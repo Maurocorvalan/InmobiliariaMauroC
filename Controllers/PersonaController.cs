@@ -15,7 +15,9 @@ public class PersonaController : Controller
 
     public IActionResult Index()
     {
-        return View();
+        RepositorioPersona rp = new RepositorioPersona();
+        var lista = rp.GetPersonas();
+        return View(lista);
     }
 
 }

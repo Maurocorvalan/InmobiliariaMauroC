@@ -1,10 +1,14 @@
-﻿@{
+﻿@model IEnumerable<Persona>
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Lista de personas</h1>
+    <h1 class="display-4">Bienvenido</h1>
     <ul>
-        <li> Mauro </li>
+        @foreach(var item in Model)
+        {
+            <li>@item.Nombre, @item.Email</li>
+        }
     </ul>
 </div>
