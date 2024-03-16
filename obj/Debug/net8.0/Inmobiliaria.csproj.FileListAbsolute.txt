@@ -108,3 +108,4 @@ C:\Users\mauro\OneDrive\Desktop\ULP\2do cuatri\.Net\InmobiliariaMauro\obj\Debug\
 C:\Users\mauro\OneDrive\Desktop\ULP\2do cuatri\.Net\InmobiliariaMauro\obj\Debug\net8.0\Inmobiliaria.pdb
 C:\Users\mauro\OneDrive\Desktop\ULP\2do cuatri\.Net\InmobiliariaMauro\obj\Debug\net8.0\Inmobiliaria.genruntimeconfig.cache
 C:\Users\mauro\OneDrive\Desktop\ULP\2do cuatri\.Net\InmobiliariaMauro\obj\Debug\net8.0\ref\Inmobiliaria.dll
+C:\Users\mauro\OneDrive\Desktop\ULP\2do cuatri\.Net\InmobiliariaMauro\obj\Debug\net8.0\Inmobiliaria.sourcelink.json
