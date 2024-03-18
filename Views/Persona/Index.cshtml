@@ -7,8 +7,9 @@
     <h1 class="display-4">Bienvenido</h1>
     <ul>
         @foreach(var item in Model)
-        {
+        {   
             <li>@item.Nombre<a asp-action="Editar" asp-route-itemid="@item.Id">(@item.Dni)</a></li>
         }
     </ul>
+    <a href="http://localhost:5296/Persona/Editar" class="btn btn-primary">Crear Persona</a>
 </div>

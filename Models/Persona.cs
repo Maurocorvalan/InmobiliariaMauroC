@@ -11,7 +11,3 @@ public class Persona
     public string? Email { get; set;}
 
 }
-public enum TipoPersona{
-    PersonaNatural =0,
-    PersonaJuridica =1
-}

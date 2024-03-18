@@ -20,10 +20,19 @@ public class PersonaController : Controller
         return View(lista);
     }
 
-    public IActionResult Editar()
+    public IActionResult Editar(int id)
     {
-     
+     if (id>0){
+        RepositorioPersona rp = new RepositorioPersona();
+        var persona = rp.GetPersona(id);
+        return View(persona);
+     }
      return View();   
+    }
+    public IActionResult Guardar(Persona persona){
+        RepositorioPersona rp = new RepositorioPersona();   
+        rp.GuardarPersona(persona);
+        return RedirectToAction(nameof(Index));
     }
 
 }
