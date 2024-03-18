@@ -16,13 +16,13 @@ public class RepositorioPersona
         var personas = new List<Persona>();
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var sql =$"SELECT {nameof(Persona.IdPersona)}, {nameof(Persona.Nombre)}, {nameof(Persona.Apellido)}, {nameof(Persona.Dni)}, {nameof(Persona.Email)}  FROM personas";
+            var sql =$"SELECT {nameof(Persona.Id)}, {nameof(Persona.Nombre)}, {nameof(Persona.Apellido)}, {nameof(Persona.Dni)}, {nameof(Persona.Email)}  FROM personas";
             using (var command = new MySqlCommand(sql, connection)){
                 connection.Open();
                 using(var reader = command.ExecuteReader()){
                     while (reader.Read()){
                         personas.Add(new Persona{
-                            IdPersona = reader.GetInt32(nameof(Persona.IdPersona)),
+                            Id = reader.GetInt32(nameof(Persona.Id)),
                             Nombre = reader.GetString(nameof(Persona.Nombre)),
                             Apellido = reader.GetString(nameof(Persona.Apellido)),
                             Dni = reader.GetInt32(nameof(Persona.Dni)),

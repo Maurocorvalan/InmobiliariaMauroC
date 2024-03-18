@@ -8,7 +8,7 @@
     <ul>
         @foreach(var item in Model)
         {
-            <li>@item.Nombre, @item.Email</li>
+            <li>@item.Nombre<a asp-action="Editar" asp-route-itemid="@item.Id">(@item.Dni)</a></li>
         }
     </ul>
 </div>

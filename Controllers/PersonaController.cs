@@ -20,4 +20,10 @@ public class PersonaController : Controller
         return View(lista);
     }
 
+    public IActionResult Editar()
+    {
+     
+     return View();   
+    }
+
 }
