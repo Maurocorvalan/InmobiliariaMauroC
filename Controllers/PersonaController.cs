@@ -20,19 +20,35 @@ public class PersonaController : Controller
         return View(lista);
     }
 
+
+    [HttpGet]
+
     public IActionResult Editar(int id)
     {
      if (id>0){
         RepositorioPersona rp = new RepositorioPersona();
         var persona = rp.GetPersona(id);
         return View(persona);
+     }else{
+        return View();   
      }
-     return View();   
     }
+
+
+	[HttpPost]
     public IActionResult Guardar(Persona persona){
         RepositorioPersona rp = new RepositorioPersona();   
-        rp.GuardarPersona(persona);
+        if(persona.Id>0){
+            rp.ModificarPersona(persona);
+        }
+        rp.AltaPersona(persona);
         return RedirectToAction(nameof(Index));
     }
 
+	public IActionResult Eliminar(int id)
+	{
+		RepositorioPersona rp = new RepositorioPersona();
+		rp.EliminaPersona(id);
+		return RedirectToAction(nameof(Index));
+	}
 }

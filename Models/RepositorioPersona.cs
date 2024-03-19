@@ -3,13 +3,13 @@ using System.Data;
 using System.Configuration;
 using MySql.Data.MySqlClient;
 using Mysqlx.Crud;
+using Microsoft.AspNetCore.Mvc;
 
 public class RepositorioPersona
 {
     readonly String  ConnectionString = "Server=localhost;Database=Inmobiliaria;User=root;Password=";
     
     public RepositorioPersona(){
-
     }
     	public Persona? GetPersona(int id)
 	{
@@ -69,8 +69,7 @@ public class RepositorioPersona
         }
         return personas;
     }
-
-    public int GuardarPersona(Persona persona){
+    public int AltaPersona(Persona persona){
         int id=0;
         using(var connection = new MySqlConnection(ConnectionString))
         {
@@ -92,4 +91,44 @@ public class RepositorioPersona
         return id;
         
     }
+
+    public int ModificarPersona(Persona persona){
+        using(var connection = new MySqlConnection(ConnectionString))
+        {
+                var sql = @$"UPDATE  personas SET ({nameof(Persona.Dni)}, {nameof(Persona.Nombre)}, {nameof(Persona.Apellido)}, {nameof(Persona.Email)}) VALUES (@{nameof(Persona.Dni)}, @{nameof(Persona.Nombre)}, @{nameof(Persona.Apellido)}, @{nameof(Persona.Email)}) WHERE {nameof(Persona.Id)} = @{nameof(Persona.Id)}";
+            
+            using (var command = new MySqlCommand(sql, connection)){
+                command.Parameters.AddWithValue($"@{nameof(Persona.Id)}", persona.Id);
+                command.Parameters.AddWithValue($"@{nameof(Persona.Nombre)}", persona.Nombre);
+                command.Parameters.AddWithValue($"@{nameof(Persona.Apellido)}", persona.Apellido);
+                command.Parameters.AddWithValue($"@{nameof(Persona.Dni)}", persona.Dni);
+                command.Parameters.AddWithValue($"@{nameof(Persona.Email)}", persona.Email);
+                connection.Open();
+                command.ExecuteNonQuery();
+                connection.Close();
+                
+            }
+     }
+
+
+     return 0;
+    }
+
+	public int EliminaPersona(int id)
+	{
+		using(var connection = new MySqlConnection(ConnectionString))
+		{
+			var sql = @$"DELETE FROM personas
+				WHERE {nameof(Persona.Id)} = @{nameof(Persona.Id)}";
+			using(var command = new MySqlCommand(sql, connection))
+			{
+				command.Parameters.AddWithValue($"@{nameof(Persona.Id)}", id);
+				connection.Open();
+				command.ExecuteNonQuery();
+				connection.Close();
+			}
+		}
+		return 0;
+	}
+
 }
