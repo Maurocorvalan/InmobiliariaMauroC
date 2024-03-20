@@ -108,11 +108,20 @@ public class RepositorioPropietarios
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var sql = @$"UPDATE propietarios SET {nameof(Propietario.IdPropietario)}, {nameof(Propietario.Nombre)}, {nameof(Propietario.Apellido)}, {nameof(Propietario.Dni)}, {nameof(Propietario.Telefono)}, {nameof(Propietario.Email)}, {nameof(Propietario.Clave)}  FROM propietarios WHERE {nameof
-            (Propietario.IdPropietario)} = @{nameof(Propietario.IdPropietario)}";
+            var sql = @$"UPDATE propietarios 
+             SET {nameof(Propietario.Nombre)} = @{nameof(Propietario.Nombre)}, 
+                 {nameof(Propietario.Apellido)} = @{nameof(Propietario.Apellido)}, 
+                 {nameof(Propietario.Dni)} = @{nameof(Propietario.Dni)}, 
+                 {nameof(Propietario.Telefono)} = @{nameof(Propietario.Telefono)}, 
+                 {nameof(Propietario.Email)} = @{nameof(Propietario.Email)}, 
+                 {nameof(Propietario.Clave)} = @{nameof(Propietario.Clave)} 
+             WHERE {nameof(Propietario.IdPropietario)} = @{nameof(Propietario.IdPropietario)}";
+
+
 
             using (var command = new MySqlCommand(sql, connection))
             {
+                command.Parameters.AddWithValue($"@{nameof(Propietario.IdPropietario)}", propietario.IdPropietario);
 
                 command.Parameters.AddWithValue($"@{nameof(Propietario.Nombre)}", propietario.Nombre);
                 command.Parameters.AddWithValue($"@{nameof(Propietario.Apellido)}", propietario.Apellido);
@@ -134,10 +143,12 @@ public class RepositorioPropietarios
 
     public int EliminarPropietario(int id)
     {
-        using (var connection = new MySqlConnection(ConnectionString)){
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
             var sql = @$"DELETE FROM propietarios WHERE {nameof(Propietario.IdPropietario)} = @{nameof(Propietario.IdPropietario)}";
-            using (var command = new MySqlCommand(sql, connection)){
-                
+            using (var command = new MySqlCommand(sql, connection))
+            {
+
                 command.Parameters.AddWithValue($"@{nameof(Propietario.IdPropietario)}", id);
                 connection.Open();
                 command.ExecuteNonQuery();

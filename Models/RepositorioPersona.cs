@@ -7,74 +7,81 @@ using Microsoft.AspNetCore.Mvc;
 
 public class RepositorioPersona
 {
-    public RepositorioPersona(){
+    public RepositorioPersona()
+    {
     }
-    readonly String  ConnectionString = "Server=localhost;Database=Inmobiliaria;User=root;Password=";
-    
+    readonly String ConnectionString = "Server=localhost;Database=Inmobiliaria;User=root;Password=";
 
-    
+
+
     public IList<Persona> GetPersonas()
     {
         var personas = new List<Persona>();
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var sql =$"SELECT {nameof(Persona.Id)}, {nameof(Persona.Nombre)}, {nameof(Persona.Apellido)}, {nameof(Persona.Dni)}, {nameof(Persona.Email)}  FROM personas";
-            using (var command = new MySqlCommand(sql, connection)){
+            var sql = $"SELECT {nameof(Persona.Id)}, {nameof(Persona.Nombre)}, {nameof(Persona.Apellido)}, {nameof(Persona.Dni)}, {nameof(Persona.Email)}  FROM personas";
+            using (var command = new MySqlCommand(sql, connection))
+            {
                 connection.Open();
-                using(var reader = command.ExecuteReader()){
-                    while (reader.Read()){
-                        personas.Add(new Persona{
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        personas.Add(new Persona
+                        {
                             Id = reader.GetInt32(nameof(Persona.Id)),
                             Nombre = reader.GetString(nameof(Persona.Nombre)),
                             Apellido = reader.GetString(nameof(Persona.Apellido)),
                             Dni = reader.GetInt32(nameof(Persona.Dni)),
                             Email = reader.GetString(nameof(Persona.Email)),
                         });
-                    
+
                     }
-                }       
+                }
             }
         }
         return personas;
     }
-    	public Persona? GetPersona(int id)
-	{
-		Persona? persona = null;
-		using(var connection = new MySqlConnection(ConnectionString))
-		{
-			var sql = @$"SELECT {nameof(Persona.Id)},{nameof(Persona.Nombre)},{nameof(Persona.Apellido)}, {nameof(Persona.Dni)}, {nameof(Persona.Email)},
+    public Persona? GetPersona(int id)
+    {
+        Persona? persona = null;
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = @$"SELECT {nameof(Persona.Id)},{nameof(Persona.Nombre)},{nameof(Persona.Apellido)}, {nameof(Persona.Dni)}, {nameof(Persona.Email)},
 				{nameof(Persona.Nombre)}
 			 FROM personas
 			 WHERE {nameof(Persona.Id)} = @{nameof(Persona.Id)}";
-			using(var command = new MySqlCommand(sql, connection))
-			{
-				command.Parameters.AddWithValue($"@{nameof(Persona.Id)}", id);
-				connection.Open();
-				using(var reader = command.ExecuteReader())
-				{
-					if(reader.Read())
-					{
-						persona = new Persona
-						{
-							Id = reader.GetInt32(nameof(Persona.Id)),
-							Nombre = reader.GetString(nameof(Persona.Nombre)),
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue($"@{nameof(Persona.Id)}", id);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        persona = new Persona
+                        {
+                            Id = reader.GetInt32(nameof(Persona.Id)),
+                            Nombre = reader.GetString(nameof(Persona.Nombre)),
                             Apellido = reader.GetString(nameof(Persona.Apellido)),
-							Dni = reader.GetInt32(nameof(Persona.Dni)),
-							Email = reader.GetString(nameof(Persona.Email)),
-							//Tipo = (TipoPersona)reader.GetInt32(nameof(Persona.Tipo))
-						};
-					}
-				}
-			}
-		}
-		return persona;
-	}
-    public int AltaPersona(Persona persona){
-        int id=0;
-        using(var connection = new MySqlConnection(ConnectionString))
+                            Dni = reader.GetInt32(nameof(Persona.Dni)),
+                            Email = reader.GetString(nameof(Persona.Email)),
+                            //Tipo = (TipoPersona)reader.GetInt32(nameof(Persona.Tipo))
+                        };
+                    }
+                }
+            }
+        }
+        return persona;
+    }
+    public int AltaPersona(Persona persona)
+    {
+        int id = 0;
+        using (var connection = new MySqlConnection(ConnectionString))
         {
-                var sql = @$"INSERT INTO personas ({nameof(Persona.Dni)}, {nameof(Persona.Nombre)}, {nameof(Persona.Apellido)}, {nameof(Persona.Email)}) VALUES (@{nameof(Persona.Dni)}, @{nameof(Persona.Nombre)}, @{nameof(Persona.Apellido)}, @{nameof(Persona.Email)}); SELECT LAST_INSERT_ID()"; ;
-            using(var command = new MySqlCommand(sql, connection)){
+            var sql = @$"INSERT INTO personas ({nameof(Persona.Dni)}, {nameof(Persona.Nombre)}, {nameof(Persona.Apellido)}, {nameof(Persona.Email)}) VALUES (@{nameof(Persona.Dni)}, @{nameof(Persona.Nombre)}, @{nameof(Persona.Apellido)}, @{nameof(Persona.Email)}); SELECT LAST_INSERT_ID()"; ;
+            using (var command = new MySqlCommand(sql, connection))
+            {
                 command.Parameters.AddWithValue($"@{nameof(Persona.Dni)}", persona.Dni);
                 command.Parameters.AddWithValue($"@{nameof(Persona.Nombre)}", persona.Nombre);
                 command.Parameters.AddWithValue($"@{nameof(Persona.Apellido)}", persona.Apellido);
@@ -89,15 +96,22 @@ public class RepositorioPersona
 
         }
         return id;
-        
+
     }
 
-    public int ModificarPersona(Persona persona){
-        using(var connection = new MySqlConnection(ConnectionString))
+    public int ModificarPersona(Persona persona)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
         {
-                var sql = @$"UPDATE  personas SET ({nameof(Persona.Dni)}, {nameof(Persona.Nombre)}, {nameof(Persona.Apellido)}, {nameof(Persona.Email)}) VALUES (@{nameof(Persona.Dni)}, @{nameof(Persona.Nombre)}, @{nameof(Persona.Apellido)}, @{nameof(Persona.Email)}) WHERE {nameof(Persona.Id)} = @{nameof(Persona.Id)}";
-            
-            using (var command = new MySqlCommand(sql, connection)){
+            var sql = @$"UPDATE personas 
+             SET {nameof(Persona.Dni)} = @{nameof(Persona.Dni)}, 
+                 {nameof(Persona.Nombre)} = @{nameof(Persona.Nombre)}, 
+                 {nameof(Persona.Apellido)} = @{nameof(Persona.Apellido)}, 
+                 {nameof(Persona.Email)} = @{nameof(Persona.Email)} 
+             WHERE {nameof(Persona.Id)} = @{nameof(Persona.Id)}";
+
+            using (var command = new MySqlCommand(sql, connection))
+            {
                 command.Parameters.AddWithValue($"@{nameof(Persona.Id)}", persona.Id);
                 command.Parameters.AddWithValue($"@{nameof(Persona.Nombre)}", persona.Nombre);
                 command.Parameters.AddWithValue($"@{nameof(Persona.Apellido)}", persona.Apellido);
@@ -106,29 +120,29 @@ public class RepositorioPersona
                 connection.Open();
                 command.ExecuteNonQuery();
                 connection.Close();
-                
+
             }
-     }
+        }
 
 
-     return 0;
+        return 0;
     }
 
-	public int EliminaPersona(int id)
-	{
-		using(var connection = new MySqlConnection(ConnectionString))
-		{
-			var sql = @$"DELETE FROM personas
+    public int EliminaPersona(int id)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = @$"DELETE FROM personas
 				WHERE {nameof(Persona.Id)} = @{nameof(Persona.Id)}";
-			using(var command = new MySqlCommand(sql, connection))
-			{
-				command.Parameters.AddWithValue($"@{nameof(Persona.Id)}", id);
-				connection.Open();
-				command.ExecuteNonQuery();
-				connection.Close();
-			}
-		}
-		return 0;
-	}
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue($"@{nameof(Persona.Id)}", id);
+                connection.Open();
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
+        return 0;
+    }
 
 }
