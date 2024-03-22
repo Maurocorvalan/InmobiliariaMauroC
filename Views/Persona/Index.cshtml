@@ -1,18 +1,63 @@
 ﻿@model IEnumerable<Persona>
+
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Personas";
 }
 
-<div>
-	<h1 class="display-4">Personas</h1>
-	<h4><a asp-action="Editar">Crear</a></h4>
-	<ul>
-		@foreach (var item in Model)
-		{
-			<li>@item.Nombre 
-				<a asp-action="Editar" asp-route-id="@item.Id">(@item.Dni)</a>
-				<a asp-action="Eliminar" asp-route-id="@item.Id"><i class="fa fa-trash text-danger"></i></a>
-			</li>
-		}
-	</ul>
-</div>
+<h1>Personas</h1>
+
+<p>
+    <a asp-action="Editar" class="btn btn-primary">Crear nuevo</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Apellido)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Dni)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Apellido)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Dni)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    <a asp-action="Editar" asp-route-IdPropietario="@item.Id" title="Editar"><span
+                            class="fa fa-edit"></span></a>&nbsp;
+                    <a asp-action="Eliminar" asp-route-id="@item.Id" title="Eliminar"
+                        onclick="return confirm('¿Estás seguro de eliminar a @item.Nombre @item.Apellido?');"><span
+                            class="fa fa-trash text-danger"></span></a>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>

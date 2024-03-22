@@ -7,7 +7,7 @@
 <h1>Inquilino</h1>
 
 <p>
-    <a asp-action="Editar">Crear nuevo</a>
+    <a asp-action="Editar" class="btn btn-primary">Crear nuevo</a>
 </p>
 <table class="table">
     <thead>
@@ -57,10 +57,10 @@
                 </td>
                 <td>
                     <a asp-action="Editar" asp-route-IdInquilino="@item.IdInquilino" title="Editar"><span
-                            class="lnr lnr-pencil"></span></a>&nbsp;
+                            class="fa fa-edit"></span></a>&nbsp;
                     <a asp-action="Eliminar" asp-route-id="@item.IdInquilino" title="Eliminar"
                         onclick="return confirm('¿Estás seguro de eliminar a @item.Nombre @item.Apellido?');"><span
-                            class="lnr lnr-cross"></span></a>
+                            class="fa fa-trash text-danger"></span></a>
                 </td>
 
             </tr>
