@@ -6,9 +6,15 @@
 
 <h1>Inquilino</h1>
 
-<p>
-    <a asp-action="Editar" class="btn btn-primary">Crear nuevo</a>
-</p>
+
+
+<div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Buscar..." id="searchInput">
+    <div class="input-group-append">
+        <a asp-action="Editar" class="btn btn-primary">Crear nuevo</a>
+    </div>
+</div>
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -62,8 +68,12 @@
                         onclick="return confirm('¿Estás seguro de eliminar a @item.Nombre @item.Apellido?');"><span
                             class="fa fa-trash text-danger"></span></a>
                 </td>
-
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="~/js/search.js"></script>
+}

@@ -53,7 +53,9 @@ body {
   font-size: 36px;
   margin-left: 50px;
 }
-
+.btn {
+  margin-left: 5px;
+}
 .container-fluid{
   margin-left: 40px;
 }
