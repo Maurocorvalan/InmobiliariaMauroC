@@ -54,6 +54,9 @@ body {
   margin-left: 50px;
 }
 
+.container-fluid{
+  margin-left: 40px;
+}
 @media screen and (max-height: 450px) {
   .sidebar {padding-top: 15px;}
   .sidebar a {font-size: 18px;}
