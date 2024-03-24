@@ -81,7 +81,7 @@ public class RepositorioInquilino
         using (var connection = new MySqlConnection(ConnectionString))
         {
             var sql = @$"INSERT INTO inquilinos ({nameof(Inquilino.Nombre)}, {nameof(Inquilino.Apellido)}, {nameof(Inquilino.Dni)}, {nameof(Inquilino.Telefono)},{nameof(Inquilino.Email)}) 
-                     VALUES (@{nameof(Inquilino.Nombre)}, @{nameof(Inquilino.Apellido)}, @{nameof(Inquilino.Dni)}, @{nameof(Inquilino.Email)}, @{nameof(Inquilino.Telefono)});
+                     VALUES (@{nameof(Inquilino.Nombre)}, @{nameof(Inquilino.Apellido)}, @{nameof(Inquilino.Dni)}, @{nameof(Inquilino.Email)} @{nameof(Inquilino.Telefono)});
                      SELECT LAST_INSERT_ID()";
 
             using (var command = new MySqlCommand(sql, connection))
@@ -101,38 +101,35 @@ public class RepositorioInquilino
         }
         return Id;
     }
-     public int ModificarInquilino(Inquilino inquilino)
+public int ModificarInquilino(Inquilino inquilino)
+{
+    using (var connection = new MySqlConnection(ConnectionString))
     {
-        using (var connection = new MySqlConnection(ConnectionString))
+        var sql = @$"UPDATE inquilinos 
+                     SET {nameof(Inquilino.Nombre)} = @{nameof(Inquilino.Nombre)}, 
+                         {nameof(Inquilino.Apellido)} = @{nameof(Inquilino.Apellido)}, 
+                         {nameof(Inquilino.Dni)} = @{nameof(Inquilino.Dni)}, 
+                         {nameof(Inquilino.Telefono)} = @{nameof(Inquilino.Telefono)}, 
+                         {nameof(Inquilino.Email)} = @{nameof(Inquilino.Email)} 
+                     WHERE {nameof(Inquilino.IdInquilino)} = @{nameof(Inquilino.IdInquilino)}";
+
+        using (var command = new MySqlCommand(sql, connection))
         {
-            var sql = @$"UPDATE inquilinos 
-             SET {nameof(Inquilino.Nombre)} = @{nameof(Inquilino.Nombre)}, 
-                 {nameof(Inquilino.Apellido)} = @{nameof(Inquilino.Apellido)}, 
-                 {nameof(Inquilino.Dni)} = @{nameof(Inquilino.Dni)}, 
-                 {nameof(Inquilino.Telefono)} = @{nameof(Inquilino.Telefono)}, 
-                 {nameof(Inquilino.Email)} = @{nameof(Inquilino.Email)}, 
-             WHERE {nameof(Inquilino.IdInquilino)} = @{nameof(Inquilino.IdInquilino)}";
+            command.Parameters.AddWithValue($"@{nameof(Inquilino.IdInquilino)}", inquilino.IdInquilino);
+            command.Parameters.AddWithValue($"@{nameof(Inquilino.Nombre)}", inquilino.Nombre);
+            command.Parameters.AddWithValue($"@{nameof(Inquilino.Apellido)}", inquilino.Apellido);
+            command.Parameters.AddWithValue($"@{nameof(Inquilino.Dni)}", inquilino.Dni);
+            command.Parameters.AddWithValue($"@{nameof(Inquilino.Email)}", inquilino.Email);
+            command.Parameters.AddWithValue($"@{nameof(Inquilino.Telefono)}", inquilino.Telefono);
 
-
-
-            using (var command = new MySqlCommand(sql, connection))
-            {
-                command.Parameters.AddWithValue($"@{nameof(Inquilino.IdInquilino)}", inquilino.IdInquilino);
-
-                command.Parameters.AddWithValue($"@{nameof(Inquilino.Nombre)}", inquilino.Nombre);
-                command.Parameters.AddWithValue($"@{nameof(Inquilino.Apellido)}", inquilino.Apellido);
-                command.Parameters.AddWithValue($"@{nameof(Inquilino.Dni)}", inquilino.Dni);
-                command.Parameters.AddWithValue($"@{nameof(Inquilino.Email)}", inquilino.Email);
-                command.Parameters.AddWithValue($"@{nameof(Inquilino.Telefono)}", inquilino.Telefono);
-
-
-                connection.Open();
-                command.ExecuteNonQuery();
-                connection.Close();
-            }
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
         }
-        return 0;
     }
+    return 0;
+}
+
 
 
     public int EliminarInquilino(int id)

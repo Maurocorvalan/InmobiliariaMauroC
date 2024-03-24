@@ -66,7 +66,7 @@ public class RepositorioPersona
                             Apellido = reader.GetString(nameof(Persona.Apellido)),
                             Dni = reader.GetInt32(nameof(Persona.Dni)),
                             Email = reader.GetString(nameof(Persona.Email)),
-                            //Tipo = (TipoPersona)reader.GetInt32(nameof(Persona.Tipo))
+
                         };
                     }
                 }
