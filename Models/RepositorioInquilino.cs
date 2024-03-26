@@ -80,9 +80,10 @@ public class RepositorioInquilino
         int Id = 0;
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var sql = @$"INSERT INTO inquilinos ({nameof(Inquilino.Nombre)}, {nameof(Inquilino.Apellido)}, {nameof(Inquilino.Dni)}, {nameof(Inquilino.Telefono)},{nameof(Inquilino.Email)}) 
-                     VALUES (@{nameof(Inquilino.Nombre)}, @{nameof(Inquilino.Apellido)}, @{nameof(Inquilino.Dni)}, @{nameof(Inquilino.Email)} @{nameof(Inquilino.Telefono)});
+            var sql = @$"INSERT INTO inquilinos ({nameof(Inquilino.Nombre)}, {nameof(Inquilino.Apellido)}, {nameof(Inquilino.Dni)}, {nameof(Inquilino.Telefono)}, {nameof(Inquilino.Email)}) 
+                     VALUES (@{nameof(Inquilino.Nombre)}, @{nameof(Inquilino.Apellido)}, @{nameof(Inquilino.Dni)}, @{nameof(Inquilino.Telefono)}, @{nameof(Inquilino.Email)});
                      SELECT LAST_INSERT_ID()";
+
 
             using (var command = new MySqlCommand(sql, connection))
             {
