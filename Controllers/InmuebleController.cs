@@ -37,24 +37,26 @@ public class InmuebleController : Controller
     }
     [HttpPost]
 
-    public IActionResult Guardar(Inquilino inquilino)
+    public IActionResult Guardar(Inmueble inmueble)
     {
-        RepositorioInquilino ri = new RepositorioInquilino();
-        if (inquilino.IdInquilino > 0)
+        RepositorioInmueble rinm = new RepositorioInmueble();
+        if (inmueble.IdInmueble > 0)
         {
-            ri.ModificarInquilino(inquilino);
+            rinm.ModificarInmueble(inmueble);
         }else{    
-        ri.CrearInquilino(inquilino);
+        rinm.CrearInmueble(inmueble);
         }
         return RedirectToAction(nameof(Index));
     }
 
     public IActionResult Eliminar(int id)
     {
-        RepositorioInquilino ri = new RepositorioInquilino();
-        ri.EliminarInquilino(id);
+        RepositorioInmueble rinm = new RepositorioInmueble();
+        rinm.EliminarInmueble(id);
         return RedirectToAction(nameof(Index));
     }
+
+
 
 }
 

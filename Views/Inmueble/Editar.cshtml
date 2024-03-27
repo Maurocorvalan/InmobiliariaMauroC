@@ -21,13 +21,21 @@
                 <span asp-validation-for="Direccion" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Uso" class="control-label"></label>
-                <input asp-for="Uso" class="form-control" required />
+                <label asp-for="Uso" class="control-label">Uso(Elegir)</label>
+                <select asp-for="Uso" class="form-control" required>
+                    <option value="Residencial">Residencial</option>
+                    <option value="Comercial">Comercial</option>
+                </select>
                 <span asp-validation-for="Uso" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Tipo" class="control-label"></label>
-                <input asp-for="Tipo" class="form-control" required />
+                <label asp-for="Tipo" class="control-label">Tipo(Elegir)</label>
+                <select asp-for="Tipo" class="form-control" required>
+                    <option value="Casa">Casa</option>
+                    <option value="Departamento">Departamento</option>
+                    <option value="Local Comercial">Local Comercial</option>
+                    <option value="Oficina">Oficina</option>
+                </select>
                 <span asp-validation-for="Tipo" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -44,6 +52,16 @@
                 <label asp-for="Valor" class="control-label"></label>
                 <input asp-for="Valor" class="form-control" required />
                 <span asp-validation-for="Valor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Latitud" class="control-label"></label>
+                <input asp-for="Latitud" class="form-control" required />
+                <span asp-validation-for="Latitud" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Longitud" class="control-label"></label>
+                <input asp-for="Longitud" class="form-control" required />
+                <span asp-validation-for="Longitud" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="IdPropietario" class="control-label"></label>
