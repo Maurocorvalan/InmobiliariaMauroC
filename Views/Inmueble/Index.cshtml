@@ -1,0 +1,79 @@
+﻿@model IEnumerable<Inmueble>
+
+@{
+    ViewData["Title"] = "Inmueble";
+}
+
+<h1>Inmueble</h1>
+
+
+
+<div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Buscar..." id="searchInput">
+    <div class="input-group-append">
+        <a asp-action="Editar" class="btn btn-primary">Crear nuevo</a>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Direccion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Uso)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tipo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ambientes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Duenio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Valor)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Direccion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Uso)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tipo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ambientes)
+                </td>
+                <td>
+                    @(item.Duenio.Nombre + " "+ item.Duenio.Apellido)
+                </td>
+                <td>
+                @Html.DisplayFor(model => item.Valor)
+                </td>
+                <td>
+                    <a asp-action="Editar" asp-route-IdInquilino="@item.IdInmueble" title="Editar"><span
+                            class="fa fa-edit"></span></a>&nbsp;
+                    <a asp-action="Eliminar" asp-route-id="@item.IdInmueble" title="Eliminar"
+                        onclick="return confirm('¿Estás seguro de eliminar a @item.Tipo @item.Uso @item.Direccion?');"><span
+                            class="fa fa-trash text-danger"></span></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="~/js/search.js"></script>
+}

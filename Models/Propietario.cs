@@ -12,5 +12,9 @@ public class Propietario
     public string? Email { get; set;}
     public string? Clave { get; set;}
 
-    
+    public override string ToString()
+    {
+        return $"{Nombre} {Apellido}";
+    }
+
 }

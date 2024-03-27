@@ -49,7 +49,7 @@ public class RepositorioInquilino
         using (var connection = new MySqlConnection(ConnectionString))
         {
             var sql = @$"SELECT {nameof(Inquilino.IdInquilino)},{nameof(Inquilino.Nombre)},{nameof(Inquilino.Apellido)}, {nameof(Inquilino.Dni)}, {nameof(Inquilino.Telefono)},{nameof(Inquilino.Email)},
-				{nameof(Persona.Nombre)}
+				{nameof(Inquilino.Nombre)}
 			 FROM inquilinos
 			 WHERE {nameof(Inquilino.IdInquilino)} = @{nameof(Inquilino.IdInquilino)}";
             using (var command = new MySqlCommand(sql, connection))
