@@ -62,7 +62,7 @@
                 @Html.DisplayFor(model => item.Valor)
                 </td>
                 <td>
-                    <a asp-action="Editar" asp-route-IdInquilino="@item.IdInmueble" title="Editar"><span
+                    <a asp-action="Editar" asp-route-idInmueble="@item.IdInmueble" title="Editar"><span
                             class="fa fa-edit"></span></a>&nbsp;
                     <a asp-action="Eliminar" asp-route-id="@item.IdInmueble" title="Eliminar"
                         onclick="return confirm('¿Estás seguro de eliminar a @item.Tipo @item.Uso @item.Direccion?');"><span

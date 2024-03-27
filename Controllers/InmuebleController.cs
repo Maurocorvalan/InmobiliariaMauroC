@@ -22,13 +22,13 @@ public class InmuebleController : Controller
     [HttpGet]
 
     
-    public IActionResult Editar(int idInquilino)
+    public IActionResult Editar(int idInmueble)
     {
-        if (idInquilino > 0)
+        if (idInmueble > 0)
         {
-            RepositorioInquilino ri = new RepositorioInquilino();
-            var inquilino = ri.GetInquilino(idInquilino);
-            return View(inquilino);
+            RepositorioInmueble rinm = new RepositorioInmueble();
+            var inmueble = rinm.GetInmueble(idInmueble);
+            return View(inmueble);
         }
         else
         {
