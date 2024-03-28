@@ -56,7 +56,7 @@
                     @Html.DisplayFor(modelItem => item.Ambientes)
                 </td>
                 <td>
-                    @(item.Duenio.Nombre + " "+ item.Duenio.Apellido)
+                    @(item.Duenio?.Nombre + " "+ item.Duenio?.Apellido)
                 </td>
                 <td>
                 @Html.DisplayFor(model => item.Valor)
