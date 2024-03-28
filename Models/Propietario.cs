@@ -14,7 +14,7 @@ public class Propietario
 
     public override string ToString()
     {
-        return $"{Nombre} {Apellido}";
+        return $"{Nombre} {Apellido} {Dni}";
     }
 
 }
