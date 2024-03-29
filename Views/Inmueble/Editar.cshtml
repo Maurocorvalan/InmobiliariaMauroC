@@ -68,7 +68,7 @@
                 <select asp-for="IdPropietario" class="form-control" required>
                     @foreach (var item in ViewBag.Propietarios)
                     {
-                        @:<option @(item.IdPropietario==Model.IdPropietario ? "selected" : "") value="@item.IdPropietario">@(item.Nombre + " " + item.Apellido)</option>                    
+                        @:<option @(item.IdPropietario==Model?.IdPropietario ? "selected" : "") value="@item.IdPropietario">@(item.Nombre + " " + item.Apellido)</option>                    
                         }
                 </select>
 

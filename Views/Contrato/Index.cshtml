@@ -1,10 +1,84 @@
-﻿@model Inmobiliaria.Models.Contrato
+﻿@model IEnumerable<Contrato>
 
 @{
-    ViewData["Title"] = "Contrato";
+    ViewData["Title"] = "Contratos";
 }
 
-<h4>Contratos</h4>
+<h1>Contratos</h1>
 
+<div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Buscar..." id="searchInput">
+    <div class="input-group-append">
+        <a asp-action="Crear" class="btn btn-primary">Crear nuevo</a>
+    </div>
+</div>
 
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdContrato)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaInicio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaFinalizacion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MontoAlquiler)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estado)
+            </th>
+            <th>
+                Nombre Inquilino
+            </th>
+            <th>
+                Direccion Inmueble
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdContrato)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaInicio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaFinalizacion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MontoAlquiler)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Estado)
+                </td>
+                <td>
+                    @(item.Inquilino?.Nombre + " " + item.Inquilino?.Apellido) 
+                </td>
+                <td>
+                    @(item.Inmueble?.Direccion)
+                 </td>
 
+                <td>
+                    <a asp-action="Editar" asp-route-idContrato="@item.IdContrato" title="Editar"><span
+                            class="fa fa-edit"></span></a>&nbsp;
+                    <a asp-action="Eliminar" asp-route-id="@item.IdContrato" title="Eliminar"
+                        onclick="return confirm('¿Estás seguro de eliminar este contrato?');"><span
+                            class="fa fa-trash text-danger"></span></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="~/js/search.js"></script>
+}

@@ -20,4 +20,9 @@ public class Inmueble
     
     public int IdPropietario{get; set;}
     public Propietario? Duenio { get; set; }
+
+        public override string ToString()
+    {
+        return $"ID: {IdInmueble} /DIRECCION: {Direccion} /DUEÑO: {Duenio}";
+    }
 }
