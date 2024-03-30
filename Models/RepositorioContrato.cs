@@ -138,13 +138,38 @@ public class RepositorioContrato
     }
 
 
-
     public int CrearContrato(Contrato contrato)
     {
         int Id = 0;
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var sql = @$"INSERT INTO contratos (
+            var overlapCheckQuery = $@"
+            SELECT COUNT(*) 
+            FROM contratos 
+            WHERE {nameof(Contrato.IdInmueble)} = @{nameof(Contrato.IdInmueble)} 
+            AND ({nameof(Contrato.FechaInicio)} BETWEEN @{nameof(Contrato.FechaInicio)} AND @{nameof(Contrato.FechaFinalizacion)} 
+                OR {nameof(Contrato.FechaFinalizacion)} BETWEEN @{nameof(Contrato.FechaInicio)} AND @{nameof(Contrato.FechaFinalizacion)})";
+
+            using (var overlapCheckCommand = new MySqlCommand(overlapCheckQuery, connection))
+            {
+                overlapCheckCommand.Parameters.AddWithValue($"@{nameof(Contrato.IdInmueble)}", contrato.IdInmueble);
+                overlapCheckCommand.Parameters.AddWithValue($"@{nameof(Contrato.FechaInicio)}", contrato.FechaInicio);
+                overlapCheckCommand.Parameters.AddWithValue($"@{nameof(Contrato.FechaFinalizacion)}", contrato.FechaFinalizacion);
+
+                connection.Open();
+                int overlappingContractsCount = Convert.ToInt32(overlapCheckCommand.ExecuteScalar());
+                connection.Close();
+
+                if (overlappingContractsCount > 0)
+                {
+
+                    throw new Exception("El inmueble ya está ocupado en las fechas especificadas por otro contrato.");
+                }
+            }
+
+
+            var insertQuery = $@"
+            INSERT INTO contratos (
                 {nameof(Contrato.FechaInicio)}, {nameof(Contrato.FechaFinalizacion)}, {nameof(Contrato.MontoAlquiler)}, {nameof(Contrato.Estado)}, {nameof(Contrato.IdInquilino)}, {nameof(Contrato.IdInmueble)}
             ) 
             VALUES (
@@ -152,24 +177,21 @@ public class RepositorioContrato
             );
             SELECT LAST_INSERT_ID();";
 
-            using (var command = new MySqlCommand(sql, connection))
+            using (var insertCommand = new MySqlCommand(insertQuery, connection))
             {
-                command.Parameters.AddWithValue($"@{nameof(Contrato.IdContrato)}", contrato.IdContrato);
-                command.Parameters.AddWithValue($"@{nameof(Contrato.FechaInicio)}", contrato.FechaInicio);
-                command.Parameters.AddWithValue($"@{nameof(Contrato.FechaFinalizacion)}", contrato.FechaFinalizacion);
-                command.Parameters.AddWithValue($"@{nameof(Contrato.MontoAlquiler)}", contrato.MontoAlquiler);
-                command.Parameters.AddWithValue($"@{nameof(Contrato.Estado)}", contrato.Estado);
-                command.Parameters.AddWithValue($"@{nameof(Contrato.IdInquilino)}", contrato.IdInquilino);
-                command.Parameters.AddWithValue($"@{nameof(Contrato.IdInmueble)}", contrato.IdInmueble);
-
+                insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.FechaInicio)}", contrato.FechaInicio);
+                insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.FechaFinalizacion)}", contrato.FechaFinalizacion);
+                insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.MontoAlquiler)}", contrato.MontoAlquiler);
+                insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.Estado)}", contrato.Estado);
+                insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.IdInquilino)}", contrato.IdInquilino);
+                insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.IdInmueble)}", contrato.IdInmueble);
                 connection.Open();
-                Id = Convert.ToInt32(command.ExecuteScalar());
-                contrato.IdContrato = Id;
+                Id = Convert.ToInt32(insertCommand.ExecuteScalar());
                 connection.Close();
-            }
 
+            }
+            return Id;
         }
-        return Id;
     }
 
     public int ModificarContrato(Contrato contrato)
@@ -205,7 +227,7 @@ public class RepositorioContrato
         return 0;
     }
 
-    public int EliminarContrato (int id)
+    public int EliminarContrato(int id)
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
@@ -218,7 +240,7 @@ public class RepositorioContrato
                 connection.Close();
             }
         }
-        
+
         return 0;
     }
 

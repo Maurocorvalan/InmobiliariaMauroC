@@ -14,12 +14,20 @@ public class ContratoController : Controller
         _logger = logger;
     }
 
-    public IActionResult Index()
+ public IActionResult Index()
+{
+    RepositorioContrato rc = new RepositorioContrato();
+    var lista = rc.GetContratos();
+
+    // Verificar si hay un mensaje de éxito en TempData y pasarlo a la vista
+    if (TempData["SuccessMessage"] != null)
     {
-        RepositorioContrato rc = new RepositorioContrato();
-        var lista = rc.GetContratos();
-        return View(lista);
+        ViewData["SuccessMessage"] = TempData["SuccessMessage"];
     }
+
+    return View(lista);
+}
+
 
     public IActionResult Crear(int idContrato)
     {
@@ -38,19 +46,32 @@ public class ContratoController : Controller
             return View();
         }
     }
-    public IActionResult Guardar(Contrato contrato)
+public IActionResult Guardar(Contrato contrato)
+{
+    RepositorioContrato rc = new RepositorioContrato();
+    try
     {
-        RepositorioContrato rc = new RepositorioContrato();
         if (contrato.IdContrato > 0)
         {
             rc.ModificarContrato(contrato);
+            TempData["SuccessMessage"] = "Contrato actualizado correctamente.";
         }
         else
         {
             rc.CrearContrato(contrato);
+            TempData["SuccessMessage"] = "Contrato creado correctamente.";
         }
         return RedirectToAction(nameof(Index));
     }
+    catch (Exception)
+    {
+        TempData["ErrorMessage"] = "Fechas no disponibles para este Inmueble";
+        return RedirectToAction(nameof(Crear));
+    }
+}
+
+
+
 
     public IActionResult Editar(int idContrato)
     {
@@ -71,10 +92,20 @@ public class ContratoController : Controller
     }
 
 
-    public IActionResult Eliminar(int id){
-        RepositorioContrato rc = new RepositorioContrato();
+public IActionResult Eliminar(int id)
+{
+    RepositorioContrato rc = new RepositorioContrato();
+    try
+    {
         rc.EliminarContrato(id);
-        return RedirectToAction(nameof(Index));
+        TempData["SuccessMessage"] = "Contrato eliminado correctamente.";
     }
+    catch (Exception)
+    {
+        TempData["ErrorMessage"] = "No se pudo eliminar el contrato.";
+    }
+    return RedirectToAction(nameof(Index));
+}
+
 
 }
