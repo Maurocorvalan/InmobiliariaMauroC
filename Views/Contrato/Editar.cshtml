@@ -51,13 +51,12 @@
       <div class="form-group">
         <label asp-for="IdInmueble" class="control-label">Inmueble</label>
         <select asp-for="IdInmueble" class="form-control" required>
-          <option value="@Model.IdInmueble" selected>@Model.Inmueble?.Direccion</option>  
+         <!-- <option value="@Model.IdInmueble" selected>@Model.Inmueble?.Direccion</option>  -->
           @foreach (var item in ViewBag.Inmuebles)
           {
-            if (item.IdInmueble != @Model.IdInmueble)
-            {
+
               <option value="@item.IdInmueble">@item.Direccion</option>
-            }
+            
           }
         </select>
         <span asp-validation-for="IdInmueble" class="text-danger"></span>
