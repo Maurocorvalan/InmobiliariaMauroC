@@ -147,8 +147,9 @@ public class RepositorioContrato
             SELECT COUNT(*) 
             FROM contratos 
             WHERE {nameof(Contrato.IdInmueble)} = @{nameof(Contrato.IdInmueble)} 
-            AND ({nameof(Contrato.FechaInicio)} BETWEEN @{nameof(Contrato.FechaInicio)} AND @{nameof(Contrato.FechaFinalizacion)} 
-                OR {nameof(Contrato.FechaFinalizacion)} BETWEEN @{nameof(Contrato.FechaInicio)} AND @{nameof(Contrato.FechaFinalizacion)})";
+            AND (DATE({nameof(Contrato.FechaInicio)}) BETWEEN DATE(@{nameof(Contrato.FechaInicio)}) AND DATE(@{nameof(Contrato.FechaFinalizacion)}) 
+                OR DATE({nameof(Contrato.FechaFinalizacion)}) BETWEEN DATE(@{nameof(Contrato.FechaInicio)}) AND DATE(@{nameof(Contrato.FechaFinalizacion)}))";
+
 
             using (var overlapCheckCommand = new MySqlCommand(overlapCheckQuery, connection))
             {
@@ -162,20 +163,18 @@ public class RepositorioContrato
 
                 if (overlappingContractsCount > 0)
                 {
-
                     throw new Exception("El inmueble ya está ocupado en las fechas especificadas por otro contrato.");
                 }
             }
 
-
             var insertQuery = $@"
-            INSERT INTO contratos (
-                {nameof(Contrato.FechaInicio)}, {nameof(Contrato.FechaFinalizacion)}, {nameof(Contrato.MontoAlquiler)}, {nameof(Contrato.Estado)}, {nameof(Contrato.IdInquilino)}, {nameof(Contrato.IdInmueble)}
-            ) 
-            VALUES (
-                @{nameof(Contrato.FechaInicio)}, @{nameof(Contrato.FechaFinalizacion)}, @{nameof(Contrato.MontoAlquiler)}, @{nameof(Contrato.Estado)}, @{nameof(Contrato.IdInquilino)}, @{nameof(Contrato.IdInmueble)}
-            );
-            SELECT LAST_INSERT_ID();";
+        INSERT INTO contratos (
+            {nameof(Contrato.FechaInicio)}, {nameof(Contrato.FechaFinalizacion)}, {nameof(Contrato.MontoAlquiler)}, {nameof(Contrato.Estado)}, {nameof(Contrato.IdInquilino)}, {nameof(Contrato.IdInmueble)}
+        ) 
+        VALUES (
+            @{nameof(Contrato.FechaInicio)}, @{nameof(Contrato.FechaFinalizacion)}, @{nameof(Contrato.MontoAlquiler)}, @{nameof(Contrato.Estado)}, @{nameof(Contrato.IdInquilino)}, @{nameof(Contrato.IdInmueble)}
+        );
+        SELECT LAST_INSERT_ID();";
 
             using (var insertCommand = new MySqlCommand(insertQuery, connection))
             {
@@ -188,11 +187,11 @@ public class RepositorioContrato
                 connection.Open();
                 Id = Convert.ToInt32(insertCommand.ExecuteScalar());
                 connection.Close();
-
             }
             return Id;
         }
     }
+
 
     public int ModificarContrato(Contrato contrato)
     {
