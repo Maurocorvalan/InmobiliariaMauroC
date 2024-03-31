@@ -83,12 +83,20 @@ namespace Inmobiliaria.Controllers
 
         public IActionResult Eliminar(int id)
         {
-            RepositorioInmueble rinm = new RepositorioInmueble();
-
-            rinm.EliminarInmueble(id);
-            TempData["SuccessMessage"] = "Inmueble eliminado correctamente.";
+            try
+            {
+                RepositorioInmueble rinm = new RepositorioInmueble();
+                rinm.EliminarInmueble(id);
+                TempData["SuccessMessage"] = "Inmueble eliminado correctamente.";
+            }
+            catch (Exception ex)
+            {
+                TempData["SuccessMessage"] = "No se pudo eliminar el inmueble debido a que posee un contrato vigente.";
+                Console.WriteLine(ex.Message);
+            }
 
             return RedirectToAction(nameof(Index));
         }
+
     }
 }

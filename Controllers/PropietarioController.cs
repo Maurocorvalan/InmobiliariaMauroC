@@ -62,10 +62,14 @@ namespace Inmobiliaria.Controllers
 
         public IActionResult Eliminar(int id)
         {
-            
+            try{
             RepositorioPropietarios rp = new RepositorioPropietarios();
             rp.EliminarPropietario(id);
             TempData["SuccessMessage"] = "Propietario eliminado correctamente.";
+            }catch(Exception ex){
+                TempData["SuccessMessage"] = "No se pudo eliminar el propietario debido a que posee un inmueble o contrato vigente";
+                Console.WriteLine(ex.Message);
+            }
             return RedirectToAction(nameof(Index));
         }
     }
