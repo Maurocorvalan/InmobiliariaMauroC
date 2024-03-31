@@ -14,13 +14,18 @@
         <a asp-action="Crear" class="btn btn-primary">Crear nuevo</a>
     </div>
 </div>
-
+@if (ViewData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @ViewData["SuccessMessage"]
+    </div>
+}
 <table class="table table-striped">
     <thead>
         <tr>
 
             <th>
-                @Html.DisplayNameFor(model => model.Direccion)
+                Dirección
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Uso)
@@ -32,7 +37,7 @@
                 @Html.DisplayNameFor(model => model.Ambientes)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Duenio)
+                Dueño
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Valor)

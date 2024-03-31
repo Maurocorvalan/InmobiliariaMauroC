@@ -1,60 +1,70 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures; // Agregado para TempData
 using Inmobiliaria.Models;
 
-namespace Inmobiliaria.Controllers;
-
-public class InquilinoController : Controller
+namespace Inmobiliaria.Controllers
 {
-    private readonly ILogger<InquilinoController> _logger;
-
-    public InquilinoController(ILogger<InquilinoController> logger)
+    public class InquilinoController : Controller
     {
-        _logger = logger;
-    }
+        private readonly ILogger<InquilinoController> _logger;
 
-    public IActionResult Index()
-    {
-        RepositorioInquilino ri = new RepositorioInquilino();
-        var lista = ri.GetInquilinos();
-        return View(lista);
-    }
-    [HttpGet]
+        public InquilinoController(ILogger<InquilinoController> logger)
+        {
+            _logger = logger;
+        }
 
-    
-    public IActionResult Editar(int idInquilino)
-    {
-        if (idInquilino > 0)
+        public IActionResult Index()
         {
             RepositorioInquilino ri = new RepositorioInquilino();
-            var inquilino = ri.GetInquilino(idInquilino);
-            return View(inquilino);
+            var lista = ri.GetInquilinos();
+
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewData["SuccessMessage"] = TempData["SuccessMessage"];
+            }
+            return View(lista);
         }
-        else
+
+        [HttpGet]
+        public IActionResult Editar(int idInquilino)
         {
-            return View();
+            if (idInquilino > 0)
+            {
+                RepositorioInquilino ri = new RepositorioInquilino();
+                var inquilino = ri.GetInquilino(idInquilino);
+                return View(inquilino);
+            }
+            else
+            {
+                return View();
+            }
         }
-    }
-    [HttpPost]
 
-    public IActionResult Guardar(Inquilino inquilino)
-    {
-        RepositorioInquilino ri = new RepositorioInquilino();
-        if (inquilino.IdInquilino > 0)
+        [HttpPost]
+        public IActionResult Guardar(Inquilino inquilino)
         {
-            ri.ModificarInquilino(inquilino);
-        }else{    
-        ri.CrearInquilino(inquilino);
+            RepositorioInquilino ri = new RepositorioInquilino();
+            if (inquilino.IdInquilino > 0)
+            {
+                ri.ModificarInquilino(inquilino);
+                TempData["SuccessMessage"] = "Inquilino actualizado correctamente.";
+            }
+            else
+            {
+                ri.CrearInquilino(inquilino);
+                TempData["SuccessMessage"] = "Inquilino creado correctamente.";
+            }
+
+            return RedirectToAction(nameof(Index));
         }
-        return RedirectToAction(nameof(Index));
-    }
 
-    public IActionResult Eliminar(int id)
-    {
-        RepositorioInquilino ri = new RepositorioInquilino();
-        ri.EliminarInquilino(id);
-        return RedirectToAction(nameof(Index));
+        public IActionResult Eliminar(int id)
+        {
+            RepositorioInquilino ri = new RepositorioInquilino();
+            ri.EliminarInquilino(id);
+            TempData["SuccessMessage"] = "Inquilino eliminado correctamente.";
+            return RedirectToAction(nameof(Index));
+        }
     }
-
 }
-
