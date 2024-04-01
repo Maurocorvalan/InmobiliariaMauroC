@@ -24,7 +24,6 @@ public class RepositorioInmueble
 
             using (var command = new MySqlCommand(sql, connection))
             {
-                command.CommandType = CommandType.Text;
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 {

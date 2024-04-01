@@ -33,11 +33,13 @@ public class RepositorioInquilino
                             Nombre = reader.GetString(nameof(Inquilino.Nombre)),
                             Apellido = reader.GetString(nameof(Inquilino.Apellido)),
                             Dni = reader.GetString(nameof(Inquilino.Dni)),
-                            Telefono= reader.GetString(nameof(Inquilino.Telefono)),
+                            Telefono = reader.GetString(nameof(Inquilino.Telefono)),
                             Email = reader.GetString(nameof(Inquilino.Email)),
                         });
 
                     }
+                    connection.Close();
+
                 }
             }
         }
@@ -63,7 +65,7 @@ public class RepositorioInquilino
                         inquilino = new Inquilino
                         {
                             IdInquilino = reader.GetInt32(nameof(Inquilino.IdInquilino)),
-                            Nombre= reader.GetString(nameof(Inquilino.Nombre)),
+                            Nombre = reader.GetString(nameof(Inquilino.Nombre)),
                             Apellido = reader.GetString(nameof(Inquilino.Apellido)),
                             Dni = reader.GetString(nameof(Inquilino.Dni)),
                             Telefono = reader.GetString(nameof(Inquilino.Telefono)),
@@ -102,11 +104,11 @@ public class RepositorioInquilino
         }
         return Id;
     }
-public int ModificarInquilino(Inquilino inquilino)
-{
-    using (var connection = new MySqlConnection(ConnectionString))
+    public int ModificarInquilino(Inquilino inquilino)
     {
-        var sql = @$"UPDATE inquilinos 
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = @$"UPDATE inquilinos 
                      SET {nameof(Inquilino.Nombre)} = @{nameof(Inquilino.Nombre)}, 
                          {nameof(Inquilino.Apellido)} = @{nameof(Inquilino.Apellido)}, 
                          {nameof(Inquilino.Dni)} = @{nameof(Inquilino.Dni)}, 
@@ -114,22 +116,22 @@ public int ModificarInquilino(Inquilino inquilino)
                          {nameof(Inquilino.Email)} = @{nameof(Inquilino.Email)} 
                      WHERE {nameof(Inquilino.IdInquilino)} = @{nameof(Inquilino.IdInquilino)}";
 
-        using (var command = new MySqlCommand(sql, connection))
-        {
-            command.Parameters.AddWithValue($"@{nameof(Inquilino.IdInquilino)}", inquilino.IdInquilino);
-            command.Parameters.AddWithValue($"@{nameof(Inquilino.Nombre)}", inquilino.Nombre);
-            command.Parameters.AddWithValue($"@{nameof(Inquilino.Apellido)}", inquilino.Apellido);
-            command.Parameters.AddWithValue($"@{nameof(Inquilino.Dni)}", inquilino.Dni);
-            command.Parameters.AddWithValue($"@{nameof(Inquilino.Email)}", inquilino.Email);
-            command.Parameters.AddWithValue($"@{nameof(Inquilino.Telefono)}", inquilino.Telefono);
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue($"@{nameof(Inquilino.IdInquilino)}", inquilino.IdInquilino);
+                command.Parameters.AddWithValue($"@{nameof(Inquilino.Nombre)}", inquilino.Nombre);
+                command.Parameters.AddWithValue($"@{nameof(Inquilino.Apellido)}", inquilino.Apellido);
+                command.Parameters.AddWithValue($"@{nameof(Inquilino.Dni)}", inquilino.Dni);
+                command.Parameters.AddWithValue($"@{nameof(Inquilino.Email)}", inquilino.Email);
+                command.Parameters.AddWithValue($"@{nameof(Inquilino.Telefono)}", inquilino.Telefono);
 
-            connection.Open();
-            command.ExecuteNonQuery();
-            connection.Close();
+                connection.Open();
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
         }
+        return 0;
     }
-    return 0;
-}
 
 
 

@@ -7,60 +7,62 @@
 <h4>Editar Contrato</h4>
 <hr />
 <div class="row">
-        <form asp-action="Guardar" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="IdContrato" class="control-label">ID Contrato</label>
-                <input asp-for="IdContrato" class="form-control" readonly />
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaInicio" class="control-label">Fecha de Inicio</label>
-                <input asp-for="FechaInicio" class="form-control" required />
-                <span asp-validation-for="FechaInicio" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaFinalizacion" class="control-label">Fecha de Finalización</label>
-                <input asp-for="FechaFinalizacion" class="form-control" required />
-                <span asp-validation-for="FechaFinalizacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MontoAlquiler" class="control-label">Monto de Alquiler</label>
-                <input asp-for="MontoAlquiler" class="form-control" required />
-                <span asp-validation-for="MontoAlquiler" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label">Estado</label>
-                <select asp-for="Estado" class="form-control" required>
-                    <option value="True">Activo</option>
-                    <option value="False">Inactivo</option>
-                </select>
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdInquilino" class="control-label">Inquilino</label>
-                <select asp-for="IdInquilino" class="form-control" required>
-                    @foreach (var item in ViewBag.Inquilinos)
-                    {
-                        <option value="@item.IdInquilino">@($"{item.Nombre} {item.Apellido}")</option>
-                    }
-                </select>
-                <span asp-validation-for="IdInquilino" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdInmueble" class="control-label">Inmueble</label>
-                <select asp-for="IdInmueble" class="form-control" required>
-                    @foreach (var item in ViewBag.Inmuebles)
-                    {
-                        <option value="@item.IdInmueble">@item.Direccion</option>
-                    }
-                </select>
-                <span asp-validation-for="IdInmueble" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Guardar" class="btn btn-success" />
-            </div>
-        </form>
-    </div>
+    <form asp-action="Guardar" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="IdContrato" class="control-label">ID Contrato</label>
+            <input asp-for="IdContrato" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label asp-for="FechaInicio" class="control-label">Fecha de Inicio</label>
+            <input asp-for="FechaInicio" class="form-control" required />
+            <span asp-validation-for="FechaInicio" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="FechaFinalizacion" class="control-label">Fecha de Finalización</label>
+            <input asp-for="FechaFinalizacion" class="form-control" required />
+            <span asp-validation-for="FechaFinalizacion" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="MontoAlquiler" class="control-label">Monto de Alquiler</label>
+            <input asp-for="MontoAlquiler" class="form-control" required />
+            <span asp-validation-for="MontoAlquiler" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Estado" class="control-label">Estado</label>
+            <select asp-for="Estado" class="form-control" required>
+                <option value="True">Activo</option>
+                <option value="False">Inactivo</option>
+            </select>
+            <span asp-validation-for="Estado" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="IdInquilino" class="control-label">Inquilino</label>
+            <select asp-for="IdInquilino" class="form-control" required>
+                @foreach (var item in ViewBag.Inquilinos)
+                {
+                    <option value="@item.IdInquilino">@($"{item.Nombre} {item.Apellido}")</option>
+                }
+            </select>
+            <span asp-validation-for="IdInquilino" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="IdInmueble" class="control-label">Inmueble</label>
+            <select asp-for="IdInmueble" class="form-control" required>
+                @foreach (var item in ViewBag.Inmuebles )
+                {
+                    <option value="@item.IdInmueble">@($"{item.Direccion}")</option>
+                }
+            </select>
+            <span asp-validation-for="IdInquilino" class="text-danger"></span>
+        </div>
+
+
+        <div class="form-group">
+            <input type="submit" value="Guardar" class="btn btn-success" />
+        </div>
+    </form>
+</div>
 
 <div>
     <a asp-action="Index" class="btn btn-secondary">Volver</a>
