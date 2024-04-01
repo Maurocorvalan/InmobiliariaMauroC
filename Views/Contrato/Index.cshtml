@@ -66,15 +66,17 @@
                     @Html.DisplayFor(modelItem => item.Estado)
                 </td>
                 <td>
-                    @(item.Inquilino?.Nombre + " " + item.Inquilino?.Apellido) 
+                    @(item.Inquilino?.Nombre + " " + item.Inquilino?.Apellido)
                 </td>
                 <td>
                     @(item.Inmueble?.Direccion)
-                 </td>
+                </td>
 
                 <td>
                     <a asp-action="Editar" asp-route-idContrato="@item.IdContrato" title="Editar"><span
-                            class="fa fa-edit"></span></a>&nbsp;
+                            class="fa fa-edit"></span></a>
+                    <a asp-action="Detalle" asp-route-IdContrato="@item.IdContrato" title="DetalleContrato"><span
+                            class="fa fa-info"></span></a>
                     <a asp-action="Eliminar" asp-route-id="@item.IdContrato" title="Eliminar"
                         onclick="return confirm('¿Estás seguro de eliminar este contrato?');"><span
                             class="fa fa-trash text-danger"></span></a>

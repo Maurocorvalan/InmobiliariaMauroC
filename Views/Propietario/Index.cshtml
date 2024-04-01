@@ -10,7 +10,7 @@
 <div class="input-group mb-3">
     <input type="text" class="form-control" placeholder="Buscar..." id="searchInput">
     <div class="input-group-append">
-            <a asp-action="Editar" class="btn btn-primary">Crear nuevo</a>
+        <a asp-action="Editar" class="btn btn-primary">Crear nuevo</a>
     </div>
 </div>
 @if (ViewData["SuccessMessage"] != null)
@@ -63,7 +63,9 @@
                 </td>
                 <td>
                     <a asp-action="Editar" asp-route-IdPropietario="@item.IdPropietario" title="Editar"><span
-                            class="fa fa-edit"></span></a>&nbsp;
+                            class="fa fa-edit"></span></a>
+                    <a asp-action="Detalle" asp-route-IdPropietario="@item.IdPropietario" title="DetallePropietario"><span
+                            class="fa fa-info"></span></a>
                     <a asp-action="Eliminar" asp-route-id="@item.IdPropietario" title="Eliminar"
                         onclick="return confirm('¿Estás seguro de eliminar a @item.Nombre @item.Apellido?');"><span
                             class="fa fa-trash text-danger"></span></a>

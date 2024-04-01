@@ -62,6 +62,22 @@ namespace Inmobiliaria.Controllers
             }
         }
 
+        public IActionResult Detalle(int idInmueble)
+        {
+            RepositorioPropietarios rpro = new RepositorioPropietarios();
+            ViewBag.Propietarios = rpro.GetPropietarios();
+            if (idInmueble > 0)
+            {
+                RepositorioInmueble rinm = new RepositorioInmueble();
+                var inmueble = rinm.GetInmueble(idInmueble);
+                return View(inmueble);
+            }
+            else
+            {
+                return View();
+            }
+        }
+
         [HttpPost]
         public IActionResult Guardar(Inmueble inmueble)
         {

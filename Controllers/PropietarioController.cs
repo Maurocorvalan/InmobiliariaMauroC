@@ -42,6 +42,20 @@ namespace Inmobiliaria.Controllers
             }
         }
 
+      public IActionResult Detalle(int idPropietario)
+        {
+            if(idPropietario > 0){
+                RepositorioPropietarios rp = new RepositorioPropietarios();
+                var propietario = rp.GetPropietario(idPropietario);
+                return View(propietario);
+            }else{
+                return View();
+            }
+        }
+
+
+
+
         [HttpPost]
         public IActionResult Guardar(Propietario propietario)
         {
@@ -60,6 +74,7 @@ namespace Inmobiliaria.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+  
         public IActionResult Eliminar(int id)
         {
             try{

@@ -63,7 +63,9 @@
                 </td>
                 <td>
                     <a asp-action="Editar" asp-route-IdInquilino="@item.IdInquilino" title="Editar"><span
-                            class="fa fa-edit"></span></a>&nbsp;
+                            class="fa fa-edit"></span></a>
+                    <a asp-action="Detalle" asp-route-IdInquilino="@item.IdInquilino" title="Detalle"><span
+                            class="fa fa-info"></span></a>
                     <a asp-action="Eliminar" asp-route-id="@item.IdInquilino" title="Eliminar"
                         onclick="return confirm('¿Estás seguro de eliminar a @item.Nombre @item.Apellido?');"><span
                             class="fa fa-trash text-danger"></span></a>

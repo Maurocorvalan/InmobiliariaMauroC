@@ -40,6 +40,20 @@ namespace Inmobiliaria.Controllers
                 return View();
             }
         }
+        public IActionResult Detalle(int idInquilino)
+        {
+            if (idInquilino > 0)
+            {
+                RepositorioInquilino ri = new RepositorioInquilino();
+                var inquilino = ri.GetInquilino(idInquilino);
+                return View(inquilino);
+            }
+            else
+            {
+                return View();
+            }
+        }
+
 
         [HttpPost]
         public IActionResult Guardar(Inquilino inquilino)
@@ -61,11 +75,14 @@ namespace Inmobiliaria.Controllers
 
         public IActionResult Eliminar(int id)
         {
-            try{
-            RepositorioInquilino ri = new RepositorioInquilino();
-            ri.EliminarInquilino(id);
-            TempData["SuccessMessage"] = "Inquilino eliminado correctamente.";
-            }catch(Exception ex){
+            try
+            {
+                RepositorioInquilino ri = new RepositorioInquilino();
+                ri.EliminarInquilino(id);
+                TempData["SuccessMessage"] = "Inquilino eliminado correctamente.";
+            }
+            catch (Exception ex)
+            {
                 TempData["SuccessMessage"] = "No se pudo eliminar el inquilino debido a que posee un contrato vigente";
                 Console.WriteLine(ex.Message);
             }
