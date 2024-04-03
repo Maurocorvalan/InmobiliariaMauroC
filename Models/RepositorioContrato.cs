@@ -119,6 +119,7 @@ public class RepositorioContrato
                             MontoAlquiler = reader.GetDecimal(nameof(Contrato.MontoAlquiler)),
                             Estado = reader.GetBoolean(nameof(Contrato.Estado)),
                             IdInquilino = reader.GetInt32(nameof(Contrato.IdInquilino)),
+                            IdInmueble = reader.GetInt32(nameof(Contrato.IdInmueble)),
                             Inquilino = new Inquilino
                             {
                                 Nombre = reader.GetString(nameof(Inquilino.Nombre)),
