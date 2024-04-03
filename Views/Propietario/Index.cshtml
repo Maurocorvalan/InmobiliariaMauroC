@@ -6,15 +6,23 @@
 
 <h1>Propietarios</h1>
 
-<p>
-    <a asp-action="Editar">Crear nuevo</a>
-</p>
-<table class="table">
+
+<div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Buscar..." id="searchInput">
+    <div class="input-group-append">
+        <a asp-action="Editar" class="btn btn-primary">Crear nuevo</a>
+    </div>
+</div>
+@if (ViewData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @ViewData["SuccessMessage"]
+    </div>
+}
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IdPropietario)
-            </th>
+
             <th>
                 @Html.DisplayNameFor(model => model.Nombre)
             </th>
@@ -25,7 +33,7 @@
                 @Html.DisplayNameFor(model => model.Dni)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Telefono)
+                Teléfono
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Email)
@@ -37,9 +45,7 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IdPropietario)
-                </td>
+
                 <td>
                     @Html.DisplayFor(modelItem => item.Nombre)
                 </td>
@@ -57,13 +63,19 @@
                 </td>
                 <td>
                     <a asp-action="Editar" asp-route-IdPropietario="@item.IdPropietario" title="Editar"><span
-                            class="lnr lnr-pencil"></span></a>&nbsp;
+                            class="fa fa-edit"></span></a>
+                    <a asp-action="Detalle" asp-route-IdPropietario="@item.IdPropietario" title="DetallePropietario"><span
+                            class="fa fa-info"></span></a>
                     <a asp-action="Eliminar" asp-route-id="@item.IdPropietario" title="Eliminar"
                         onclick="return confirm('¿Estás seguro de eliminar a @item.Nombre @item.Apellido?');"><span
-                            class="lnr lnr-cross"></span></a>
+                            class="fa fa-trash text-danger"></span></a>
                 </td>
-
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="~/js/search.js"></script>
+}
