@@ -84,7 +84,7 @@ public IActionResult Editar(int idContrato)
         RepositorioContrato rc = new RepositorioContrato();
         var contrato = rc.GetContrato(idContrato);
     
-        Console.WriteLine($"Direccion del contrato: {contrato.IdInmueble}");
+        Console.WriteLine($"Direccion del contrato: {contrato?.IdInmueble}");
         return View(contrato);
     }
     else
