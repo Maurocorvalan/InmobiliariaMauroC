@@ -1,0 +1,16 @@
+﻿@model IEnumerable<Usuario>
+
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<h1>Usuario</h1>
+
+
+
+<div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Buscar..." id="searchInput">
+    <div class="input-group-append">
+        <a asp-action="Crear" class="btn btn-primary">Crear nuevo</a>
+    </div>
+</div>
