@@ -12,7 +12,7 @@ public class Usuario{
     public string? Apellido{get;set;}
     public string? Email{get;set;}
 
-    public string? Clave{get;set;}
+    public string Clave{get;set;}
 
     public string? AvatarUrl{get;set;}
     public IFormFile? AvatarFile{get;set;}

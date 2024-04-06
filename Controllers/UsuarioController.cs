@@ -25,11 +25,12 @@ public class UsuarioController : Controller
     private readonly RepositorioUsuario repositorioUsuario;
     private readonly ILogger<UsuarioController> _logger;
 
-    public UsuarioController(ILogger<UsuarioController> logger, IConfiguration configuration, IWebHostEnvironment environment)
+    public UsuarioController(ILogger<UsuarioController> logger, IConfiguration configuration, IWebHostEnvironment environment, RepositorioUsuario repositorioUsuario)
     {
         _logger = logger;
         this.configuration = configuration;
         this.environment = environment;
+        this.repositorioUsuario = repositorioUsuario;
     }
 
     public IActionResult Index()
@@ -57,16 +58,9 @@ public class UsuarioController : Controller
             return View();
         try
         {
-            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                 password: usuario.Clave,
-                 salt: System.Text.Encoding.ASCII.GetBytes(configuration["SALADA"]),
-                prf: KeyDerivationPrf.HMACSHA1,
-                iterationCount: 10000,
-                numBytesRequested: 256 / 8));
-
-            usuario.Clave = hashed;
+            usuario.Clave = HashPassword(usuario.Clave);
             var nombreRandom = Guid.NewGuid();
-            int ru = repositorioUsuario.CrearUsuario(usuario);
+            int res = repositorioUsuario.CrearUsuario(usuario);
             if (usuario.AvatarFile != null && usuario.IdUsuario > 0)
             {
                 string wwwPath = environment.WebRootPath;
@@ -84,42 +78,31 @@ public class UsuarioController : Controller
                 }
                 repositorioUsuario.ModificarUsuario(usuario);
             }
+            TempData["SuccessMessage"] = "Usuario creado correctamente.";
             return RedirectToAction("Index");
         }
         catch (Exception ex)
         {
             ViewBag.Roles = Usuario.ObtenerRoles();
+            Console.WriteLine(ex.Message);
             return View();
         }
 
     }
-    public IActionResult Guardar(Usuario usuario)
+    private string HashPassword(string password)
     {
-        RepositorioUsuario ru = new RepositorioUsuario();
-        try
-        {
-            if (usuario.IdUsuario > 0)
-            {
-                ru.ModificarUsuario(usuario);
-                TempData["SuccessMessage"] = "Usuario actualizado correctamente.";
-            }
-            else
-            {
-                ru.CrearUsuario(usuario);
-                TempData["SuccessMessage"] = "Usuario creado correctamente.";
-            }
-            return RedirectToAction("Index");
+        string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+            password: password,
+            salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
+            prf: KeyDerivationPrf.HMACSHA1,
+            iterationCount: 10000,
+            numBytesRequested: 256 / 8));
 
-        }
-        catch (Exception ex)
-        {
-            TempData["ErrorMessage"] = "Error al crear usuario";
-            return RedirectToAction(nameof(Crear));
-            Console.WriteLine(ex.Message);
-
-        }
+        return hashed;
     }
+
 }
+
 
 
 
