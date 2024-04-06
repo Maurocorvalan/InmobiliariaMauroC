@@ -57,4 +57,33 @@ public class RepositorioUsuario
         return 0;
     }
 
+    public IList<Usuario> GetUsuarios(){
+        var usuarios = new List<Usuario>();
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = @$"SELECT {nameof(Usuario.IdUsuario)}, {nameof(Usuario.Nombre)}, {nameof(Usuario.Apellido)}, {nameof(Usuario.Email)}, {nameof(Usuario.Clave)}, {nameof(Usuario.AvatarUrl)},{nameof(Usuario.Rol)} 
+            FROM usuarios;";
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        usuarios.Add(new Usuario
+                        {
+                            IdUsuario = reader.GetInt32(nameof(Usuario.IdUsuario)),
+                            Nombre = reader.GetString(nameof(Usuario.Nombre)),
+                            Apellido = reader.GetString(nameof(Usuario.Apellido)),
+                            Email = reader.GetString(nameof(Usuario.Email)),
+                            Clave = reader.GetString(nameof(Usuario.Clave)),
+                            Rol = reader.GetInt32(nameof(Usuario.Rol))
+                        });
+                    }
+                }
+            }
+        }
+        return usuarios;
+    }
+
 }

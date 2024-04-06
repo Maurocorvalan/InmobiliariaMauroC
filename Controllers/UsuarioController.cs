@@ -36,12 +36,13 @@ public class UsuarioController : Controller
     public IActionResult Index()
     {
         RepositorioUsuario ru = new RepositorioUsuario();
+        var lista = ru.GetUsuarios();
         if (TempData["SuccessMessage"] != null)
         {
             ViewData["SuccessMessage"] = TempData["SuccessMessage"];
 
         }
-        return View();
+        return View(lista);
     }
 
     [HttpGet]
