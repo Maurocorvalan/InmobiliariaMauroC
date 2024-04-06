@@ -89,6 +89,8 @@ public class UsuarioController : Controller
         }
 
     }
+
+    //funcion para hashear la contraseña
     private string HashPassword(string password)
     {
         string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
