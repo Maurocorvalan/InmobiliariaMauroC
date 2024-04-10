@@ -42,7 +42,8 @@ public class PagoController : Controller
         }
     }
 
-    public IActionResult Editar(int idPago){
+    public IActionResult Editar(int idPago)
+    {
         RepositorioContrato rc = new RepositorioContrato();
         ViewBag.Contratos = rc.GetContratos();
         if (idPago > 0)
@@ -83,7 +84,25 @@ public class PagoController : Controller
             return RedirectToAction(nameof(Index));
         }
     }
-        public IActionResult Eliminar(int id)
+
+
+    public IActionResult Detalle(int idPago)
+    {
+        RepositorioContrato rc = new RepositorioContrato();
+        ViewBag.Contratos = rc.GetContratos();
+        if(idPago > 0)
+        {
+            RepositorioPago rp = new RepositorioPago();
+            var pago = rp.GetPago(idPago);
+            return View(pago);
+        }
+        else
+        {
+            return View();
+        }
+
+    }
+    public IActionResult Eliminar(int id)
     {
         RepositorioPago rp = new RepositorioPago();
         try
