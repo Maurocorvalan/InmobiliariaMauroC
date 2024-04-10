@@ -14,5 +14,11 @@ namespace Inmobiliaria.Models
         public int IdInmueble { get; set; }
         public Inquilino? Inquilino { get; set; }
         public Inmueble? Inmueble { get; set; }
+
+
+        public override string ToString()
+        {
+            return $"Contrato: {IdContrato} Inquilino: {Inquilino} Inmueble: {Inmueble} /MONTO: {MontoAlquiler} ";
+        }
     }
 }

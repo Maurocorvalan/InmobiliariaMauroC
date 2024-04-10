@@ -1,11 +1,10 @@
-﻿@model IEnumerable<Inmueble>
+﻿@model IEnumerable<Pago>
 
 @{
-    ViewData["Title"] = "Inmueble";
+    ViewData["Title"] = "Pago";
 }
 
-<h1>Inmueble</h1>
-
+<h1>Pagos</h1>
 
 
 <div class="input-group mb-3">
@@ -23,27 +22,26 @@
 <table class="table table-striped">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdPago)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaPago)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Monto)
+            </th>
 
             <th>
-                Dirección
+                @Html.DisplayNameFor(model => model.Detalle)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Uso)
+                @Html.DisplayNameFor(model => model.Estado)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Tipo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ambientes)
-            </th>
-            <th>
-                Dueño
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Valor)
+                @Html.DisplayNameFor(model => model.IdContrato)
             </th>
             <th></th>
-
         </tr>
     </thead>
     <tbody>
@@ -51,30 +49,30 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Direccion)
+                    @Html.DisplayFor(modelItem => item.IdPago)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Uso)
+                    @Html.DisplayFor(modelItem => item.FechaPago)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Tipo)
+                    @Html.DisplayFor(modelItem => item.Monto)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Ambientes)
+                    @Html.DisplayFor(modelItem => item.Detalle)
                 </td>
                 <td>
-                    @(item.Duenio?.Nombre + " " + item.Duenio?.Apellido)
+                    @Html.DisplayFor(modelItem => item.Estado)
                 </td>
                 <td>
-                    @Html.DisplayFor(model => item.Valor)
+                    @Html.DisplayFor(model => item.IdContrato)
                 </td>
                 <td>
-                    <a asp-action="Editar" asp-route-idInmueble="@item.IdInmueble" title="Editar"><span
+                    <a asp-action="Editar" asp-route-idInmueble="@item.IdPago" title="Editar"><span
                             class="fa fa-edit"></span></a>
-                    <a asp-action="Detalle" asp-route-IdInmueble="@item.IdInmueble" title="DetallePropietario"><span
+                    <a asp-action="Detalle" asp-route-IdInmueble="@item.IdPago" title="DetallePropietario"><span
                             class="fa fa-info"></span></a>
-                    <a asp-action="Eliminar" asp-route-id="@item.IdInmueble" title="Eliminar"
-                        onclick="return confirm('¿Estás seguro de eliminar a @item.Tipo @item.Uso @item.Direccion?');"><span
+                    <a asp-action="Eliminar" asp-route-id="@item.IdPago" title="Eliminar"
+                        onclick="return confirm('¿Estás seguro de eliminar a IdPago: @item.IdPago / IdContrato: @item.IdContrato?');"><span
                             class="fa fa-trash text-danger"></span></a>
                 </td>
             </tr>

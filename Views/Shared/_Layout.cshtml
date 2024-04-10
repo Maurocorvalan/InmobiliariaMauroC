@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="~/Inmobiliaria.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 </head>
 
 <body>
@@ -19,8 +22,8 @@
 
             <!--@if (!User.Identity.IsAuthenticated)
             {
-                        <a class="py-2" asp-controller="Home" asp-action="Index"><span class="lnr lnr-home"></span> Inicio</a>
-                        <a class="py-2 d-none d-md-inline-block float-right" href='@Url.Link("login", null)'><span class="lnr lnr-enter"></span> Acceder</a>
+                                                                <a class="py-2" asp-controller="Home" asp-action="Index"><span class="lnr lnr-home"></span> Inicio</a>
+                                                                <a class="py-2 d-none d-md-inline-block float-right" href='@Url.Link("login", null)'><span class="lnr lnr-enter"></span> Acceder</a>
             }
             else
             {
@@ -37,24 +40,33 @@
                     <ul class="navbar-nav flex-grow-1">
 
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Propietario"
-                                asp-action="Index">Propietarios</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Propietario" asp-action="Index">
+                                <i class="fa fa-address-book"></i> Propietarios
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Inquilino"
-                                asp-action="Index">Inquilinos</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Inquilino" asp-action="Index">
+                                <i class="fa fa-male"></i> Inquilino
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Inmueble"
-                                asp-action="Index">Inmuebles</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Inmueble" asp-action="Index">
+                                <i class="fa fa-building"></i> Inmueble
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Contrato"
-                                asp-action="Index">Contratos</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Contrato" asp-action="Index">
+                                <i class="fa fa-folder-open"></i> Contrato
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Usuario"
-                                asp-action="Index">Usuarios</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Usuario" asp-action="Index">
+                                <i class="fa fa-users"></i> Usuario
+                            </a>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Pago" asp-action="Index">
+                                <i class="fa fa-money"></i> Pagos
+                            </a>
                         </li>
                     </ul>
                 </div>
