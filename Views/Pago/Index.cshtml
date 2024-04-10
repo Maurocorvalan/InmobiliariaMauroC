@@ -67,9 +67,9 @@
                     @Html.DisplayFor(model => item.IdContrato)
                 </td>
                 <td>
-                    <a asp-action="Editar" asp-route-idInmueble="@item.IdPago" title="Editar"><span
+                    <a asp-action="Editar" asp-route-IdPago="@item.IdPago" title="Editar"><span
                             class="fa fa-edit"></span></a>
-                    <a asp-action="Detalle" asp-route-IdInmueble="@item.IdPago" title="DetallePropietario"><span
+                    <a asp-action="Detalle" asp-route-IdPago="@item.IdPago" title="DetallePago"><span
                             class="fa fa-info"></span></a>
                     <a asp-action="Eliminar" asp-route-id="@item.IdPago" title="Eliminar"
                         onclick="return confirm('¿Estás seguro de eliminar a IdPago: @item.IdPago / IdContrato: @item.IdContrato?');"><span

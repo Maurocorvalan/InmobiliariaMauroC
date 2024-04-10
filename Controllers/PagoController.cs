@@ -41,6 +41,22 @@ public class PagoController : Controller
             return View();
         }
     }
+
+    public IActionResult Editar(int idPago){
+        RepositorioContrato rc = new RepositorioContrato();
+        ViewBag.Contratos = rc.GetContratos();
+        if (idPago > 0)
+        {
+            RepositorioPago rp = new RepositorioPago();
+            var pago = rp.GetPago(idPago);
+            Console.WriteLine(pago);
+            return View(pago);
+        }
+        else
+        {
+            return View();
+        }
+    }
     public IActionResult Guardar(Pago pago)
     {
         RepositorioPago rp = new RepositorioPago();
@@ -66,5 +82,20 @@ public class PagoController : Controller
             TempData["ErrorMessage"] = "Fechas no disponibles para este Inmueble";
             return RedirectToAction(nameof(Index));
         }
+    }
+        public IActionResult Eliminar(int id)
+    {
+        RepositorioPago rp = new RepositorioPago();
+        try
+        {
+            rp.EliminarPago(id);
+            TempData["SuccessMessage"] = "Contrato eliminado correctamente.";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            TempData["ErrorMessage"] = "No se pudo eliminar el contrato.";
+        }
+        return RedirectToAction(nameof(Index));
     }
 }
