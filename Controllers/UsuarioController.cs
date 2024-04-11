@@ -65,7 +65,7 @@ public class UsuarioController : Controller
             if (usuario.AvatarFile != null && usuario.IdUsuario > 0)
             {
                 string wwwPath = environment.WebRootPath;
-                string path = Path.Combine(wwwPath, "Uploads");
+                string path = Path.Combine(wwwPath, "Avatars");
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
@@ -89,6 +89,64 @@ public class UsuarioController : Controller
             return View();
         }
 
+    }
+    [AllowAnonymous]
+    public IActionResult Login(string returnUrl)
+    {
+        TempData["returnUrl"] = returnUrl;
+        return View();
+    }
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(LoginView login)
+    {
+        try
+        {
+            var returnUrl = String.IsNullOrEmpty(TempData["returnUrl"] as string) ? "/Home" : TempData["returnUrl"].ToString();
+            if (ModelState.IsValid)
+            {
+                string hashed = HashPassword(login.Clave);
+                var usuario = repositorioUsuario.ObtenerPorEmail(login.Email);
+                if (usuario == null || usuario.Clave != hashed)
+                {
+                    ModelState.AddModelError("", "El email o la clave no son correctos");
+                    TempData["returnUrl"] = returnUrl;
+
+
+                    return View();
+                }else{
+                    Console.WriteLine("logueado");
+                }
+
+                var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, usuario.Email),
+                        new Claim("FullName", usuario.Nombre + " " + usuario.Apellido),
+                        new Claim(ClaimTypes.Role, usuario.RolNombre),
+                    };
+
+                var claimsIdentity = new ClaimsIdentity(
+                        claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity));
+                        Console.WriteLine("User signed in successfully.");
+
+                TempData.Remove("returnUrl");
+                Console.WriteLine($"Redirecting to: {returnUrl}");
+
+                return Redirect(returnUrl);
+            }
+            TempData["returnUrl"] = returnUrl;
+            return View();
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            return View();
+        }
     }
 
     //funcion para hashear la contraseña

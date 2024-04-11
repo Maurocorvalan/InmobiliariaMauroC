@@ -38,10 +38,10 @@ public class RepositorioUsuario
                 command.Parameters.AddWithValue($"@{nameof(Usuario.Apellido)}", usuario.Apellido);
                 command.Parameters.AddWithValue($"@{nameof(Usuario.Email)}", usuario.Email);
                 command.Parameters.AddWithValue($"@{nameof(Usuario.Clave)}", usuario.Clave);
-					if (String.IsNullOrEmpty(usuario.AvatarUrl))
-						command.Parameters.AddWithValue($"@{nameof(Usuario.AvatarUrl)}", DBNull.Value);
-					else
-						command.Parameters.AddWithValue("@AvatarUrl", usuario.AvatarUrl);
+                if (String.IsNullOrEmpty(usuario.AvatarUrl))
+                    command.Parameters.AddWithValue($"@{nameof(Usuario.AvatarUrl)}", DBNull.Value);
+                else
+                    command.Parameters.AddWithValue($"@{nameof(Usuario.AvatarUrl)}", usuario.AvatarUrl);
                 command.Parameters.AddWithValue($"@{nameof(Usuario.Rol)}", usuario.Rol);
 
                 connection.Open();
@@ -54,10 +54,29 @@ public class RepositorioUsuario
     }
     public int ModificarUsuario(Usuario usuario)
     {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = @$"UPDATE usuarios SET {nameof(Usuario.Nombre)} = @{nameof(Usuario.Nombre)}, {nameof(Usuario.Apellido)} = @{nameof(Usuario.Apellido)}, {nameof(Usuario.Email)} = @{nameof(Usuario.Email)}, {nameof(Usuario.Clave)} = @{nameof(Usuario.Clave)}, {nameof(Usuario.AvatarUrl)} = @{nameof(Usuario.AvatarUrl)}, {nameof(Usuario.Rol)} = @{nameof(Usuario.Rol)} WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
+
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue($"@{nameof(Usuario.Nombre)}", usuario.Nombre);
+                command.Parameters.AddWithValue($"@{nameof(Usuario.Apellido)}", usuario.Apellido);
+                command.Parameters.AddWithValue($"@{nameof(Usuario.Email)}", usuario.Email);
+                command.Parameters.AddWithValue($"@{nameof(Usuario.Clave)}", usuario.Clave);
+                command.Parameters.AddWithValue($"@{nameof(Usuario.AvatarUrl)}", usuario.AvatarUrl);
+                command.Parameters.AddWithValue($"@{nameof(Usuario.Rol)}", usuario.Rol);
+                command.Parameters.AddWithValue($"@{nameof(Usuario.IdUsuario)}", usuario.IdUsuario);
+                connection.Open();
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
         return 0;
     }
 
-    public IList<Usuario> GetUsuarios(){
+    public IList<Usuario> GetUsuarios()
+    {
         var usuarios = new List<Usuario>();
         using (var connection = new MySqlConnection(ConnectionString))
         {
@@ -77,6 +96,7 @@ public class RepositorioUsuario
                             Apellido = reader.GetString(nameof(Usuario.Apellido)),
                             Email = reader.GetString(nameof(Usuario.Email)),
                             Clave = reader.GetString(nameof(Usuario.Clave)),
+                            AvatarUrl = reader.IsDBNull(reader.GetOrdinal(nameof(Usuario.AvatarUrl))) ? null : reader.GetString(nameof(Usuario.AvatarUrl)),
                             Rol = reader.GetInt32(nameof(Usuario.Rol))
                         });
                     }
@@ -85,5 +105,45 @@ public class RepositorioUsuario
         }
         return usuarios;
     }
+    public Usuario? ObtenerPorEmail(string Email)
+    {
+        Usuario? usuario = null;
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = @$"SELECT 
+            {nameof(Usuario.IdUsuario)}, 
+            {nameof(Usuario.Nombre)},
+            {nameof(Usuario.Apellido)},
+            {nameof(Usuario.Email)},
+            {nameof(Usuario.Clave)},
+            {nameof(Usuario.AvatarUrl)},
+            {nameof(Usuario.Rol)}
+            FROM usuarios
+            WHERE {nameof(Usuario.Email)} = @{nameof(Usuario.Email)};";
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue($"@{nameof(Usuario.Email)}", Email);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        usuario = new Usuario
+                        {
+                            IdUsuario = reader.GetInt32(nameof(Usuario.IdUsuario)),
+                            Nombre = reader.GetString(nameof(Usuario.Nombre)),
+                            Apellido = reader.GetString(nameof(Usuario.Apellido)),
+                            Email = reader.GetString(nameof(Usuario.Email)),
+                            Clave = reader.GetString(nameof(Usuario.Clave)),
+                            AvatarUrl = reader.IsDBNull(reader.GetOrdinal(nameof(Usuario.AvatarUrl))) ? null : reader.GetString(nameof(Usuario.AvatarUrl)),
+                            Rol = reader.GetInt32(nameof(Usuario.Rol))
+                        };
+                    }
+                }
+                connection.Close();
+            }
+            return usuario;
+        }
 
+    }
 }

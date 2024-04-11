@@ -36,7 +36,7 @@
                     @Html.DisplayNameFor(model => model.Email)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.AvatarUrl)
+                    Avatar
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Rol)
@@ -61,15 +61,15 @@
                         @Html.DisplayFor(modelItem => item.Email)
                     </td>
                     <td>
-                        Avatar
+                        <img width="32" src="@item.AvatarUrl" alt="User Avatar" />
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.RolNombre)
                     </td>
                     <td>
-                        <a asp-action="Editar" asp-route-IdPropietario="@item.IdUsuario" title="Editar"><span
+                        <a asp-action="Editar" asp-route-IdUsuario="@item.IdUsuario" title="Editar"><span
                                 class="fa fa-edit"></span></a>
-                        <a asp-action="Detalle" asp-route-IdPropietario="@item.IdUsuario" title="DetalleUsuario"><span
+                        <a asp-action="Detalle" asp-route-IdUsuario="@item.IdUsuario" title="DetalleUsuario"><span
                                 class="fa fa-info"></span></a>
                         <a asp-action="Eliminar" asp-route-id="@item.IdUsuario" title="Eliminar"
                             onclick="return confirm('¿Estás seguro de eliminar a @item.Nombre @item.Apellido?');"><span
