@@ -46,6 +46,7 @@ public class UsuarioController : Controller
     }
 
     [HttpGet]
+    [Authorize(Policy = "Administrador")]
     public IActionResult Crear()
     {
         ViewBag.Roles = Usuario.ObtenerRoles();
@@ -90,6 +91,24 @@ public class UsuarioController : Controller
         }
 
     }
+    public IActionResult Editar(int idUsuario)
+    {
+        RepositorioUsuario ru = new RepositorioUsuario();
+        ViewBag.Usuarios = ru.GetUsuarios();
+        if (idUsuario > 0)
+        {
+            var usuario = ru.GetUsuario(idUsuario);
+            return View(usuario);
+        }
+        else
+        {
+            return View();
+        }
+
+    }
+
+
+
     [AllowAnonymous]
     public IActionResult Login(string returnUrl)
     {
@@ -112,27 +131,28 @@ public class UsuarioController : Controller
                 {
                     ModelState.AddModelError("", "El email o la clave no son correctos");
                     TempData["returnUrl"] = returnUrl;
-
-
                     return View();
-                }else{
-                    Console.WriteLine("logueado");
                 }
 
+                // Crear la lista de claims, incluyendo el IdUsuario
                 var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, usuario.Email),
-                        new Claim("FullName", usuario.Nombre + " " + usuario.Apellido),
-                        new Claim(ClaimTypes.Role, usuario.RolNombre),
-                    };
+            {
+                new Claim(ClaimTypes.Name, usuario.Email),
+                new Claim("FullName", usuario.Nombre + " " + usuario.Apellido),
+                new Claim(ClaimTypes.Role, usuario.RolNombre),
+                new Claim("IdUsuario", usuario.IdUsuario.ToString()) // Agregar el IdUsuario como un claim
+            };
 
+                // Crear la identidad de claims
                 var claimsIdentity = new ClaimsIdentity(
-                        claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
+                // Firmar al usuario
                 await HttpContext.SignInAsync(
-                        CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(claimsIdentity));
-                        Console.WriteLine("User signed in successfully.");
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity));
+
+                Console.WriteLine("User signed in successfully.");
 
                 TempData.Remove("returnUrl");
                 Console.WriteLine($"Redirecting to: {returnUrl}");
@@ -147,6 +167,12 @@ public class UsuarioController : Controller
             ModelState.AddModelError("", ex.Message);
             return View();
         }
+    }
+
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return RedirectToAction("Index", "Home");
     }
 
     //funcion para hashear la contraseña

@@ -146,4 +146,50 @@ public class RepositorioUsuario
         }
 
     }
+    public Usuario ObtenerPorId(int id)
+    {
+        Usuario usuario = null;
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = $"SELECT * FROM usuarios WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue($"@{nameof(Usuario.IdUsuario)}", id);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        usuario = new Usuario
+                        {
+                            IdUsuario = reader.GetInt32(reader.GetOrdinal(nameof(Usuario.IdUsuario))),
+                            Nombre = reader.GetString(reader.GetOrdinal(nameof(Usuario.Nombre))),
+                            Apellido = reader.GetString(reader.GetOrdinal(nameof(Usuario.Apellido))),
+                            Email = reader.GetString(reader.GetOrdinal(nameof(Usuario.Email))),
+                            Clave = reader.GetString(reader.GetOrdinal(nameof(Usuario.Clave))),
+                            AvatarUrl = reader.IsDBNull(reader.GetOrdinal(nameof(Usuario.AvatarUrl))) ? null : reader.GetString(reader.GetOrdinal(nameof(Usuario.AvatarUrl)))
+                        };
+                    }
+                }
+            }
+        }
+        return usuario;
+    }
+
+    public int EditarAvatar(int idUsuario, string nuevaUrlAvatar)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = @$"UPDATE usuarios SET {nameof(Usuario.AvatarUrl)} = @{nameof(Usuario.AvatarUrl)} WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue($"@{nameof(Usuario.AvatarUrl)}", nuevaUrlAvatar);
+                command.Parameters.AddWithValue($"@{nameof(Usuario.IdUsuario)}", idUsuario);
+                connection.Open();
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
+        return 0;
+    }
 }
