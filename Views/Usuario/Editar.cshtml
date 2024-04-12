@@ -4,20 +4,84 @@
     ViewData["Title"] = "Editar Usuario";
 }
 
-<h4>Editar Usuario</h4>
-<hr />
-
-<form asp-action="EditarAvatar" asp-controller="Usuario" enctype="multipart/form-data">
-    <input type="hidden" name="idUsuario" value="@Model.IdUsuario" />
-    <div class="form-group">
-        <label asp-for="AvatarFile" class="control-label">Avatar</label>
-        <input type="file" name="AvatarFile" class="form-control" />
+<nav class="navbar navbar-expand-lg navbar-dark " style="background-color: rgb(238, 238, 238);">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <button type="button" class="btn btn-primary" onclick="mostrarEditarFoto()">Editar Foto de
+                        Perfil</button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="btn btn-primary" onclick="mostrarEditarDatos()">Editar Datos</button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="btn btn-primary" onclick="mostrarCambiarContraseña()">Cambiar
+                        Contraseña</button>
+                </li>
+            </ul>
+        </div>
     </div>
-    <button type="submit" class="btn btn-primary">Guardar Avatar</button>
-</form>
+</nav>
 
-<!-- Resto de los campos para editar otros detalles del usuario -->
 
-<div>
-    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+<div id="editarFotoForm" style="display:none;">
+    <form id="avatarForm" asp-action="EditarAvatar" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="IdUsuario" class="control-label"></label>
+            <input asp-for="IdUsuario" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+
+            <label asp-for="AvatarFile" class="sr-only">Selecciona una imagen</label>
+            <input type="file" name="AvatarFile" id="avatar" class="form-control-file" accept="image/*">
+            <span asp-validation-for="AvatarFile" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <img src="#" id="preview" alt="Preview" style="max-width: 150px;">
+        </div>
+
+        <button type="submit" class="btn btn-success" value="EditarAvatar">Guardar Cambios</button>
+        <button type="button" class="btn btn-danger" value="EliminarAvatar"
+            onclick="return confirm('¿Estás seguro de eliminar tu avatar?')">Eliminar Avatar actual</button>
+    </form>
 </div>
+
+<div id="editarDatosForm" style="display:none;">
+    <div class="form-group">
+        <label asp-for="Nombre" class="control-label"></label>
+        <input asp-for="Nombre" class="form-control" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Apellido" class="control-label"></label>
+        <input asp-for="Apellido" class="form-control" required />
+        <span asp-validation-for="Apellido" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+
+</div>
+
+<div id="cambiarContraseñaForm" style="display:none;">
+    <div class="form-group">
+        <label asp-for="Clave" class="control-label">Contraseña Actual</label>
+        <input asp-for="Clave" class="form-control" type="password" required />
+        <span asp-validation-for="Clave" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Clave" class="control-label">Nueva contraseña</label>
+        <input asp-for="Clave" class="form-control" type="password" required />
+        <span asp-validation-for="Clave" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Clave" class="control-label">Confirmar nueva contraseña</label>
+        <input asp-for="Clave" class="form-control" type="password" required />
+        <span asp-validation-for="Clave" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+
+</div>
+<a asp-action="Index" class="btn btn-secondary">Volver</a>
+
+<script src="~/js/site.js" asp-append-version="true"></script>

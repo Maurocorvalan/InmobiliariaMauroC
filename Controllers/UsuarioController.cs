@@ -66,7 +66,7 @@ public class UsuarioController : Controller
             if (usuario.AvatarFile != null && usuario.IdUsuario > 0)
             {
                 string wwwPath = environment.WebRootPath;
-                string path = Path.Combine(wwwPath, "Avatars");
+                string path = Path.Combine(wwwPath, "Uploads");
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
@@ -105,6 +105,63 @@ public class UsuarioController : Controller
             return View();
         }
 
+    }
+    public IActionResult EditarAvatar(Usuario usuario)
+    {
+        RepositorioUsuario ru = new RepositorioUsuario();
+        if (usuario.IdUsuario > 0)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Si el modelo no es válido, regresar a la vista de edición con los errores
+                return View(usuario);
+            }
+
+            try
+            {
+                // Guardar el nuevo avatar si se proporciona
+                if (usuario.AvatarFile != null && usuario.AvatarFile.Length > 0)
+                {
+                    string wwwPath = environment.WebRootPath;
+                    string path = Path.Combine(wwwPath, "Uploads");
+
+                    // Verificar si la carpeta "Uploads" existe, de lo contrario, crearla
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+
+                    // Generar un nombre de archivo único para el avatar
+                    string fileName = "avatar_" + usuario.IdUsuario + Path.GetExtension(usuario.AvatarFile.FileName);
+                    string pathCompleto = Path.Combine(path, fileName);
+
+                    // Guardar el nuevo avatar
+                    using (FileStream stream = new FileStream(pathCompleto, FileMode.Create))
+                    {
+                        usuario.AvatarFile.CopyTo(stream);
+                    }
+
+                    // Actualizar la URL del avatar en el objeto usuario
+                    usuario.AvatarUrl = Path.Combine("/Uploads", fileName);
+                }
+
+                // Actualizar la URL del avatar en la base de datos
+                Console.WriteLine("id usuario  " + usuario.IdUsuario);
+                ru.ModificarAvatar(usuario);
+                TempData["SuccessMessage"] = "Avatar actualizado correctamente.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Roles = Usuario.ObtenerRoles();
+                Console.WriteLine(ex.Message);
+                return View(usuario);
+            }
+        }
+        else
+        {
+            return View();
+        }
     }
 
 

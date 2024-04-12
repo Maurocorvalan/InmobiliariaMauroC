@@ -56,7 +56,14 @@ public class RepositorioUsuario
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var sql = @$"UPDATE usuarios SET {nameof(Usuario.Nombre)} = @{nameof(Usuario.Nombre)}, {nameof(Usuario.Apellido)} = @{nameof(Usuario.Apellido)}, {nameof(Usuario.Email)} = @{nameof(Usuario.Email)}, {nameof(Usuario.Clave)} = @{nameof(Usuario.Clave)}, {nameof(Usuario.AvatarUrl)} = @{nameof(Usuario.AvatarUrl)}, {nameof(Usuario.Rol)} = @{nameof(Usuario.Rol)} WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
+            var sql = @$"UPDATE usuarios 
+                     SET {nameof(Usuario.Nombre)} = @{nameof(Usuario.Nombre)}, 
+                         {nameof(Usuario.Apellido)} = @{nameof(Usuario.Apellido)}, 
+                         {nameof(Usuario.Email)} = @{nameof(Usuario.Email)}, 
+                         {nameof(Usuario.Clave)} = @{nameof(Usuario.Clave)}, 
+                         {nameof(Usuario.AvatarUrl)} = @{nameof(Usuario.AvatarUrl)}, 
+                         {nameof(Usuario.Rol)} = @{nameof(Usuario.Rol)} 
+                     WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
 
             using (var command = new MySqlCommand(sql, connection))
             {
@@ -74,6 +81,7 @@ public class RepositorioUsuario
         }
         return 0;
     }
+
 
     public IList<Usuario> GetUsuarios()
     {
@@ -176,15 +184,15 @@ public class RepositorioUsuario
         return usuario;
     }
 
-    public int EditarAvatar(int idUsuario, string nuevaUrlAvatar)
+    public int ModificarAvatar(Usuario usuario)
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
             var sql = @$"UPDATE usuarios SET {nameof(Usuario.AvatarUrl)} = @{nameof(Usuario.AvatarUrl)} WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
             using (var command = new MySqlCommand(sql, connection))
             {
-                command.Parameters.AddWithValue($"@{nameof(Usuario.AvatarUrl)}", nuevaUrlAvatar);
-                command.Parameters.AddWithValue($"@{nameof(Usuario.IdUsuario)}", idUsuario);
+                command.Parameters.AddWithValue($"@{nameof(Usuario.AvatarUrl)}", usuario.AvatarUrl);
+                command.Parameters.AddWithValue($"@{nameof(Usuario.IdUsuario)}", usuario.IdUsuario);
                 connection.Open();
                 command.ExecuteNonQuery();
                 connection.Close();
@@ -192,4 +200,5 @@ public class RepositorioUsuario
         }
         return 0;
     }
+
 }
