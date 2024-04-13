@@ -84,7 +84,6 @@ public class ContratoController : Controller
             RepositorioContrato rc = new RepositorioContrato();
             var contrato = rc.GetContrato(idContrato);
 
-            Console.WriteLine($"Direccion del contrato: {contrato?.IdInmueble}");
             return View(contrato);
         }
         else

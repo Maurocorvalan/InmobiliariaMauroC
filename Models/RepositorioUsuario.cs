@@ -17,7 +17,25 @@ public class RepositorioUsuario
         Usuario? usuario = null;
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var sql = @$"SELECT * FROM usuarios WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)}, {nameof(Usuario.Nombre)}, {nameof(Usuario.Apellido)}, {nameof(Usuario.Email)}, {nameof(Usuario.Clave)}, {nameof(Usuario.Rol)};";
+            var sql = @$"SELECT {nameof(Usuario.IdUsuario)}, {nameof(Usuario.Nombre)}, {nameof(Usuario.Apellido)}, {nameof(Usuario.Email)}, {nameof(Usuario.Clave)}, {nameof(Usuario.AvatarUrl)},{nameof(Usuario.Rol)} FROM usuarios WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
+            using(var command = new MySqlCommand(sql, connection)){
+                command.Parameters.AddWithValue($"@{nameof(Usuario.IdUsuario)}", id);
+                connection.Open();
+                using(var reader = command.ExecuteReader()){
+                    if(reader.Read()){
+                        usuario = new Usuario{
+                            IdUsuario = reader.GetInt32(nameof(Usuario.IdUsuario)),
+                            Nombre = reader.GetString(nameof(Usuario.Nombre)),
+                            Apellido = reader.GetString(nameof(Usuario.Apellido)),
+                            Email = reader.GetString(nameof(Usuario.Email)),
+                            Clave = reader.GetString(nameof(Usuario.Clave)),
+                            AvatarUrl = reader.IsDBNull(reader.GetOrdinal(nameof(Usuario.AvatarUrl))) ? null : reader.GetString(nameof(Usuario.AvatarUrl)),
+                            Rol = reader.GetInt32(nameof(Usuario.Rol))
+
+                        };
+                    }
+                }
+            }
         }
 
         return usuario;
@@ -213,6 +231,23 @@ public class RepositorioUsuario
             using (var command = new MySqlCommand(sql, connection))
             {
                 command.Parameters.AddWithValue($"@{nameof(Usuario.Clave)}", usuario.Clave);
+                command.Parameters.AddWithValue($"@{nameof(Usuario.IdUsuario)}", usuario.IdUsuario);
+                connection.Open();
+                command.ExecuteNonQuery();
+                usuario.IdUsuario = Id;
+                connection.Close();
+            }
+        }
+        return Id;
+    }
+    public int ModificarDatos(Usuario usuario){
+        int Id=0;
+        using (var connection = new MySqlConnection(ConnectionString)){
+            var sql = @$"UPDATE usuarios SET {nameof(Usuario.Nombre)} = @{nameof(Usuario.Nombre)}, {nameof(Usuario.Apellido)} = @{nameof(Usuario.Apellido)}, {nameof(Usuario.Email)} = @{nameof(Usuario.Email)} WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
+            using (var command = new MySqlCommand(sql, connection)){
+                command.Parameters.AddWithValue($"@{nameof(Usuario.Nombre)}", usuario.Nombre);
+                command.Parameters.AddWithValue($"@{nameof(Usuario.Apellido)}", usuario.Apellido);
+                command.Parameters.AddWithValue($"@{nameof(Usuario.Email)}", usuario.Email);
                 command.Parameters.AddWithValue($"@{nameof(Usuario.IdUsuario)}", usuario.IdUsuario);
                 connection.Open();
                 command.ExecuteNonQuery();

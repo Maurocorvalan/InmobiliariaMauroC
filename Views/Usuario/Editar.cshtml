@@ -8,7 +8,9 @@
     <div class="alert alert-success" role="alert">
         @ViewData["SuccessMessage"]
     </div>
-}else if (ViewData["ErrorMessage"] != null){
+}
+else if (ViewData["ErrorMessage"] != null)
+{
     <div class="alert alert-danger" role="alert">
         @ViewData["ErrorMessage"]
     </div>
@@ -18,8 +20,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <button type="button" class="btn btn-primary" onclick="mostrarEditarFoto()">Editar Foto de
-                        Perfil</button>
+                    <button type="button" class="btn btn-primary" onclick="mostrarEditarFoto()">Editar Avatar</button>
                 </li>
                 <li class="nav-item">
                     <button type="button" class="btn btn-primary" onclick="mostrarEditarDatos()">Editar Datos</button>
@@ -56,27 +57,41 @@
             onclick="return confirm('¿Estás seguro de eliminar tu avatar?')">Eliminar Avatar actual</button>
     </form>
 </div>
-
 <div id="editarDatosForm" style="display:none;">
-    <div class="form-group">
-        <label asp-for="Nombre" class="control-label"></label>
-        <input asp-for="Nombre" class="form-control" />
-        <span asp-validation-for="Nombre" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Apellido" class="control-label"></label>
-        <input asp-for="Apellido" class="form-control" required />
-        <span asp-validation-for="Apellido" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    <form id="editarDatosForm" asp-action="EditarDatos" method="post">
+        <div class="form-group">
+            <label asp-for="IdUsuario" class="control-label" hidden></label>
+            <input asp-for="IdUsuario" class="form-control" name="idUsuario" hidden />
+        </div>
+        <div class="form-group">
+            <label asp-for="Email" class="control-label"></label>
+            <input asp-for="Email" class="form-control" name="Email" required />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Nombre" class="control-label"></label>
+            <input asp-for="Nombre" class="form-control" name="Nombre" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Apellido" class="control-label"></label>
+            <input asp-for="Apellido" class="form-control" name="Apellido" />
+        </div>
+        <div class="form-group">
+            <label for="claveActual" class="control-label">Contraseña Actual (Necesaria para realizar cualquier cambio
+                de datos)</label>
+            <input id="claveActual" class="form-control" type="password" name="claveActual" required />
+        </div>
+        <button type="submit" value="EditarDatos" class="btn btn-success">Guardar Cambios</button>
+    </form>
 </div>
+
 
 <div id="cambiarContraseñaForm" style="display:none;">
     <form id="cambiarClave" asp-action="CambiarClave" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
-            <label asp-for="IdUsuario" class="control-label"></label>
-            <input asp-for="IdUsuario" class="form-control" name="idUsuario" />
+            <label asp-for="IdUsuario" class="control-label" hidden></label>
+            <input asp-for="IdUsuario" class="form-control" name="idUsuario" hidden />
         </div>
         <div class="form-group">
             <label for="ClaveActual" class="control-label">Contraseña Actual</label>

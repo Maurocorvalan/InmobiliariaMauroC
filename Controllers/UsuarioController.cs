@@ -147,7 +147,6 @@ public class UsuarioController : Controller
                     usuario.AvatarUrl = Path.Combine("/Uploads", fileName);
                 }
 
-                Console.WriteLine("id usuario  " + usuario.IdUsuario);
                 ru.ModificarAvatar(usuario);
                 TempData["SuccessMessage"] = "Avatar actualizado correctamente.";
                 return RedirectToAction("Index");
@@ -169,11 +168,8 @@ public class UsuarioController : Controller
         string claveActual = Request.Form["claveActual"];
         string claveNueva = Request.Form["claveNueva"];
         string claveConfirmar = Request.Form["claveConfirmar"];
-
-
         RepositorioUsuario ru = new RepositorioUsuario();
         var user = ru.ObtenerPorId(usuario.IdUsuario);
-
         string hashed = HashPassword(claveActual);
         try
         {
@@ -206,10 +202,39 @@ public class UsuarioController : Controller
             Console.WriteLine(ex.Message);
         }
         return RedirectToAction("Index");
-
-
-
     }
+    public IActionResult EditarDatos(Usuario usuario)
+    {
+        string claveActual = Request.Form["claveActual"];
+        RepositorioUsuario ru = new RepositorioUsuario();
+        var user = ru.ObtenerPorId(usuario.IdUsuario);
+        string hashed = HashPassword(claveActual);
+        try
+        {
+
+            if (hashed != user.Clave)
+            {
+                TempData["ErrorMessage"] = "Error al editar datos";
+                return RedirectToAction("Editar", new { IdUsuario = usuario.IdUsuario });
+            }
+            else
+            {
+                user.Nombre = Request.Form["Nombre"];
+                user.Email = Request.Form["Email"];
+                user.Apellido = Request.Form["Apellido"];
+                ru.ModificarDatos(user);
+                TempData["SuccessMessage"] = "Datos cambiados correctamente.";
+                return RedirectToAction("Editar", new { IdUsuario = usuario.IdUsuario });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+
+        }
+        return RedirectToAction("Index");
+    }
+
 
 
 

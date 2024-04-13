@@ -31,4 +31,9 @@ public string RolNombre => Rol > 0 ? ((enRoles)Rol).ToString() : "";
 			}
 			return roles;
 		}
+
+		    public override string ToString()
+    {
+        return $"{Nombre} {Apellido} {Email}";
+    }
 	}
