@@ -80,8 +80,8 @@ public class UsuarioController : Controller
                 }
                 repositorioUsuario.ModificarUsuario(usuario);
             }
-            TempData["SuccessMessage"] = "Usuario creado correctamente.";
-            return RedirectToAction("E");
+            TempData["SuccessMessage"] = "Usuario "+ usuario.Nombre + " " + usuario.Apellido +" creado correctamente.";
+            return RedirectToAction("Index");
         }
         catch (Exception ex)
         {
@@ -202,6 +202,23 @@ public class UsuarioController : Controller
             Console.WriteLine(ex.Message);
         }
         return RedirectToAction("Index");
+    }
+
+    public IActionResult Eliminar(int id)
+    {
+        try
+        {
+            RepositorioUsuario ru = new RepositorioUsuario();
+            ru.EliminarUsuario(id);
+            TempData["SuccessMessage"] = "Usuario eliminado correctamente.";
+
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = "No se pudo eliminar el usuario";
+            Console.WriteLine(ex.Message);
+        }
+        return RedirectToAction(nameof(Index));
     }
     public IActionResult EditarDatos(Usuario usuario)
     {

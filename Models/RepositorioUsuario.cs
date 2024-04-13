@@ -18,12 +18,16 @@ public class RepositorioUsuario
         using (var connection = new MySqlConnection(ConnectionString))
         {
             var sql = @$"SELECT {nameof(Usuario.IdUsuario)}, {nameof(Usuario.Nombre)}, {nameof(Usuario.Apellido)}, {nameof(Usuario.Email)}, {nameof(Usuario.Clave)}, {nameof(Usuario.AvatarUrl)},{nameof(Usuario.Rol)} FROM usuarios WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
-            using(var command = new MySqlCommand(sql, connection)){
+            using (var command = new MySqlCommand(sql, connection))
+            {
                 command.Parameters.AddWithValue($"@{nameof(Usuario.IdUsuario)}", id);
                 connection.Open();
-                using(var reader = command.ExecuteReader()){
-                    if(reader.Read()){
-                        usuario = new Usuario{
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        usuario = new Usuario
+                        {
                             IdUsuario = reader.GetInt32(nameof(Usuario.IdUsuario)),
                             Nombre = reader.GetString(nameof(Usuario.Nombre)),
                             Apellido = reader.GetString(nameof(Usuario.Apellido)),
@@ -240,11 +244,14 @@ public class RepositorioUsuario
         }
         return Id;
     }
-    public int ModificarDatos(Usuario usuario){
-        int Id=0;
-        using (var connection = new MySqlConnection(ConnectionString)){
+    public int ModificarDatos(Usuario usuario)
+    {
+        int Id = 0;
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
             var sql = @$"UPDATE usuarios SET {nameof(Usuario.Nombre)} = @{nameof(Usuario.Nombre)}, {nameof(Usuario.Apellido)} = @{nameof(Usuario.Apellido)}, {nameof(Usuario.Email)} = @{nameof(Usuario.Email)} WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
-            using (var command = new MySqlCommand(sql, connection)){
+            using (var command = new MySqlCommand(sql, connection))
+            {
                 command.Parameters.AddWithValue($"@{nameof(Usuario.Nombre)}", usuario.Nombre);
                 command.Parameters.AddWithValue($"@{nameof(Usuario.Apellido)}", usuario.Apellido);
                 command.Parameters.AddWithValue($"@{nameof(Usuario.Email)}", usuario.Email);
@@ -256,6 +263,21 @@ public class RepositorioUsuario
             }
         }
         return Id;
+    }
+    public int EliminarUsuario(int id)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = @$"DELETE FROM usuarios WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue($"@{nameof(Usuario.IdUsuario)}", id);
+                connection.Open();
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
+        return 0;
     }
 
 }
