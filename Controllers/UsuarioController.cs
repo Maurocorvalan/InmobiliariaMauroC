@@ -81,7 +81,7 @@ public class UsuarioController : Controller
                 repositorioUsuario.ModificarUsuario(usuario);
             }
             TempData["SuccessMessage"] = "Usuario creado correctamente.";
-            return RedirectToAction("Index");
+            return RedirectToAction("E");
         }
         catch (Exception ex)
         {
@@ -98,6 +98,14 @@ public class UsuarioController : Controller
         if (idUsuario > 0)
         {
             var usuario = ru.GetUsuario(idUsuario);
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewData["SuccessMessage"] = TempData["SuccessMessage"];
+            }
+            else
+            {
+                ViewData["ErrorMessage"] = TempData["ErrorMessage"];
+            }
             return View(usuario);
         }
         else
@@ -113,39 +121,32 @@ public class UsuarioController : Controller
         {
             if (!ModelState.IsValid)
             {
-                // Si el modelo no es válido, regresar a la vista de edición con los errores
                 return View(usuario);
             }
 
             try
             {
-                // Guardar el nuevo avatar si se proporciona
                 if (usuario.AvatarFile != null && usuario.AvatarFile.Length > 0)
                 {
                     string wwwPath = environment.WebRootPath;
                     string path = Path.Combine(wwwPath, "Uploads");
 
-                    // Verificar si la carpeta "Uploads" existe, de lo contrario, crearla
                     if (!Directory.Exists(path))
                     {
                         Directory.CreateDirectory(path);
                     }
 
-                    // Generar un nombre de archivo único para el avatar
                     string fileName = "avatar_" + usuario.IdUsuario + Path.GetExtension(usuario.AvatarFile.FileName);
                     string pathCompleto = Path.Combine(path, fileName);
 
-                    // Guardar el nuevo avatar
                     using (FileStream stream = new FileStream(pathCompleto, FileMode.Create))
                     {
                         usuario.AvatarFile.CopyTo(stream);
                     }
 
-                    // Actualizar la URL del avatar en el objeto usuario
                     usuario.AvatarUrl = Path.Combine("/Uploads", fileName);
                 }
 
-                // Actualizar la URL del avatar en la base de datos
                 Console.WriteLine("id usuario  " + usuario.IdUsuario);
                 ru.ModificarAvatar(usuario);
                 TempData["SuccessMessage"] = "Avatar actualizado correctamente.";
@@ -163,6 +164,53 @@ public class UsuarioController : Controller
             return View();
         }
     }
+    public IActionResult CambiarClave(Usuario usuario)
+    {
+        string claveActual = Request.Form["claveActual"];
+        string claveNueva = Request.Form["claveNueva"];
+        string claveConfirmar = Request.Form["claveConfirmar"];
+
+
+        RepositorioUsuario ru = new RepositorioUsuario();
+        var user = ru.ObtenerPorId(usuario.IdUsuario);
+
+        string hashed = HashPassword(claveActual);
+        try
+        {
+            if (hashed != user.Clave)
+            {
+                Console.WriteLine("Contraseña actual incorrecta puesta");
+                TempData["ErrorMessage"] = "Contraseña actual incorrecta.";
+                return RedirectToAction("Editar", new { IdUsuario = usuario.IdUsuario });
+
+            }
+            else if (claveNueva != claveConfirmar)
+            {
+                Console.WriteLine("Las claves no coinciden");
+                TempData["ErrorMessage"] = "Las contraseñas no coinciden.";
+
+                return RedirectToAction("Editar", new { IdUsuario = usuario.IdUsuario });
+
+            }
+            else
+            {
+                string nuevaHasheada = HashPassword(claveNueva);
+                user.Clave = nuevaHasheada;
+                ru.ModificarClave(user);
+                TempData["SuccessMessage"] = "Clave cambiada correctamente.";
+                return RedirectToAction("Editar", new { IdUsuario = usuario.IdUsuario });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        return RedirectToAction("Index");
+
+
+
+    }
+
 
 
 
@@ -191,20 +239,17 @@ public class UsuarioController : Controller
                     return View();
                 }
 
-                // Crear la lista de claims, incluyendo el IdUsuario
                 var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, usuario.Email),
                 new Claim("FullName", usuario.Nombre + " " + usuario.Apellido),
                 new Claim(ClaimTypes.Role, usuario.RolNombre),
-                new Claim("IdUsuario", usuario.IdUsuario.ToString()) // Agregar el IdUsuario como un claim
+                new Claim("IdUsuario", usuario.IdUsuario.ToString())
             };
 
-                // Crear la identidad de claims
                 var claimsIdentity = new ClaimsIdentity(
                     claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                // Firmar al usuario
                 await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity));
@@ -244,6 +289,15 @@ public class UsuarioController : Controller
 
         return hashed;
     }
+    private string UnhashPassword(string hashedPassword)
+    {
+        byte[] hashedBytes = Convert.FromBase64String(hashedPassword);
+        string password = System.Text.Encoding.UTF8.GetString(hashedBytes);
+
+        return password;
+    }
+
+
 
 }
 

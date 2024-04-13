@@ -191,7 +191,10 @@ public class RepositorioUsuario
             var sql = @$"UPDATE usuarios SET {nameof(Usuario.AvatarUrl)} = @{nameof(Usuario.AvatarUrl)} WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
             using (var command = new MySqlCommand(sql, connection))
             {
-                command.Parameters.AddWithValue($"@{nameof(Usuario.AvatarUrl)}", usuario.AvatarUrl);
+                if (String.IsNullOrEmpty(usuario.AvatarUrl))
+                    command.Parameters.AddWithValue($"@{nameof(Usuario.AvatarUrl)}", DBNull.Value);
+                else
+                    command.Parameters.AddWithValue($"@{nameof(Usuario.AvatarUrl)}", usuario.AvatarUrl);
                 command.Parameters.AddWithValue($"@{nameof(Usuario.IdUsuario)}", usuario.IdUsuario);
                 connection.Open();
                 command.ExecuteNonQuery();
@@ -199,6 +202,25 @@ public class RepositorioUsuario
             }
         }
         return 0;
+    }
+
+    public int ModificarClave(Usuario usuario)
+    {
+        int Id = 0;
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = @$"UPDATE usuarios SET {nameof(Usuario.Clave)} = @{nameof(Usuario.Clave)} WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue($"@{nameof(Usuario.Clave)}", usuario.Clave);
+                command.Parameters.AddWithValue($"@{nameof(Usuario.IdUsuario)}", usuario.IdUsuario);
+                connection.Open();
+                command.ExecuteNonQuery();
+                usuario.IdUsuario = Id;
+                connection.Close();
+            }
+        }
+        return Id;
     }
 
 }

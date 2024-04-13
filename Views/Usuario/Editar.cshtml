@@ -3,7 +3,16 @@
 @{
     ViewData["Title"] = "Editar Usuario";
 }
-
+@if (ViewData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @ViewData["SuccessMessage"]
+    </div>
+}else if (ViewData["ErrorMessage"] != null){
+    <div class="alert alert-danger" role="alert">
+        @ViewData["ErrorMessage"]
+    </div>
+}
 <nav class="navbar navbar-expand-lg navbar-dark " style="background-color: rgb(238, 238, 238);">
     <div class="container-fluid">
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -29,8 +38,8 @@
     <form id="avatarForm" asp-action="EditarAvatar" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
-            <label asp-for="IdUsuario" class="control-label"></label>
-            <input asp-for="IdUsuario" class="form-control" readonly />
+            <label asp-for="IdUsuario" class="control-label" hidden></label>
+            <input asp-for="IdUsuario" class="form-control" hidden />
         </div>
         <div class="form-group">
 
@@ -43,7 +52,7 @@
         </div>
 
         <button type="submit" class="btn btn-success" value="EditarAvatar">Guardar Cambios</button>
-        <button type="button" class="btn btn-danger" value="EliminarAvatar"
+        <button type="submit" class="btn btn-danger" value="EditarAvatar"
             onclick="return confirm('¿Estás seguro de eliminar tu avatar?')">Eliminar Avatar actual</button>
     </form>
 </div>
@@ -60,26 +69,33 @@
         <span asp-validation-for="Apellido" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-success">Guardar Cambios</button>
-
 </div>
 
 <div id="cambiarContraseñaForm" style="display:none;">
-    <div class="form-group">
-        <label asp-for="Clave" class="control-label">Contraseña Actual</label>
-        <input asp-for="Clave" class="form-control" type="password" required />
-        <span asp-validation-for="Clave" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Clave" class="control-label">Nueva contraseña</label>
-        <input asp-for="Clave" class="form-control" type="password" required />
-        <span asp-validation-for="Clave" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Clave" class="control-label">Confirmar nueva contraseña</label>
-        <input asp-for="Clave" class="form-control" type="password" required />
-        <span asp-validation-for="Clave" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    <form id="cambiarClave" asp-action="CambiarClave" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="IdUsuario" class="control-label"></label>
+            <input asp-for="IdUsuario" class="form-control" name="idUsuario" />
+        </div>
+        <div class="form-group">
+            <label for="ClaveActual" class="control-label">Contraseña Actual</label>
+            <input id="claveActual" class="form-control" type="password" name="claveActual" required />
+            <span asp-validation-for="Clave" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label for="claveNueva" class="control-label">Nueva contraseña</label>
+            <input id="claveNueva" class="form-control" type="password" name="claveNueva" required />
+            <span asp-validation-for="Clave" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label for="claveConfirmar" class="control-label">Confirmar nueva contraseña</label>
+            <input id="claveConfirmar" class="form-control" type="password" name="claveConfirmar" required />
+            <span asp-validation-for="Clave" class="text-danger"></span>
+        </div>
+        <button type="submit" value="CambiarClave" class="btn btn-success">Guardar Cambios</button>
+    </form>
+
 
 </div>
 <a asp-action="Index" class="btn btn-secondary">Volver</a>
