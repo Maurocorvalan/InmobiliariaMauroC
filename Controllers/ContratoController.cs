@@ -73,25 +73,24 @@ public class ContratoController : Controller
 
 
 
-public IActionResult Editar(int idContrato)
-{
-    RepositorioInquilino ri = new RepositorioInquilino();
-    RepositorioInmueble rim = new RepositorioInmueble();
-    ViewBag.Inquilinos = ri.GetInquilinos();
-    ViewBag.Inmuebles = rim.GetInmuebles();
-    if (idContrato > 0)
+    public IActionResult Editar(int idContrato)
     {
-        RepositorioContrato rc = new RepositorioContrato();
-        var contrato = rc.GetContrato(idContrato);
-    
-        Console.WriteLine($"Direccion del contrato: {contrato?.IdInmueble}");
-        return View(contrato);
+        RepositorioInquilino ri = new RepositorioInquilino();
+        RepositorioInmueble rim = new RepositorioInmueble();
+        ViewBag.Inquilinos = ri.GetInquilinos();
+        ViewBag.Inmuebles = rim.GetInmuebles();
+        if (idContrato > 0)
+        {
+            RepositorioContrato rc = new RepositorioContrato();
+            var contrato = rc.GetContrato(idContrato);
+
+            return View(contrato);
+        }
+        else
+        {
+            return View();
+        }
     }
-    else
-    {
-        return View();
-    }
-}
 
     public IActionResult Detalle(int idContrato)
     {

@@ -1,0 +1,87 @@
+﻿@model IEnumerable<Usuario>
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<div class="container">
+    <h1>Usuarios</h1>
+
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Buscar..." id="searchInput">
+        <div class="input-group-append">
+            <a asp-action="Crear" class="btn btn-primary">Crear nuevo</a>
+        </div>
+    </div>
+
+    @if (ViewData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @ViewData["SuccessMessage"]
+        </div>
+    }
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.IdUsuario)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Apellido)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th>
+                    Avatar
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Rol)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IdUsuario)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Apellido)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td>
+                        <img width="32" src="@item.AvatarUrl" alt="User Avatar" />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RolNombre)
+                    </td>
+                    <td>
+                        <a asp-action="Editar" asp-route-idUsuario="@item.IdUsuario" title="Editar"><span
+                                class="fa fa-edit"></span></a>
+                        <a asp-action="Detalle" asp-route-IdUsuario="@item.IdUsuario" title="DetalleUsuario"><span
+                                class="fa fa-info"></span></a>
+                        <a asp-action="Eliminar" asp-route-id="@item.IdUsuario" title="Eliminar"
+                            onclick="return confirm('¿Estás seguro de eliminar a @item.Nombre @item.Apellido?');"><span
+                                class="fa fa-trash text-danger"></span></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="~/js/search.js"></script>
+}
