@@ -234,6 +234,21 @@ public class UsuarioController : Controller
         }
         return RedirectToAction("Index");
     }
+    public IActionResult Detalle(int idUsuario)
+    {
+        RepositorioUsuario ru = new RepositorioUsuario();
+        ViewBag.Usuarios = ru.GetUsuarios();
+        if (idUsuario > 0)
+        {
+            var usuario = ru.GetUsuario(idUsuario);
+            return View(usuario);
+        }
+        else
+        {
+
+            return View();
+        }
+    }
 
 
 
