@@ -36,6 +36,22 @@ else if (ViewData["ErrorMessage"] != null)
 
 
 <div id="editarFotoForm" style="display:none;">
+    <div class="form-group">
+        <label asp-for="AvatarUrl" class="control-label" readonly>Avatar Actual</label>
+        <div class="form-group">
+            @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+            {
+                <img src="@Model.AvatarUrl" id="avatar-preview" alt="Avatar" style="max-width: 150px;">
+            }
+            else
+            {
+                <p>No hay avatar disponible.</p>
+            }
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="AvatarUrl" class="control-label" >Elegir nuevo avatar</label>
+    </div>
     <form id="avatarForm" asp-action="EditarAvatar" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">

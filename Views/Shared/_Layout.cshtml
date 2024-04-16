@@ -18,9 +18,10 @@
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
             @if (!User.Identity.IsAuthenticated)
             {
-                <a class="py-2" asp-controller="Home" asp-action="Index"><span class="lnr lnr-home"></span> Inicio</a>
-                <a class="py-2 d-none d-md-inline-block float-right" asp-controller="Usuario" asp-action="Login"><span
-                        class="lnr lnr-enter"></span> Acceder</a>
+                <a class="navbar-brand pl-3" asp-controller="Home" asp-action="Index"><span class="lnr lnr-home"></span>
+                    Inicio</a>
+                <a class="nav-link d-none d-md-inline-block text-light ml-auto" asp-controller="Usuario"
+                    asp-action="Login"><span class="lnr lnr-enter"></span> Acceder</a>
             }
             else
             {
@@ -95,6 +96,7 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
