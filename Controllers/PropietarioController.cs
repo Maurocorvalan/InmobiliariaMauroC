@@ -2,9 +2,12 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures; // Agregado para TempData
 using Inmobiliaria.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Inmobiliaria.Controllers
 {
+    [Authorize]
+
     public class PropietarioController : Controller
     {
         private readonly ILogger<PropietarioController> _logger;
@@ -13,7 +16,6 @@ namespace Inmobiliaria.Controllers
         {
             _logger = logger;
         }
-
         public IActionResult Index()
         {
             RepositorioPropietarios rp = new RepositorioPropietarios();
@@ -42,13 +44,16 @@ namespace Inmobiliaria.Controllers
             }
         }
 
-      public IActionResult Detalle(int idPropietario)
+        public IActionResult Detalle(int idPropietario)
         {
-            if(idPropietario > 0){
+            if (idPropietario > 0)
+            {
                 RepositorioPropietarios rp = new RepositorioPropietarios();
                 var propietario = rp.GetPropietario(idPropietario);
                 return View(propietario);
-            }else{
+            }
+            else
+            {
                 return View();
             }
         }
@@ -74,14 +79,17 @@ namespace Inmobiliaria.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-  
+        [Authorize(Policy = "Administrador")]
         public IActionResult Eliminar(int id)
         {
-            try{
-            RepositorioPropietarios rp = new RepositorioPropietarios();
-            rp.EliminarPropietario(id);
-            TempData["SuccessMessage"] = "Propietario eliminado correctamente.";
-            }catch(Exception ex){
+            try
+            {
+                RepositorioPropietarios rp = new RepositorioPropietarios();
+                rp.EliminarPropietario(id);
+                TempData["SuccessMessage"] = "Propietario eliminado correctamente.";
+            }
+            catch (Exception ex)
+            {
                 TempData["SuccessMessage"] = "No se pudo eliminar el propietario debido a que posee un inmueble o contrato vigente";
                 Console.WriteLine(ex.Message);
             }

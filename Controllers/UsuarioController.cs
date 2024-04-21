@@ -17,7 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Net.Http.Headers;
 using Org.BouncyCastle.Security;
 
-
+[Authorize]
 public class UsuarioController : Controller
 {
     private readonly IConfiguration configuration;
@@ -32,27 +32,40 @@ public class UsuarioController : Controller
         this.environment = environment;
         this.repositorioUsuario = repositorioUsuario;
     }
-
+    [Authorize(Policy = "Administrador")]
     public IActionResult Index()
     {
+        if (!User.IsInRole("Administrador"))
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         RepositorioUsuario ru = new RepositorioUsuario();
         var lista = ru.GetUsuarios();
         if (TempData["SuccessMessage"] != null)
         {
             ViewData["SuccessMessage"] = TempData["SuccessMessage"];
-
         }
         return View(lista);
     }
+
 
     [HttpGet]
     [Authorize(Policy = "Administrador")]
     public IActionResult Crear()
     {
+        if (User.IsInRole("empleado"))
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         ViewBag.Roles = Usuario.ObtenerRoles();
         return View();
     }
+
     [HttpPost]
+    [Authorize(Policy = "Administrador")]
+
     public IActionResult Crear(Usuario usuario)
     {
         if (!ModelState.IsValid)
@@ -80,7 +93,7 @@ public class UsuarioController : Controller
                 }
                 repositorioUsuario.ModificarUsuario(usuario);
             }
-            TempData["SuccessMessage"] = "Usuario "+ usuario.Nombre + " " + usuario.Apellido +" creado correctamente.";
+            TempData["SuccessMessage"] = "Usuario " + usuario.Nombre + " " + usuario.Apellido + " creado correctamente.";
             return RedirectToAction("Index");
         }
         catch (Exception ex)
@@ -91,8 +104,15 @@ public class UsuarioController : Controller
         }
 
     }
+    [Authorize]
+
+
     public IActionResult Editar(int idUsuario)
     {
+        if (User.IsInRole("empleado") && idUsuario.ToString() != User.FindFirst("IdUsuario")?.Value)
+        {
+            return Forbid();
+        }
         RepositorioUsuario ru = new RepositorioUsuario();
         ViewBag.Usuarios = ru.GetUsuarios();
         if (idUsuario > 0)
@@ -114,8 +134,15 @@ public class UsuarioController : Controller
         }
 
     }
+    [Authorize]
+
+
     public IActionResult EditarAvatar(Usuario usuario)
     {
+        if (User.IsInRole("empleado") && usuario.IdUsuario.ToString() != User.FindFirst("IdUsuario")?.Value)
+        {
+            return Forbid();
+        }
         RepositorioUsuario ru = new RepositorioUsuario();
         if (usuario.IdUsuario > 0)
         {
@@ -149,7 +176,14 @@ public class UsuarioController : Controller
 
                 ru.ModificarAvatar(usuario);
                 TempData["SuccessMessage"] = "Avatar actualizado correctamente.";
-                return RedirectToAction("Index");
+                if (User.IsInRole("Empleado"))
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    return RedirectToAction("Index");
+                }
             }
             catch (Exception ex)
             {
@@ -163,8 +197,14 @@ public class UsuarioController : Controller
             return View();
         }
     }
+    [Authorize]
+
     public IActionResult CambiarClave(Usuario usuario)
     {
+        if (User.IsInRole("empleado") && usuario.IdUsuario.ToString() != User.FindFirst("IdUsuario")?.Value)
+        {
+            return Forbid();
+        }
         string claveActual = Request.Form["claveActual"];
         string claveNueva = Request.Form["claveNueva"];
         string claveConfirmar = Request.Form["claveConfirmar"];
@@ -203,6 +243,7 @@ public class UsuarioController : Controller
         }
         return RedirectToAction("Index");
     }
+    [Authorize(Policy = "Administrador")]
 
     public IActionResult Eliminar(int id)
     {
@@ -220,6 +261,7 @@ public class UsuarioController : Controller
         }
         return RedirectToAction(nameof(Index));
     }
+    [Authorize]
     public IActionResult EditarDatos(Usuario usuario)
     {
         string claveActual = Request.Form["claveActual"];

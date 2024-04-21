@@ -2,9 +2,11 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures; // Agregado para TempData
 using Inmobiliaria.Models;
-
+using Microsoft.AspNetCore.Authorization;
 namespace Inmobiliaria.Controllers
 {
+    [Authorize]
+
     public class InmuebleController : Controller
     {
         private readonly ILogger<InmuebleController> _logger;
@@ -96,6 +98,8 @@ namespace Inmobiliaria.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        [Authorize(Policy = "Administrador")]
+
 
         public IActionResult Eliminar(int id)
         {

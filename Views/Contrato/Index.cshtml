@@ -77,9 +77,12 @@
                             class="fa fa-edit"></span></a>
                     <a asp-action="Detalle" asp-route-IdContrato="@item.IdContrato" title="DetalleContrato"><span
                             class="fa fa-info"></span></a>
-                    <a asp-action="Eliminar" asp-route-id="@item.IdContrato" title="Eliminar"
-                        onclick="return confirm('¿Estás seguro de eliminar este contrato?');"><span
-                            class="fa fa-trash text-danger"></span></a>
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a asp-action="Eliminar" asp-route-id="@item.IdContrato" title="Eliminar"
+                            onclick="return confirm('¿Estás seguro de eliminar este contrato?');"><span
+                                class="fa fa-trash text-danger"></span></a>
+                    }
                 </td>
             </tr>
         }

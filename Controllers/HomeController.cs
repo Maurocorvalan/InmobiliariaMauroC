@@ -15,7 +15,8 @@ public class HomeController : Controller
     }
     public IActionResult Index()
     {
-            
+        ViewData["SuccessMessage"] = TempData["SuccessMessage"];
+
         return View();
     }
 

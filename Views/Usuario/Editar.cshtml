@@ -1,134 +1,142 @@
 @model Inmobiliaria.Models.Usuario
 
-@{
-    ViewData["Title"] = "Editar Usuario";
-}
-@if (ViewData["SuccessMessage"] != null)
+    @{
+        ViewData["Title"] = "Editar Usuario";
+    }
+    @if (User.IsInRole("Administrador") || Model.IdUsuario.ToString() == User.FindFirst("IdUsuario")?.Value)
 {
-    <div class="alert alert-success" role="alert">
-        @ViewData["SuccessMessage"]
+    @if (ViewData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @ViewData["SuccessMessage"]
+        </div>
+    }
+    else if (ViewData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @ViewData["ErrorMessage"]
+        </div>
+    }
+
+    <nav class="navbar navbar-expand-lg navbar-dark " style="background-color: rgb(238, 238, 238);">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-primary" onclick="mostrarEditarFoto()">Editar Avatar</button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-primary" onclick="mostrarEditarDatos()">Editar Datos</button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-primary" onclick="mostrarCambiarContraseña()">Cambiar
+                            Contraseña</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <div id="editarFotoForm" style="display:none;">
+        <div class="form-group">
+            <label asp-for="AvatarUrl" class="control-label" readonly>Avatar Actual</label>
+            <div class="form-group">
+                @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+                {
+                    <img src="@Model.AvatarUrl" id="avatar-preview" alt="Avatar" style="max-width: 150px;">
+                }
+                else
+                {
+                    <p>No hay avatar disponible.</p>
+                }
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="AvatarUrl" class="control-label">Elegir nuevo avatar</label>
+        </div>
+        <form id="avatarForm" asp-action="EditarAvatar" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="IdUsuario" class="control-label" hidden></label>
+                <input asp-for="IdUsuario" class="form-control" hidden />
+            </div>
+            <div class="form-group">
+
+                <label asp-for="AvatarFile" class="sr-only">Selecciona una imagen</label>
+                <input type="file" name="AvatarFile" id="avatar" class="form-control-file" accept="image/*">
+                <span asp-validation-for="AvatarFile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <img src="#" id="preview" alt="Preview" style="max-width: 150px;">
+            </div>
+
+            <button type="submit" class="btn btn-success" value="EditarAvatar">Guardar Cambios</button>
+            <button type="submit" class="btn btn-danger" value="EditarAvatar"
+                onclick="return confirm('¿Estás seguro de eliminar tu avatar?')">Eliminar Avatar actual</button>
+        </form>
     </div>
+    <div id="editarDatosForm" style="display:none;">
+        <form id="editarDatosForm" asp-action="EditarDatos" method="post">
+            <div class="form-group">
+                <label asp-for="IdUsuario" class="control-label" hidden></label>
+                <input asp-for="IdUsuario" class="form-control" name="idUsuario" hidden />
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" name="Email" required />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" name="Nombre" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Apellido" class="control-label"></label>
+                <input asp-for="Apellido" class="form-control" name="Apellido" />
+            </div>
+            <div class="form-group">
+                <label for="claveActual" class="control-label">Contraseña Actual (Necesaria para realizar cualquier cambio
+                    de datos)</label>
+                <input id="claveActual" class="form-control" type="password" name="claveActual" required />
+            </div>
+            <button type="submit" value="EditarDatos" class="btn btn-success">Guardar Cambios</button>
+        </form>
+    </div>
+
+
+    <div id="cambiarContraseñaForm" style="display:none;">
+        <form id="cambiarClave" asp-action="CambiarClave" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="IdUsuario" class="control-label" hidden></label>
+                <input asp-for="IdUsuario" class="form-control" name="idUsuario" hidden />
+            </div>
+            <div class="form-group">
+                <label for="ClaveActual" class="control-label">Contraseña Actual</label>
+                <input id="claveActual" class="form-control" type="password" name="claveActual" required />
+                <span asp-validation-for="Clave" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="claveNueva" class="control-label">Nueva contraseña</label>
+                <input id="claveNueva" class="form-control" type="password" name="claveNueva" required />
+                <span asp-validation-for="Clave" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="claveConfirmar" class="control-label">Confirmar nueva contraseña</label>
+                <input id="claveConfirmar" class="form-control" type="password" name="claveConfirmar" required />
+                <span asp-validation-for="Clave" class="text-danger"></span>
+            </div>
+            <button type="submit" value="CambiarClave" class="btn btn-success">Guardar Cambios</button>
+        </form>
+
+
+    </div>
+    <a asp-action="Index" class="btn btn-secondary">Volver</a>
 }
-else if (ViewData["ErrorMessage"] != null)
+else
 {
-    <div class="alert alert-danger" role="alert">
-        @ViewData["ErrorMessage"]
-    </div>
+    <p>No tienes acceso.</p>
 }
-<nav class="navbar navbar-expand-lg navbar-dark " style="background-color: rgb(238, 238, 238);">
-    <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <button type="button" class="btn btn-primary" onclick="mostrarEditarFoto()">Editar Avatar</button>
-                </li>
-                <li class="nav-item">
-                    <button type="button" class="btn btn-primary" onclick="mostrarEditarDatos()">Editar Datos</button>
-                </li>
-                <li class="nav-item">
-                    <button type="button" class="btn btn-primary" onclick="mostrarCambiarContraseña()">Cambiar
-                        Contraseña</button>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-
-<div id="editarFotoForm" style="display:none;">
-    <div class="form-group">
-        <label asp-for="AvatarUrl" class="control-label" readonly>Avatar Actual</label>
-        <div class="form-group">
-            @if (!string.IsNullOrEmpty(Model.AvatarUrl))
-            {
-                <img src="@Model.AvatarUrl" id="avatar-preview" alt="Avatar" style="max-width: 150px;">
-            }
-            else
-            {
-                <p>No hay avatar disponible.</p>
-            }
-        </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="AvatarUrl" class="control-label" >Elegir nuevo avatar</label>
-    </div>
-    <form id="avatarForm" asp-action="EditarAvatar" enctype="multipart/form-data">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
-            <label asp-for="IdUsuario" class="control-label" hidden></label>
-            <input asp-for="IdUsuario" class="form-control" hidden />
-        </div>
-        <div class="form-group">
-
-            <label asp-for="AvatarFile" class="sr-only">Selecciona una imagen</label>
-            <input type="file" name="AvatarFile" id="avatar" class="form-control-file" accept="image/*">
-            <span asp-validation-for="AvatarFile" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <img src="#" id="preview" alt="Preview" style="max-width: 150px;">
-        </div>
-
-        <button type="submit" class="btn btn-success" value="EditarAvatar">Guardar Cambios</button>
-        <button type="submit" class="btn btn-danger" value="EditarAvatar"
-            onclick="return confirm('¿Estás seguro de eliminar tu avatar?')">Eliminar Avatar actual</button>
-    </form>
-</div>
-<div id="editarDatosForm" style="display:none;">
-    <form id="editarDatosForm" asp-action="EditarDatos" method="post">
-        <div class="form-group">
-            <label asp-for="IdUsuario" class="control-label" hidden></label>
-            <input asp-for="IdUsuario" class="form-control" name="idUsuario" hidden />
-        </div>
-        <div class="form-group">
-            <label asp-for="Email" class="control-label"></label>
-            <input asp-for="Email" class="form-control" name="Email" required />
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Nombre" class="control-label"></label>
-            <input asp-for="Nombre" class="form-control" name="Nombre" />
-        </div>
-        <div class="form-group">
-            <label asp-for="Apellido" class="control-label"></label>
-            <input asp-for="Apellido" class="form-control" name="Apellido" />
-        </div>
-        <div class="form-group">
-            <label for="claveActual" class="control-label">Contraseña Actual (Necesaria para realizar cualquier cambio
-                de datos)</label>
-            <input id="claveActual" class="form-control" type="password" name="claveActual" required />
-        </div>
-        <button type="submit" value="EditarDatos" class="btn btn-success">Guardar Cambios</button>
-    </form>
-</div>
-
-
-<div id="cambiarContraseñaForm" style="display:none;">
-    <form id="cambiarClave" asp-action="CambiarClave" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
-            <label asp-for="IdUsuario" class="control-label" hidden></label>
-            <input asp-for="IdUsuario" class="form-control" name="idUsuario" hidden />
-        </div>
-        <div class="form-group">
-            <label for="ClaveActual" class="control-label">Contraseña Actual</label>
-            <input id="claveActual" class="form-control" type="password" name="claveActual" required />
-            <span asp-validation-for="Clave" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label for="claveNueva" class="control-label">Nueva contraseña</label>
-            <input id="claveNueva" class="form-control" type="password" name="claveNueva" required />
-            <span asp-validation-for="Clave" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label for="claveConfirmar" class="control-label">Confirmar nueva contraseña</label>
-            <input id="claveConfirmar" class="form-control" type="password" name="claveConfirmar" required />
-            <span asp-validation-for="Clave" class="text-danger"></span>
-        </div>
-        <button type="submit" value="CambiarClave" class="btn btn-success">Guardar Cambios</button>
-    </form>
-
-
-</div>
-<a asp-action="Index" class="btn btn-secondary">Volver</a>
 
 <script src="~/js/site.js" asp-append-version="true"></script>

@@ -1,8 +1,10 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Inmobiliaria.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Inmobiliaria.Controllers;
+[Authorize]
 
 public class PagoController : Controller
 {
@@ -90,7 +92,7 @@ public class PagoController : Controller
     {
         RepositorioContrato rc = new RepositorioContrato();
         ViewBag.Contratos = rc.GetContratos();
-        if(idPago > 0)
+        if (idPago > 0)
         {
             RepositorioPago rp = new RepositorioPago();
             var pago = rp.GetPago(idPago);
@@ -102,6 +104,8 @@ public class PagoController : Controller
         }
 
     }
+    [Authorize(Policy = "Administrador")]
+
     public IActionResult Eliminar(int id)
     {
         RepositorioPago rp = new RepositorioPago();
