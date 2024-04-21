@@ -5,6 +5,7 @@ namespace Inmobiliaria.Models
     using System.Data;
     using MySql.Data.MySqlClient;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Authorization;
 
     public class RepositorioPago
     {
@@ -151,22 +152,23 @@ namespace Inmobiliaria.Models
             }
             return Id;
         }
-    
 
-    public int EliminarPago(int id)
-    {
-        using (var connection = new MySqlConnection(ConnectionString))
+        [Authorize(Policy = "Administrador")]
+
+        public int EliminarPago(int id)
         {
-            var sql = $@"DELETE FROM pagos WHERE {nameof(Pago.IdPago)} = @{nameof(Pago.IdPago)};";
-            using (var command = new MySqlCommand(sql, connection))
+            using (var connection = new MySqlConnection(ConnectionString))
             {
-                command.Parameters.AddWithValue($"@{nameof(Pago.IdPago)}", id);
-                connection.Open();
-                command.ExecuteNonQuery();
-                connection.Close();
+                var sql = $@"DELETE FROM pagos WHERE {nameof(Pago.IdPago)} = @{nameof(Pago.IdPago)};";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue($"@{nameof(Pago.IdPago)}", id);
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
             }
+            return 0;
         }
-        return 0;
     }
-}
 }

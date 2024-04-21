@@ -4,6 +4,7 @@ using System.Configuration;
 using MySql.Data.MySqlClient;
 using Mysqlx.Crud;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 public class RepositorioContrato
 {
@@ -139,12 +140,12 @@ public class RepositorioContrato
     }
 
 
-public int CrearContrato(Contrato contrato)
-{
-    int Id = 0;
-    using (var connection = new MySqlConnection(ConnectionString))
+    public int CrearContrato(Contrato contrato)
     {
-        var sql = $@"
+        int Id = 0;
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = $@"
         SELECT COUNT(*) 
         FROM contratos 
         WHERE {nameof(Contrato.IdInmueble)} = @{nameof(Contrato.IdInmueble)} 
@@ -152,23 +153,23 @@ public int CrearContrato(Contrato contrato)
             OR DATE({nameof(Contrato.FechaFinalizacion)}) BETWEEN DATE(@{nameof(Contrato.FechaInicio)}) AND DATE(@{nameof(Contrato.FechaFinalizacion)}))";
 
 
-        using (var command = new MySqlCommand(sql, connection))
-        {
-            command.Parameters.AddWithValue($"@{nameof(Contrato.IdInmueble)}", contrato.IdInmueble);
-            command.Parameters.AddWithValue($"@{nameof(Contrato.FechaInicio)}", contrato.FechaInicio);
-            command.Parameters.AddWithValue($"@{nameof(Contrato.FechaFinalizacion)}", contrato.FechaFinalizacion);
-
-            connection.Open();
-            int cantidadContratosSuperpuestos = Convert.ToInt32(command.ExecuteScalar());
-            connection.Close();
-
-            if (cantidadContratosSuperpuestos > 0)
+            using (var command = new MySqlCommand(sql, connection))
             {
-                throw new Exception("El inmueble ya está ocupado en las fechas especificadas por otro contrato.");
-            }
-        }
+                command.Parameters.AddWithValue($"@{nameof(Contrato.IdInmueble)}", contrato.IdInmueble);
+                command.Parameters.AddWithValue($"@{nameof(Contrato.FechaInicio)}", contrato.FechaInicio);
+                command.Parameters.AddWithValue($"@{nameof(Contrato.FechaFinalizacion)}", contrato.FechaFinalizacion);
 
-        var insertQuery = $@"
+                connection.Open();
+                int cantidadContratosSuperpuestos = Convert.ToInt32(command.ExecuteScalar());
+                connection.Close();
+
+                if (cantidadContratosSuperpuestos > 0)
+                {
+                    throw new Exception("El inmueble ya está ocupado en las fechas especificadas por otro contrato.");
+                }
+            }
+
+            var insertQuery = $@"
     INSERT INTO contratos (
         {nameof(Contrato.FechaInicio)}, {nameof(Contrato.FechaFinalizacion)}, {nameof(Contrato.MontoAlquiler)}, {nameof(Contrato.Estado)}, {nameof(Contrato.IdInquilino)}, {nameof(Contrato.IdInmueble)}
     ) 
@@ -177,21 +178,21 @@ public int CrearContrato(Contrato contrato)
     );
     SELECT LAST_INSERT_ID();";
 
-        using (var insertCommand = new MySqlCommand(insertQuery, connection))
-        {
-            insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.FechaInicio)}", contrato.FechaInicio);
-            insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.FechaFinalizacion)}", contrato.FechaFinalizacion);
-            insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.MontoAlquiler)}", contrato.MontoAlquiler);
-            insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.Estado)}", contrato.Estado);
-            insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.IdInquilino)}", contrato.IdInquilino);
-            insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.IdInmueble)}", contrato.IdInmueble);
-            connection.Open();
-            Id = Convert.ToInt32(insertCommand.ExecuteScalar());
-            connection.Close();
+            using (var insertCommand = new MySqlCommand(insertQuery, connection))
+            {
+                insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.FechaInicio)}", contrato.FechaInicio);
+                insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.FechaFinalizacion)}", contrato.FechaFinalizacion);
+                insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.MontoAlquiler)}", contrato.MontoAlquiler);
+                insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.Estado)}", contrato.Estado);
+                insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.IdInquilino)}", contrato.IdInquilino);
+                insertCommand.Parameters.AddWithValue($"@{nameof(Contrato.IdInmueble)}", contrato.IdInmueble);
+                connection.Open();
+                Id = Convert.ToInt32(insertCommand.ExecuteScalar());
+                connection.Close();
+            }
+            return Id;
         }
-        return Id;
     }
-}
 
 
 
@@ -227,6 +228,7 @@ public int CrearContrato(Contrato contrato)
         }
         return 0;
     }
+    [Authorize(Policy = "Administrador")]
 
     public int EliminarContrato(int id)
     {

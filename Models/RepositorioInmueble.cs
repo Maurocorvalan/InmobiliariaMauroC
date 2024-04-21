@@ -4,6 +4,7 @@ using System.Configuration;
 using MySql.Data.MySqlClient;
 using Mysqlx.Crud;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 public class RepositorioInmueble
 {
@@ -170,6 +171,7 @@ public class RepositorioInmueble
         }
         return 0;
     }
+    [Authorize(Policy = "Administrador")]
 
     public int EliminarInmueble(int id)
     {
