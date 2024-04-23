@@ -84,8 +84,8 @@ public class RepositorioPropietarios
         using (var connection = new MySqlConnection(ConnectionString))
         {
             var sql = @$"INSERT INTO propietarios ({nameof(Propietario.Nombre)}, {nameof(Propietario.Apellido)}, {nameof(Propietario.Dni)}, {nameof(Propietario.Email)}, {nameof(Propietario.Telefono)}) 
-                     VALUES (@{nameof(Propietario.Nombre)}, @{nameof(Propietario.Apellido)}, @{nameof(Propietario.Dni)}, @{nameof(Propietario.Email)}, @{nameof(Propietario.Telefono)}, @);
-                     SELECT LAST_INSERT_ID()";
+             VALUES (@{nameof(Propietario.Nombre)}, @{nameof(Propietario.Apellido)}, @{nameof(Propietario.Dni)}, @{nameof(Propietario.Email)}, @{nameof(Propietario.Telefono)})";
+
 
             using (var command = new MySqlCommand(sql, connection))
             {
@@ -112,8 +112,9 @@ public class RepositorioPropietarios
                  {nameof(Propietario.Apellido)} = @{nameof(Propietario.Apellido)}, 
                  {nameof(Propietario.Dni)} = @{nameof(Propietario.Dni)}, 
                  {nameof(Propietario.Telefono)} = @{nameof(Propietario.Telefono)}, 
-                 {nameof(Propietario.Email)} = @{nameof(Propietario.Email)}, 
+                 {nameof(Propietario.Email)} = @{nameof(Propietario.Email)} 
              WHERE {nameof(Propietario.IdPropietario)} = @{nameof(Propietario.IdPropietario)}";
+
 
 
 
