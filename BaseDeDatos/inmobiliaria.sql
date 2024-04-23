@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-04-2024 a las 19:59:23
+-- Tiempo de generación: 23-04-2024 a las 03:29:05
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -43,7 +43,6 @@ CREATE TABLE `contratos` (
 
 INSERT INTO `contratos` (`IdContrato`, `FechaInicio`, `FechaFinalizacion`, `MontoAlquiler`, `Estado`, `IdInquilino`, `IdInmueble`) VALUES
 (6, '2020-02-02 12:12:00', '2022-04-03 23:13:00', 23.00, 1, 1, 3),
-(12, '2020-02-02 12:00:00', '2022-04-03 23:13:00', 2342342.00, 1, 1, 4),
 (14, '2016-03-02 21:12:00', '2020-07-03 03:03:00', 324423.00, 1, 6, 1),
 (15, '2003-02-02 02:02:00', '2014-01-31 02:03:00', 32.00, 1, 7, 4);
 
@@ -73,7 +72,8 @@ CREATE TABLE `inmuebles` (
 INSERT INTO `inmuebles` (`IdInmueble`, `Direccion`, `Uso`, `Tipo`, `Ambientes`, `Superficie`, `Latitud`, `Longitud`, `Valor`, `IdPropietario`) VALUES
 (1, 'Belgrano 123', 'Residencial', 'Departamento', 2, 131, 6, 1, 34324, 6),
 (3, '9 DE JULIO 922', 'Comercial', 'Local Comercial', 3, 1, 2, 2, 4564, 3),
-(4, 'Las palmeras', 'Residencial', 'Casa', 5, 1, 123, 32, 2342, 8);
+(4, 'Las palmeras', 'Residencial', 'Casa', 5, 1, 123, 32, 2342, 8),
+(7, 'ayacucho 1234', 'Comercial', 'Departamento', 2, 3, 23, 234, 20000, 3);
 
 -- --------------------------------------------------------
 
@@ -106,8 +106,20 @@ INSERT INTO `inquilinos` (`IdInquilino`, `Nombre`, `Apellido`, `Dni`, `Telefono`
 --
 
 CREATE TABLE `pagos` (
-  `IdPago` int(11) NOT NULL
+  `IdPago` int(11) NOT NULL,
+  `FechaPago` datetime NOT NULL,
+  `Monto` decimal(10,2) NOT NULL,
+  `Detalle` varchar(255) DEFAULT NULL,
+  `Estado` tinyint(1) NOT NULL DEFAULT 0,
+  `IdContrato` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `pagos`
+--
+
+INSERT INTO `pagos` (`IdPago`, `FechaPago`, `Monto`, `Detalle`, `Estado`, `IdContrato`) VALUES
+(1, '2024-04-10 14:21:11', 23.00, 'Mes abril', 0, 6);
 
 -- --------------------------------------------------------
 
@@ -156,8 +168,10 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`IdUsuario`, `Nombre`, `Apellido`, `Email`, `Clave`, `AvatarUrl`, `Rol`) VALUES
-(1, 'Mauro', 'Corvalan', 'mauro@gmail.com', 'R4az/8y0ULOTuylBZ48KBeBConbAoQV3g1vAYmGiWX0=', NULL, 1),
-(2, 'Esteban', 'Quito', 'estebanquito@gmail.com', 'R4az/8y0ULOTuylBZ48KBeBConbAoQV3g1vAYmGiWX0=', NULL, 2);
+(4, 'ola', 'mundo', 'mauro@gmail.com', 'R4az/8y0ULOTuylBZ48KBeBConbAoQV3g1vAYmGiWX0=', '/Uploads\\avatar_4.jpg', 1),
+(7, 'Tiziana', 'Corvalan', 'tizi@gmail.com', 'R4az/8y0ULOTuylBZ48KBeBConbAoQV3g1vAYmGiWX0=', '/Uploads\\avatar_7.jpg', 1),
+(9, 'pepe', 'feo', 'pepe@gmail.com', 'R4az/8y0ULOTuylBZ48KBeBConbAoQV3g1vAYmGiWX0=', NULL, 2),
+(11, 'Sergio', 'Massa', 'sergio@gmail.com', 'R4az/8y0ULOTuylBZ48KBeBConbAoQV3g1vAYmGiWX0=', NULL, 2);
 
 --
 -- Índices para tablas volcadas
@@ -188,7 +202,8 @@ ALTER TABLE `inquilinos`
 -- Indices de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  ADD PRIMARY KEY (`IdPago`);
+  ADD PRIMARY KEY (`IdPago`),
+  ADD KEY `IdContrato` (`IdContrato`);
 
 --
 -- Indices de la tabla `propietarios`
@@ -216,7 +231,7 @@ ALTER TABLE `contratos`
 -- AUTO_INCREMENT de la tabla `inmuebles`
 --
 ALTER TABLE `inmuebles`
-  MODIFY `IdInmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `IdInmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `inquilinos`
@@ -228,7 +243,7 @@ ALTER TABLE `inquilinos`
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `IdPago` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `IdPago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `propietarios`
@@ -240,7 +255,7 @@ ALTER TABLE `propietarios`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `IdUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `IdUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Restricciones para tablas volcadas
@@ -258,6 +273,12 @@ ALTER TABLE `contratos`
 --
 ALTER TABLE `inmuebles`
   ADD CONSTRAINT `FK_IdPropietario` FOREIGN KEY (`IdPropietario`) REFERENCES `propietarios` (`IdPropietario`);
+
+--
+-- Filtros para la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  ADD CONSTRAINT `pagos_ibfk_1` FOREIGN KEY (`IdContrato`) REFERENCES `contratos` (`IdContrato`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
