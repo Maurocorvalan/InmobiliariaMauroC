@@ -251,6 +251,7 @@ public class RepositorioUsuario
         {
             var sql = @$"UPDATE usuarios SET {nameof(Usuario.Nombre)} = @{nameof(Usuario.Nombre)}, {nameof(Usuario.Apellido)} = @{nameof(Usuario.Apellido)}, {nameof(Usuario.Email)} = @{nameof(Usuario.Email)} WHERE {nameof(Usuario.IdUsuario)} = @{nameof(Usuario.IdUsuario)};";
             using (var command = new MySqlCommand(sql, connection))
+            
             {
                 command.Parameters.AddWithValue($"@{nameof(Usuario.Nombre)}", usuario.Nombre);
                 command.Parameters.AddWithValue($"@{nameof(Usuario.Apellido)}", usuario.Apellido);

@@ -264,6 +264,10 @@ public class UsuarioController : Controller
     [Authorize]
     public IActionResult EditarDatos(Usuario usuario)
     {
+          if (User.IsInRole("empleado") && usuario.IdUsuario.ToString() != User.FindFirst("IdUsuario")?.Value)
+        {
+            return Forbid();
+        }
         string claveActual = Request.Form["claveActual"];
         RepositorioUsuario ru = new RepositorioUsuario();
         var user = ru.ObtenerPorId(usuario.IdUsuario);
