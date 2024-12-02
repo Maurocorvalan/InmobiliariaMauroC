@@ -11,7 +11,7 @@ namespace Inmobiliaria.Models
     {
         public RepositorioPago() { }
 
-        readonly String ConnectionString = "Server=localhost;Database=inmobiliaria;User=root;Password=;";
+        readonly String ConnectionString = "Server=localhost;Database=inmobiliaria;User=root;Password=15516028;";
 
         public IList<Pago> GetPagos()
         {

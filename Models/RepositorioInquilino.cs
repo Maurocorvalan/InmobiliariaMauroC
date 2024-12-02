@@ -11,7 +11,7 @@ public class RepositorioInquilino
     public RepositorioInquilino()
     {
     }
-    readonly String ConnectionString = "Server=localhost;Database=Inmobiliaria;User=root;Password=";
+    readonly String ConnectionString = "Server=localhost;Database=inmobiliaria;User=root;Password=15516028";
 
 
 

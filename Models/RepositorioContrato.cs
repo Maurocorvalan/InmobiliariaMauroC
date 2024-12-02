@@ -13,7 +13,7 @@ public class RepositorioContrato
     public RepositorioContrato() { }
 
 
-    readonly String ConnectionString = "Server=localhost;Database=inmobiliaria;User=root;Password=;";
+    readonly String ConnectionString = "Server=localhost;Database=inmobiliaria;User=root;Password=15516028;";
     public IList<Contrato> GetContratos()
     {
         var contratos = new List<Contrato>();

@@ -13,7 +13,7 @@ public class RepositorioInmueble
     {
 
     }
-    readonly String ConnectionString = "Server=localhost;Database=Inmobiliaria;User=root;Password=";
+    readonly String ConnectionString = "Server=localhost;Database=inmobiliaria;User=root;Password=15516028";
 
 
     public IList<Inmueble> GetInmuebles()
