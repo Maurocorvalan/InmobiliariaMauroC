@@ -79,6 +79,19 @@ namespace Inmobiliaria.Controllers
                 return View();
             }
         }
+        public IActionResult Disponibles()
+        {
+            RepositorioInmueble rinm = new RepositorioInmueble();
+            var disponibles = rinm.GetInmueblesDisponibles();
+
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewData["SuccessMessage"] = TempData["SuccessMessage"];
+            }
+
+            return View(disponibles);
+        }
+
 
         [HttpPost]
         public IActionResult Guardar(Inmueble inmueble)
