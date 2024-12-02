@@ -17,7 +17,9 @@ public class Inmueble
     
     public decimal Valor {get; set;}
     public decimal Longitud { get; set; }
-    
+
+    public int Disponible { get; set; }
+
     public int IdPropietario{get; set;}
     public Propietario? Duenio { get; set; }
 

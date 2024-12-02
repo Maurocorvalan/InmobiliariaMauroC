@@ -116,7 +116,7 @@ public class RepositorioInmueble
         Inmueble? inmueble = null;
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var sql = $"SELECT {nameof(Inmueble.IdInmueble)}, {nameof(Inmueble.Direccion)}, {nameof(Inmueble.Uso)}, {nameof(Inmueble.Tipo)}, {nameof(Inmueble.Ambientes)}, {nameof(Inmueble.Superficie)}, {nameof(Inmueble.Valor)}, {nameof(Inmueble.Latitud)}, {nameof(Inmueble.Longitud)}, i.{nameof(Inmueble.IdPropietario)}, p.{nameof(Propietario.Nombre)}, p.{nameof(Propietario.Apellido)} FROM inmuebles i JOIN propietarios p ON i.{nameof(Inmueble.IdPropietario)} = p.{nameof(Propietario.IdPropietario)} WHERE {nameof(Inmueble.IdInmueble)} = @IdInmueble;";
+            var sql = $"SELECT {nameof(Inmueble.IdInmueble)}, {nameof(Inmueble.Direccion)}, {nameof(Inmueble.Uso)}, {nameof(Inmueble.Tipo)}, {nameof(Inmueble.Ambientes)}, {nameof(Inmueble.Superficie)}, {nameof(Inmueble.Valor)}, {nameof(Inmueble.Latitud)}, {nameof(Inmueble.Longitud)},  {nameof(Inmueble.Disponible)}, i.{nameof(Inmueble.IdPropietario)}, p.{nameof(Propietario.Nombre)}, p.{nameof(Propietario.Apellido)} FROM inmuebles i JOIN propietarios p ON i.{nameof(Inmueble.IdPropietario)} = p.{nameof(Propietario.IdPropietario)} WHERE {nameof(Inmueble.IdInmueble)} = @IdInmueble;";
             using (var command = new MySqlCommand(sql, connection))
             {
                 command.Parameters.AddWithValue("@IdInmueble", id);
@@ -136,6 +136,7 @@ public class RepositorioInmueble
                             Valor = reader.GetDecimal(nameof(Inmueble.Valor)),
                             Latitud = reader.GetDecimal(nameof(Inmueble.Latitud)),
                             Longitud = reader.GetDecimal(nameof(Inmueble.Longitud)),
+                            Disponible = reader.GetInt32(nameof(Inmueble.Disponible)),
                             IdPropietario = reader.GetInt32(nameof(Inmueble.IdPropietario)),
                             Duenio = new Propietario
                             {
@@ -157,11 +158,17 @@ public class RepositorioInmueble
         using (var connection = new MySqlConnection(ConnectionString))
         {
             var sql = @$"INSERT INTO inmuebles (
-                {nameof(Inmueble.Direccion)},{nameof(Inmueble.Uso)},{nameof(Inmueble.Tipo)},{nameof(Inmueble.Ambientes)},{nameof(Inmueble.Superficie)},{nameof(Inmueble.Latitud)},{nameof(Inmueble.Longitud)},{nameof(Inmueble.Valor)},{nameof(Inmueble.IdPropietario)}
+                {nameof(Inmueble.Direccion)}, {nameof(Inmueble.Uso)}, {nameof(Inmueble.Tipo)}, 
+                {nameof(Inmueble.Ambientes)}, {nameof(Inmueble.Superficie)}, {nameof(Inmueble.Latitud)}, 
+                {nameof(Inmueble.Longitud)}, {nameof(Inmueble.Valor)}, {nameof(Inmueble.IdPropietario)}, {nameof(Inmueble.Disponible)}
             ) 
-                VALUES (@{nameof(Inmueble.Direccion)}, @{nameof(Inmueble.Uso)},@{nameof(Inmueble.Tipo)},@{nameof(Inmueble.Ambientes)},@{nameof(Inmueble.Superficie)},@{nameof(Inmueble.Latitud)},@{nameof(Inmueble.Longitud)},@{nameof(Inmueble.Valor)},@{nameof(Inmueble.IdPropietario)}
-                );
-                SELECT LAST_INSERT_ID();";
+            VALUES (
+                @{nameof(Inmueble.Direccion)}, @{nameof(Inmueble.Uso)}, @{nameof(Inmueble.Tipo)}, 
+                @{nameof(Inmueble.Ambientes)}, @{nameof(Inmueble.Superficie)}, @{nameof(Inmueble.Latitud)}, 
+                @{nameof(Inmueble.Longitud)}, @{nameof(Inmueble.Valor)}, @{nameof(Inmueble.IdPropietario)}, @{nameof(Inmueble.Disponible)}
+            );
+            SELECT LAST_INSERT_ID();";
+
 
 
             using (var command = new MySqlCommand(sql, connection))
@@ -175,6 +182,8 @@ public class RepositorioInmueble
                 command.Parameters.AddWithValue($"@{nameof(Inmueble.Valor)}", inmueble.Valor);
                 command.Parameters.AddWithValue($"@{nameof(Inmueble.Latitud)}", inmueble.Latitud);
                 command.Parameters.AddWithValue($"@{nameof(Inmueble.Longitud)}", inmueble.Longitud);
+                command.Parameters.AddWithValue($"@{nameof(Inmueble.Disponible)}", inmueble.Disponible);
+
                 command.Parameters.AddWithValue($"@{nameof(Inmueble.IdPropietario)}", inmueble.IdPropietario);
 
                 connection.Open();

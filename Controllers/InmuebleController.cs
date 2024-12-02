@@ -79,6 +79,9 @@ namespace Inmobiliaria.Controllers
                 return View();
             }
         }
+
+
+        [HttpGet]
         public IActionResult Disponibles()
         {
             RepositorioInmueble rinm = new RepositorioInmueble();
