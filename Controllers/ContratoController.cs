@@ -142,4 +142,23 @@ public class ContratoController : Controller
     }
 
 
+
+
+
+    public IActionResult ListarPorInmueble(int idInmueble)
+    {
+        RepositorioContrato rc = new RepositorioContrato();
+        var contratos = rc.GetContratosPorInmueble(idInmueble);
+
+        if (contratos == null || !contratos.Any())
+        {
+            ViewData["NoContractsMessage"] = "Este inmueble no posee ningún contrato.";
+            return View(new List<Contrato>()); 
+        }
+
+        ViewBag.IdInmueble = idInmueble;
+        return View(contratos);
+    }
+
+
 }
