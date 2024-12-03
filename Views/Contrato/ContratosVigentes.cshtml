@@ -1,0 +1,41 @@
+@model IEnumerable<Contrato>
+
+@{
+    ViewData["Title"] = "Contratos Vigentes";
+}
+
+<h1>Contratos Vigentes</h1>
+
+@if (ViewData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @ViewData["SuccessMessage"]
+    </div>
+}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Contrato ID</th>
+            <th>Fecha de Inicio</th>
+            <th>Fecha de Finalización</th>
+            <th>Monto del Alquiler</th>
+            <th>Estado</th>
+            <th>Inquilino</th>
+            <th>Dirección del Inmueble</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var contrato in Model)
+        {
+            <tr>
+                <td>@contrato.IdContrato</td>
+                <td>@contrato.FechaInicio.ToShortDateString()</td>
+                <td>@contrato.FechaFinalizacion.ToShortDateString()</td>
+                <td>$@contrato.MontoAlquiler</td>
+                <td>@(contrato.Estado ? "Activo" : "Inactivo")</td>
+                <td>@contrato.Inquilino.Nombre @contrato.Inquilino.Apellido</td>
+                <td>@contrato.Inmueble.Direccion</td>
+            </tr>
+        }
+    </tbody>
+</table>

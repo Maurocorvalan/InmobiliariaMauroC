@@ -128,5 +128,18 @@ public class ContratoController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    public IActionResult ContratosVigentes()
+    {
+        RepositorioContrato rc = new RepositorioContrato();
+        var contratosVigentes = rc.GetContratosVigentes();
+
+        if (TempData["SuccessMessage"] != null)
+        {
+            ViewData["SuccessMessage"] = TempData["SuccessMessage"];
+        }
+
+        return View(contratosVigentes);
+    }
+
 
 }
