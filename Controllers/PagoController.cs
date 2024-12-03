@@ -105,19 +105,18 @@ public class PagoController : Controller
 
     }
     [Authorize(Policy = "Administrador")]
-
     public IActionResult Eliminar(int id)
     {
         RepositorioPago rp = new RepositorioPago();
         try
         {
-            rp.EliminarPago(id);
-            TempData["SuccessMessage"] = "Contrato eliminado correctamente.";
+            rp.EliminarPago(id, false);
+            TempData["SuccessMessage"] = "Estado del pago actualizado correctamente.";
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            TempData["ErrorMessage"] = "No se pudo eliminar el contrato.";
+            TempData["ErrorMessage"] = "No se pudo actualizar el estado del pago.";
         }
         return RedirectToAction(nameof(Index));
     }

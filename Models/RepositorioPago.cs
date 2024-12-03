@@ -155,14 +155,15 @@ namespace Inmobiliaria.Models
 
         [Authorize(Policy = "Administrador")]
 
-        public int EliminarPago(int id)
+        public int EliminarPago(int id, bool estado)
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var sql = $@"DELETE FROM pagos WHERE {nameof(Pago.IdPago)} = @{nameof(Pago.IdPago)};";
+                var sql = $@"UPDATE pagos SET {nameof(Pago.Estado)} = @{nameof(Pago.Estado)} WHERE {nameof(Pago.IdPago)} = @{nameof(Pago.IdPago)};";
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue($"@{nameof(Pago.IdPago)}", id);
+                    command.Parameters.AddWithValue($"@{nameof(Pago.Estado)}", estado);
                     connection.Open();
                     command.ExecuteNonQuery();
                     connection.Close();

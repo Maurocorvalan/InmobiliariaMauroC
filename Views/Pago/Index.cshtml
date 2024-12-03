@@ -61,7 +61,14 @@
                     @Html.DisplayFor(modelItem => item.Detalle)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Estado)
+                    @if (item.Estado)
+                    {
+                        <span class="text-secondary">Pagado</span>
+                    }
+                    else
+                    {
+                        <span class="text-danger">Pendiente</span>
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(model => item.IdContrato)
@@ -71,7 +78,8 @@
                             class="fa fa-edit"></span></a>
                     <a asp-action="Detalle" asp-route-IdPago="@item.IdPago" title="DetallePago"><span
                             class="fa fa-info"></span></a>
-                    @if (User.IsInRole("Administrador")){
+                    @if (User.IsInRole("Administrador"))
+                    {
                         <a asp-action="Eliminar" asp-route-id="@item.IdPago" title="Eliminar"
                             onclick="return confirm('¿Estás seguro de eliminar a IdPago: @item.IdPago / IdContrato: @item.IdContrato?');"><span
                                 class="fa fa-trash text-danger"></span></a>
