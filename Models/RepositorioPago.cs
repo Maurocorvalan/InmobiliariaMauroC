@@ -171,5 +171,54 @@ namespace Inmobiliaria.Models
             }
             return 0;
         }
+
+        public IList<Pago> GetPagosPorContrato(int idContrato)
+        {
+            var pagos = new List<Pago>();
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var sql = $@"
+                            SELECT 
+                                {nameof(Pago.IdPago)},
+                                {nameof(Pago.FechaPago)},
+                                {nameof(Pago.Monto)},
+                                {nameof(Pago.Detalle)},
+                                {nameof(Pago.Estado)},
+                                {nameof(Pago.IdContrato)}
+                            FROM pagos
+                            WHERE {nameof(Pago.IdContrato)} = @IdContrato"; ;
+
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@IdContrato", idContrato);
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            pagos.Add(new Pago
+                            {
+                                IdPago = reader.GetInt32(nameof(Pago.IdPago)),
+                                FechaPago = reader.GetDateTime(nameof(Pago.FechaPago)),
+                                Monto = reader.GetDecimal(nameof(Pago.Monto)),
+                                Detalle = reader.GetString(nameof(Pago.Detalle)),
+                                Estado = reader.GetBoolean(nameof(Pago.Estado)),
+                                IdContrato = reader.GetInt32(nameof(Pago.IdContrato))
+                            });
+                        }
+                    }
+                }
+            }
+            return pagos;
+        }
+
+
+
+
+
     }
+
+
+
+
 }

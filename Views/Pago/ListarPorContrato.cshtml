@@ -1,0 +1,72 @@
+@model IEnumerable<Pago>
+
+@{
+    ViewData["Title"] = "Pagos del Contrato";
+}
+
+<h2>Pagos del Contrato</h2>
+
+@if (ViewData["InfoMessage"] != null)
+{
+    <div class="alert alert-info" role="alert">
+        @ViewData["InfoMessage"]
+    </div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID Pago</th>
+            <th>Fecha de Pago</th>
+            <th>Monto</th>
+            <th>Detalle</th>
+            <th>Estado</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pago in Model)
+        {
+            <tr>
+                <td>@pago.IdPago</td>
+                <td>@pago.FechaPago.ToShortDateString()</td>
+                <td>$ @pago.Monto</td>
+                <td>@pago.Detalle</td>
+                <td>@(pago.Estado ? "Pagado" : "Anulado")</td>
+                 <td>
+                    <a asp-action="Editar" asp-route-IdPago="@pago.IdPago" title="Editar" >
+                        <span class="fa fa-edit"></span></a>
+                    <a asp-action="Detalle" asp-route-IdPago="@pago.IdPago" title="DetallePago" >
+                        <span class="fa fa-info"></span></a>
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a asp-action="Eliminar" asp-route-id="@pago.IdPago" title="Eliminar" 
+                            onclick="return confirm('¿Estás seguro de eliminar el Pago ID: @pago.IdPago del Contrato ID: @pago.IdContrato?');">
+                            <span class="fa fa-trash"></span>
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<br>
+<h3>Agregar nuevo pago</h3>
+<form asp-action="Guardar" method="post">
+    <input type="hidden" name="IdContrato" value="@ViewData["IdContrato"]" />
+    <div class="form-group">
+        <label for="FechaPago">Fecha de Pago</label>
+        <input type="date" name="FechaPago" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="Monto">Monto</label>
+        <input type="number" name="Monto" step="0.01" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="Detalle">Detalle</label>
+        <textarea name="Detalle" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</form>

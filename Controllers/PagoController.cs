@@ -52,7 +52,6 @@ public class PagoController : Controller
         {
             RepositorioPago rp = new RepositorioPago();
             var pago = rp.GetPago(idPago);
-            Console.WriteLine(pago);
             return View(pago);
         }
         else
@@ -73,7 +72,7 @@ public class PagoController : Controller
             else
             {
                 rp.CrearPago(pago);
-                TempData["SuccessMessage"] = "Contrato creado correctamente.";
+                TempData["SuccessMessage"] = "Pago realizado correctamente.";
 
             }
 
@@ -120,4 +119,23 @@ public class PagoController : Controller
         }
         return RedirectToAction(nameof(Index));
     }
+
+
+
+    public IActionResult ListarPorContrato(int idContrato)
+    {
+        RepositorioPago rp = new RepositorioPago();
+        var pagos = rp.GetPagosPorContrato(idContrato); // Método a implementar en el repositorio
+
+        ViewData["IdContrato"] = idContrato;
+
+        if (!pagos.Any())
+        {
+            ViewData["InfoMessage"] = "Este contrato no tiene pagos realizados.";
+        }
+
+        return View(pagos);
+    }
+
+
 }

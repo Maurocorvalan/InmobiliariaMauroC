@@ -79,6 +79,10 @@
                             class="fa fa-edit"></span></a>
                     <a asp-action="Detalle" asp-route-IdContrato="@item.IdContrato" title="DetalleContrato"><span
                             class="fa fa-info"></span></a>
+                    <a asp-controller="Pago" asp-action="ListarPorContrato" asp-route-idContrato="@item.IdContrato" title="Ver Pagos" ><span
+                            class="fa fa-money"></span></a>
+
+
                     @if (User.IsInRole("Administrador"))
                     {
                         <a asp-action="Eliminar" asp-route-id="@item.IdContrato" title="Eliminar"
