@@ -134,5 +134,22 @@ namespace Inmobiliaria.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+
+        [HttpGet]
+        public IActionResult DisponiblesPorFechas(DateTime fechaInicio, DateTime fechaFin)
+        {
+            RepositorioInmueble rinm = new RepositorioInmueble();
+            var disponibles = rinm.GetInmueblesNoOcupados(fechaInicio, fechaFin);
+
+            return View("Disponibles", disponibles);
+        }
+
+
     }
+
+
+
+
+
 }

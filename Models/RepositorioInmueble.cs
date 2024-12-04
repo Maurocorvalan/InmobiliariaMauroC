@@ -252,4 +252,67 @@ public class RepositorioInmueble
         }
         return 0;
     }
+
+    public IList<Inmueble> GetInmueblesNoOcupados(DateTime fechaInicio, DateTime fechaFin)
+    {
+        var inmuebles = new List<Inmueble>();
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = $@"
+            SELECT 
+                i.{nameof(Inmueble.IdInmueble)}, 
+                i.{nameof(Inmueble.Direccion)}, 
+                i.{nameof(Inmueble.Uso)}, 
+                i.{nameof(Inmueble.Tipo)}, 
+                i.{nameof(Inmueble.Ambientes)}, 
+                i.{nameof(Inmueble.Superficie)}, 
+                i.{nameof(Inmueble.Valor)}, 
+                i.{nameof(Inmueble.IdPropietario)}, 
+                p.{nameof(Propietario.Nombre)}, 
+                p.{nameof(Propietario.Apellido)}
+            FROM inmuebles i
+            LEFT JOIN contratos c ON i.{nameof(Inmueble.IdInmueble)} = c.{nameof(Contrato.IdInmueble)}
+                AND (
+                    (c.{nameof(Contrato.FechaInicio)} BETWEEN @fechaInicio AND @fechaFin) OR
+                    (c.{nameof(Contrato.FechaFinalizacion)} BETWEEN @fechaInicio AND @fechaFin) OR
+                    (c.{nameof(Contrato.FechaInicio)} <= @fechaInicio AND c.{nameof(Contrato.FechaFinalizacion)} >= @fechaFin)
+                )
+            INNER JOIN propietarios p ON i.{nameof(Inmueble.IdPropietario)} = p.{nameof(Propietario.IdPropietario)}
+            WHERE c.{nameof(Contrato.IdContrato)} IS NULL;";
+
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@fechaInicio", fechaInicio);
+                command.Parameters.AddWithValue("@fechaFin", fechaFin);
+
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        inmuebles.Add(new Inmueble
+                        {
+                            IdInmueble = reader.GetInt32(nameof(Inmueble.IdInmueble)),
+                            Direccion = reader.GetString(nameof(Inmueble.Direccion)),
+                            Uso = reader.GetString(nameof(Inmueble.Uso)),
+                            Tipo = reader.GetString(nameof(Inmueble.Tipo)),
+                            Ambientes = reader.GetInt32(nameof(Inmueble.Ambientes)),
+                            Superficie = reader.GetInt32(nameof(Inmueble.Superficie)),
+                            Valor = reader.GetDecimal(nameof(Inmueble.Valor)),
+                            IdPropietario = reader.GetInt32(nameof(Inmueble.IdPropietario)),
+                            Duenio = new Propietario
+                            {
+                                Nombre = reader.GetString(nameof(Propietario.Nombre)),
+                                Apellido = reader.GetString(nameof(Propietario.Apellido))
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        return inmuebles;
+    }
+
+
+
 }
