@@ -146,12 +146,15 @@ public class RepositorioContrato
         using (var connection = new MySqlConnection(ConnectionString))
         {
             var sql = $@"
-        SELECT COUNT(*) 
-        FROM contratos 
-        WHERE {nameof(Contrato.IdInmueble)} = @{nameof(Contrato.IdInmueble)} 
-        AND (DATE({nameof(Contrato.FechaInicio)}) BETWEEN DATE(@{nameof(Contrato.FechaInicio)}) AND DATE(@{nameof(Contrato.FechaFinalizacion)}) 
-            OR DATE({nameof(Contrato.FechaFinalizacion)}) BETWEEN DATE(@{nameof(Contrato.FechaInicio)}) AND DATE(@{nameof(Contrato.FechaFinalizacion)}))";
-
+                        SELECT COUNT(*) 
+                        FROM contratos 
+                        WHERE {nameof(Contrato.IdInmueble)} = @{nameof(Contrato.IdInmueble)} 
+                        AND (
+                            (@{nameof(Contrato.FechaInicio)} BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFinalizacion)})
+                            OR (@{nameof(Contrato.FechaFinalizacion)} BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFinalizacion)})
+                            OR ({nameof(Contrato.FechaInicio)} BETWEEN @{nameof(Contrato.FechaInicio)} AND @{nameof(Contrato.FechaFinalizacion)})
+                            OR ({nameof(Contrato.FechaFinalizacion)} BETWEEN @{nameof(Contrato.FechaInicio)} AND @{nameof(Contrato.FechaFinalizacion)})
+                        );";
 
             using (var command = new MySqlCommand(sql, connection))
             {
@@ -168,6 +171,7 @@ public class RepositorioContrato
                     throw new Exception("El inmueble ya está ocupado en las fechas especificadas por otro contrato.");
                 }
             }
+
 
             var insertQuery = $@"
     INSERT INTO contratos (
@@ -194,13 +198,43 @@ public class RepositorioContrato
         }
     }
 
-
-
     public int ModificarContrato(Contrato contrato)
     {
         using (var connection = new MySqlConnection(ConnectionString))
         {
-            var sql = $@"UPDATE contratos 
+            // Consulta para verificar superposición de fechas
+            var checkSql = $@"
+            SELECT COUNT(*) 
+            FROM contratos
+            WHERE 
+                {nameof(Contrato.IdInmueble)} = @{nameof(Contrato.IdInmueble)} -- Validar el nuevo inmueble
+                AND {nameof(Contrato.IdContrato)} != @{nameof(Contrato.IdContrato)} -- Excluir el contrato actual
+                AND (
+                    @{nameof(Contrato.FechaInicio)} BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFinalizacion)}
+                    OR @{nameof(Contrato.FechaFinalizacion)} BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFinalizacion)}
+                    OR {nameof(Contrato.FechaInicio)} BETWEEN @{nameof(Contrato.FechaInicio)} AND @{nameof(Contrato.FechaFinalizacion)}
+                )";
+
+            using (var command = new MySqlCommand(checkSql, connection))
+            {
+                command.Parameters.AddWithValue($"@{nameof(Contrato.IdContrato)}", contrato.IdContrato);
+                command.Parameters.AddWithValue($"@{nameof(Contrato.IdInmueble)}", contrato.IdInmueble); // Nuevo inmueble (si se cambió)
+                command.Parameters.AddWithValue($"@{nameof(Contrato.FechaInicio)}", contrato.FechaInicio);
+                command.Parameters.AddWithValue($"@{nameof(Contrato.FechaFinalizacion)}", contrato.FechaFinalizacion);
+
+                connection.Open();
+                var count = Convert.ToInt32(command.ExecuteScalar());
+                connection.Close();
+
+                if (count > 0)
+                {
+                    // Si hay superposición de fechas, lanzamos una excepción o devolvemos un error.
+                    throw new InvalidOperationException("Las fechas del contrato se superponen con otro contrato existente para el inmueble seleccionado.");
+                }
+            }
+
+            // Actualización del contrato
+            var updateSql = $@"UPDATE contratos 
                      SET 
                          {nameof(Contrato.FechaInicio)} = @{nameof(Contrato.FechaInicio)}, 
                          {nameof(Contrato.FechaFinalizacion)} = @{nameof(Contrato.FechaFinalizacion)}, 
@@ -211,7 +245,7 @@ public class RepositorioContrato
                      WHERE 
                          {nameof(Contrato.IdContrato)} = @{nameof(Contrato.IdContrato)}";
 
-            using (var command = new MySqlCommand(sql, connection))
+            using (var command = new MySqlCommand(updateSql, connection))
             {
                 command.Parameters.AddWithValue($"@{nameof(Contrato.IdContrato)}", contrato.IdContrato);
                 command.Parameters.AddWithValue($"@{nameof(Contrato.FechaInicio)}", contrato.FechaInicio);
@@ -219,15 +253,18 @@ public class RepositorioContrato
                 command.Parameters.AddWithValue($"@{nameof(Contrato.MontoAlquiler)}", contrato.MontoAlquiler);
                 command.Parameters.AddWithValue($"@{nameof(Contrato.Estado)}", contrato.Estado);
                 command.Parameters.AddWithValue($"@{nameof(Contrato.IdInquilino)}", contrato.IdInquilino);
-                command.Parameters.AddWithValue($"@{nameof(Contrato.IdInmueble)}", contrato.IdInmueble);
+                command.Parameters.AddWithValue($"@{nameof(Contrato.IdInmueble)}", contrato.IdInmueble); // Nuevo inmueble
 
                 connection.Open();
-                command.ExecuteNonQuery();
+                var rowsAffected = command.ExecuteNonQuery();
                 connection.Close();
+
+                return rowsAffected;
             }
         }
-        return 0;
     }
+
+
     [Authorize(Policy = "Administrador")]
 
     public int EliminarContrato(int id)

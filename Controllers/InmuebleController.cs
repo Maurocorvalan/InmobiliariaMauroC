@@ -18,6 +18,8 @@ namespace Inmobiliaria.Controllers
 
         public IActionResult Index()
         {
+            RepositorioPropietarios rpro = new RepositorioPropietarios();
+            ViewBag.Propietarios = rpro.GetPropietarios() ?? new List<Propietario>();
             RepositorioInmueble rinm = new RepositorioInmueble();
             var lista = rinm.GetInmuebles();
 
@@ -144,6 +146,35 @@ namespace Inmobiliaria.Controllers
 
             return View("Disponibles", disponibles);
         }
+
+
+        [HttpGet]
+        [HttpGet]
+        public IActionResult DisponiblesPorPropietario(int idPropietario)
+        {
+            RepositorioPropietarios rpro = new RepositorioPropietarios();
+            var propietario = rpro.GetPropietario(idPropietario); 
+
+            if (propietario == null)
+            {
+                ViewData["InfoMessage"] = "No se encontró el propietario.";
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.PropietarioNombre = $"{propietario.Nombre} {propietario.Apellido}";
+
+            RepositorioInmueble rinm = new RepositorioInmueble();
+            var inmuebles = rinm.GetInmueblesDisponiblesPorPropietario(idPropietario);
+
+            if (!inmuebles.Any())
+            {
+                ViewData["InfoMessage"] = "No se encontraron inmuebles disponibles para este propietario.";
+            }
+
+            return View("DisponiblesPorPropietario", inmuebles);
+        }
+
+
 
 
     }

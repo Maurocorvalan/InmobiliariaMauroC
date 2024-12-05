@@ -313,6 +313,61 @@ public class RepositorioInmueble
         return inmuebles;
     }
 
+    public IList<Inmueble> GetInmueblesDisponiblesPorPropietario(int idPropietario)
+    {
+        var inmuebles = new List<Inmueble>();
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = $@"
+            SELECT 
+                i.{nameof(Inmueble.IdInmueble)}, 
+                i.{nameof(Inmueble.Direccion)}, 
+                i.{nameof(Inmueble.Uso)}, 
+                i.{nameof(Inmueble.Tipo)}, 
+                i.{nameof(Inmueble.Ambientes)}, 
+                i.{nameof(Inmueble.Superficie)}, 
+                i.{nameof(Inmueble.Valor)}, 
+                i.{nameof(Inmueble.IdPropietario)}, 
+                p.{nameof(Propietario.Nombre)}, 
+                p.{nameof(Propietario.Apellido)}
+            FROM inmuebles i 
+            INNER JOIN propietarios p 
+                ON i.{nameof(Inmueble.IdPropietario)} = p.{nameof(Propietario.IdPropietario)}
+            WHERE i.{nameof(Inmueble.Disponible)} = 1 
+                AND i.{nameof(Inmueble.IdPropietario)} = @idPropietario;";
+
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@idPropietario", idPropietario);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        inmuebles.Add(new Inmueble
+                        {
+                            IdInmueble = reader.GetInt32(nameof(Inmueble.IdInmueble)),
+                            Direccion = reader.GetString(nameof(Inmueble.Direccion)),
+                            Uso = reader.GetString(nameof(Inmueble.Uso)),
+                            Tipo = reader.GetString(nameof(Inmueble.Tipo)),
+                            Ambientes = reader.GetInt32(nameof(Inmueble.Ambientes)),
+                            Superficie = reader.GetInt32(nameof(Inmueble.Superficie)),
+                            Valor = reader.GetDecimal(nameof(Inmueble.Valor)),
+                            IdPropietario = reader.GetInt32(nameof(Inmueble.IdPropietario)),
+                            Duenio = new Propietario
+                            {
+                                Nombre = reader.GetString(nameof(Propietario.Nombre)),
+                                Apellido = reader.GetString(nameof(Propietario.Apellido))
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        return inmuebles;
+    }
+
+
 
 
 }

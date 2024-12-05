@@ -29,47 +29,74 @@ public class ContratoController : Controller
         return View(lista);
     }
 
-
-    public IActionResult Crear(int idContrato)
+    [HttpGet]
+    public IActionResult Crear(int? idContrato, int? idInmueble)
     {
         RepositorioInquilino ri = new RepositorioInquilino();
         RepositorioInmueble rim = new RepositorioInmueble();
+
         ViewBag.Inquilinos = ri.GetInquilinos();
         ViewBag.Inmuebles = rim.GetInmuebles();
-        if (idContrato > 0)
+
+        // Si idContrato está definido, cargar el contrato para edición
+        if (idContrato.HasValue && idContrato > 0)
         {
             RepositorioContrato rc = new RepositorioContrato();
-            var contrato = rc.GetContrato(idContrato);
+            var contrato = rc.GetContrato(idContrato.Value);
             return View(contrato);
         }
         else
         {
-            return View();
+            // Crear un nuevo contrato con el inmueble preseleccionado si idInmueble está definido
+            var nuevoContrato = new Contrato();
+            if (idInmueble.HasValue)
+            {
+                nuevoContrato.IdInmueble = idInmueble.Value;
+            }
+            return View(nuevoContrato);
         }
     }
+
+    [HttpPost]
     public IActionResult Guardar(Contrato contrato)
     {
         RepositorioContrato rc = new RepositorioContrato();
         try
         {
-            if (contrato.IdContrato > 0)
+            if (contrato.IdContrato > 0) // Contrato existente (Editar)
             {
                 rc.ModificarContrato(contrato);
                 TempData["SuccessMessage"] = "Contrato actualizado correctamente.";
             }
-            else
+            else // Nuevo contrato (Crear)
             {
                 rc.CrearContrato(contrato);
                 TempData["SuccessMessage"] = "Contrato creado correctamente.";
             }
+
+            // Redirigir al listado si todo salió bien
             return RedirectToAction(nameof(Index));
         }
-        catch (Exception)
+        catch (InvalidOperationException ex) // Superposición de fechas
         {
-            TempData["ErrorMessage"] = "Fechas no disponibles para este Inmueble";
-            return RedirectToAction(nameof(Crear));
+            TempData["ErrorMessage"] = "Fechas no disponibles para este Inmueble.";
+
+            if (contrato.IdContrato > 0) // Contrato existente (Editar)
+            {
+                return RedirectToAction("Editar", new { idContrato = contrato.IdContrato });
+            }
+            else // Nuevo contrato (Crear)
+            {
+                return RedirectToAction(nameof(Crear));
+            }
+        }
+        catch (Exception ex) // Otros errores
+        {
+            TempData["ErrorMessage"] = "Ocurrió un error inesperado: " + ex.Message;
+            return RedirectToAction(nameof(Index));
         }
     }
+
 
 
 
@@ -153,7 +180,7 @@ public class ContratoController : Controller
         if (contratos == null || !contratos.Any())
         {
             ViewData["NoContractsMessage"] = "Este inmueble no posee ningún contrato.";
-            return View(new List<Contrato>()); 
+            return View(new List<Contrato>());
         }
 
         ViewBag.IdInmueble = idInmueble;

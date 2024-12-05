@@ -59,6 +59,8 @@ public class PagoController : Controller
             return View();
         }
     }
+
+    [HttpPost]
     public IActionResult Guardar(Pago pago)
     {
         RepositorioPago rp = new RepositorioPago();
@@ -66,14 +68,25 @@ public class PagoController : Controller
         {
             if (pago.IdPago > 0)
             {
+                // Obtener el pago original de la base de datos
+                var pagoOriginal = rp.GetPago(pago.IdPago);
+
+                // Validar campos inmutables
+                if (pagoOriginal.FechaPago != pago.FechaPago ||
+                    pagoOriginal.Monto != pago.Monto ||
+                    pagoOriginal.IdContrato != pago.IdContrato)
+                {
+                    TempData["ErrorMessage"] = "No se permite modificar campos inmutables.";
+                    return RedirectToAction(nameof(Index));
+                }
+
                 rp.ModificarPago(pago);
-                TempData["SuccessMessage"] = "Pago realizado correctamente";
+                TempData["SuccessMessage"] = "Pago actualizado correctamente.";
             }
             else
             {
                 rp.CrearPago(pago);
-                TempData["SuccessMessage"] = "Pago realizado correctamente.";
-
+                TempData["SuccessMessage"] = "Pago creado correctamente.";
             }
 
             return RedirectToAction(nameof(Index));
@@ -81,7 +94,7 @@ public class PagoController : Controller
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            TempData["ErrorMessage"] = "Fechas no disponibles para este Inmueble";
+            TempData["ErrorMessage"] = "Ocurrió un error al procesar el pago.";
             return RedirectToAction(nameof(Index));
         }
     }

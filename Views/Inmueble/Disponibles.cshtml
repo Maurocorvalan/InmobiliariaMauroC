@@ -1,5 +1,5 @@
 @model IEnumerable<Inmueble>
-    @{
+@{
     ViewData["Title"] = "Inmuebles Disponibles";
 }
 
@@ -25,6 +25,7 @@
             <th>Tipo</th>
             <th>Valor</th>
             <th>Propietario</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -37,6 +38,12 @@
                 <td>@inmueble.Tipo</td>
                 <td>@inmueble.Valor</td>
                 <td>@inmueble.Duenio.Nombre @inmueble.Duenio.Apellido</td>
+                <td>
+                    <a asp-controller="Contrato" asp-action="Crear" asp-route-idInmueble="@inmueble.IdInmueble"
+                        class="btn btn-primary">
+                        Crear Contrato
+                    </a>
+                </td>
             </tr>
         }
     </tbody>
