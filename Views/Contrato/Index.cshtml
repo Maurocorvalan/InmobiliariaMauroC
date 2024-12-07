@@ -65,7 +65,7 @@
                     @Html.DisplayFor(modelItem => item.MontoAlquiler)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Estado)
+                    <input type="checkbox" disabled @(item.Estado ? "checked" : "") />
                 </td>
                 <td>
                     @(item.Inquilino?.Nombre + " " + item.Inquilino?.Apellido)
@@ -79,8 +79,8 @@
                             class="fa fa-edit"></span></a>
                     <a asp-action="Detalle" asp-route-IdContrato="@item.IdContrato" title="DetalleContrato"><span
                             class="fa fa-info"></span></a>
-                    <a asp-controller="Pago" asp-action="ListarPorContrato" asp-route-idContrato="@item.IdContrato" title="Ver Pagos" ><span
-                            class="fa fa-money"></span></a>
+                    <a asp-controller="Pago" asp-action="ListarPorContrato" asp-route-idContrato="@item.IdContrato"
+                        title="Ver Pagos"><span class="fa fa-money"></span></a>
 
 
                     @if (User.IsInRole("Administrador"))

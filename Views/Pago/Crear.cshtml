@@ -10,16 +10,19 @@
     <div class="col-md-4">
         <form asp-action="Guardar" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
             <div class="form-group">
-                <label asp-for="IdContrato" class="control-label">Contrato (Elegir)</label>
-                <select asp-for="IdContrato" class="form-control" required>
-                    @foreach (var item in ViewBag.Contratos)
+                <label asp-for="IdContrato" class="control-label">Contrato</label>
+                <select asp-for="IdContrato" id="contratoSelect" class="form-control" required>
+                    <option value="">Seleccione un contrato</option>
+                    @foreach (var contrato in ViewBag.Contratos)
                     {
-                        <option value="@item.IdContrato">@(item.ToString())</option>
+                        <option value="@contrato.IdContrato" data-monto="@contrato.MontoAlquiler">
+                            @contrato.Descripcion
+                        </option>
                     }
                 </select>
             </div>
+
             <div class="form-group">
                 <label asp-for="FechaPago" class="control-label"></label>
                 <input asp-for="FechaPago" class="form-control" required />
@@ -27,7 +30,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Monto" class="control-label"></label>
-                <input asp-for="Monto" class="form-control" required />
+                <input asp-for="Monto" id="montoInput" class="form-control"  readonly />
                 <span asp-validation-for="Monto" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -54,3 +57,12 @@
 <div>
     <a asp-action="Index" class="btn btn-secondary">Volver</a>
 </div>
+
+
+<script>
+    document.getElementById('contratoSelect').addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const monto = selectedOption.getAttribute('data-monto');
+        document.getElementById('montoInput').value = monto || '';
+    });
+</script>

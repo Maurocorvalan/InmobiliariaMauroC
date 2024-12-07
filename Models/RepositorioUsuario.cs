@@ -9,7 +9,7 @@ public class RepositorioUsuario
 {
     public RepositorioUsuario() { }
 
-    readonly String ConnectionString = "Server=localhost;Database=inmobiliaria;User=root;Password=15516028;";
+    readonly String ConnectionString = "Server=localhost;Database=inmobiliaria;User=root;Password=;";
 
 
     public Usuario GetUsuario(int id)

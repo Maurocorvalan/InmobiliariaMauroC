@@ -31,7 +31,14 @@ public class PagoController : Controller
     public IActionResult Crear(int idPago)
     {
         RepositorioContrato rc = new RepositorioContrato();
-        ViewBag.Contratos = rc.GetContratos();
+
+        ViewBag.Contratos = rc.GetContratos().Select(c => new
+        {
+            c.IdContrato,
+            Descripcion = $"Contrato {c.IdContrato} - Inquilino: {c.Inquilino.Nombre} {c.Inquilino.Apellido} - Dueño: {c.Inmueble.Duenio.Nombre} {c.Inmueble.Duenio.Apellido} - Dirección: {c.Inmueble.Direccion}",
+            c.MontoAlquiler
+        }).ToList();
+
         if (idPago > 0)
         {
             RepositorioPago rp = new RepositorioPago();
@@ -43,6 +50,7 @@ public class PagoController : Controller
             return View();
         }
     }
+
 
     public IActionResult Editar(int idPago)
     {
@@ -148,6 +156,18 @@ public class PagoController : Controller
         }
 
         return View(pagos);
+    }
+
+    [HttpGet]
+    public IActionResult GetPrecioPorContrato(int idContrato)
+    {
+        RepositorioContrato rc = new RepositorioContrato();
+        var contrato = rc.GetContrato(idContrato);
+        if (contrato != null && contrato.Inmueble != null)
+        {
+            return Json(new { precio = contrato.Inmueble.Valor });
+        }
+        return Json(new { precio = 0 });
     }
 
 

@@ -12,7 +12,7 @@ public class RepositorioPropietarios
     {
 
     }
-    readonly String ConnectionString = "Server=localhost;Database=inmobiliaria;User=root;Password=15516028";
+    readonly String ConnectionString = "Server=localhost;Database=inmobiliaria;User=root;Password=";
 
 
     //Muestra todos los propietarios
