@@ -1,0 +1,57 @@
+@model Inmobiliaria.Models.Contrato
+
+@{
+    ViewData["Title"] = "Renovar Contrato";
+}
+
+<h1>Renovar Contrato</h1>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+<form asp-action="Guardar" method="post">
+    <input type="hidden" name="idContratoOriginal" value="@Model.IdContrato" />
+    <input type="hidden" name="EsRenovar" value="true" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="IdInquilino" />
+    <input type="hidden" asp-for="IdInmueble" />
+
+    <div class="form-group">
+        <label asp-for="Inquilino.Nombre" class="control-label">Inquilino</label>
+        <input asp-for="Inquilino.Nombre" class="form-control" disabled />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Inmueble.Direccion" class="control-label">Inmueble</label>
+        <input asp-for="Inmueble.Direccion" class="form-control" disabled />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="FechaInicio" class="control-label">Fecha de Inicio</label>
+        <input asp-for="FechaInicio" type="datetime-local" class="form-control" value="" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="FechaFinalizacion" class="control-label">Fecha de Finalización</label>
+        <input asp-for="FechaFinalizacion" type="datetime-local" class="form-control" value="" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MontoAlquiler" class="control-label">Monto de Alquiler</label>
+        <input asp-for="MontoAlquiler" type="number" step="0.01" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Renovar Contrato" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -38,7 +38,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="IdContrato" class="control-label">Contrato (Elegir)</label>
-                <select asp-for="IdContrato" class="form-control" readonly dis>
+                <select asp-for="IdContrato" class="form-control" readonly disabled>
                     @foreach (var item in ViewBag.Contratos)
                     {
                         <option value="@item.IdContrato">@(item.ToString())</option>

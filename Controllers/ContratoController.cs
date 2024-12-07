@@ -20,7 +20,6 @@ public class ContratoController : Controller
         RepositorioContrato rc = new RepositorioContrato();
         var lista = rc.GetContratos();
 
-        // Verificar si hay un mensaje de éxito en TempData y pasarlo a la vista
         if (TempData["SuccessMessage"] != null)
         {
             ViewData["SuccessMessage"] = TempData["SuccessMessage"];
@@ -38,7 +37,6 @@ public class ContratoController : Controller
         ViewBag.Inquilinos = ri.GetInquilinos();
         ViewBag.Inmuebles = rim.GetInmuebles();
 
-        // Si idContrato está definido, cargar el contrato para edición
         if (idContrato.HasValue && idContrato > 0)
         {
             RepositorioContrato rc = new RepositorioContrato();
@@ -47,7 +45,6 @@ public class ContratoController : Controller
         }
         else
         {
-            // Crear un nuevo contrato con el inmueble preseleccionado si idInmueble está definido
             var nuevoContrato = new Contrato();
             if (idInmueble.HasValue)
             {
@@ -63,36 +60,42 @@ public class ContratoController : Controller
         RepositorioContrato rc = new RepositorioContrato();
         try
         {
-            if (contrato.IdContrato > 0) // Contrato existente (Editar)
+            if (contrato.IdContrato > 0) 
             {
                 rc.ModificarContrato(contrato);
                 TempData["SuccessMessage"] = "Contrato actualizado correctamente.";
             }
-            else // Nuevo contrato (Crear)
+            else 
             {
                 rc.CrearContrato(contrato);
                 TempData["SuccessMessage"] = "Contrato creado correctamente.";
             }
 
-            // Redirigir al listado si todo salió bien
             return RedirectToAction(nameof(Index));
         }
-        catch (InvalidOperationException ex) // Superposición de fechas
+        catch (InvalidOperationException ex)
         {
             TempData["ErrorMessage"] = "Fechas no disponibles para este Inmueble.";
 
-            if (contrato.IdContrato > 0) // Contrato existente (Editar)
+            if (contrato.IdContrato > 0) 
             {
                 return RedirectToAction("Editar", new { idContrato = contrato.IdContrato });
             }
-            else // Nuevo contrato (Crear)
+            else 
             {
                 return RedirectToAction(nameof(Crear));
             }
         }
-        catch (Exception ex) // Otros errores
+        catch (Exception ex) 
         {
-            TempData["ErrorMessage"] = "Ocurrió un error inesperado: " + ex.Message;
+            TempData["ErrorMessage"] = $"Fechas no disponibles para este inmueble: Fecha inicio:{contrato.FechaInicio} - Fecha Finalizacion:{contrato.FechaFinalizacion}";
+
+            if (Request.Form["EsRenovar"] == "true")
+            {
+                var idContratoOriginal = Request.Form["idContratoOriginal"];
+
+                return RedirectToAction("Renovar", new { idContrato = idContratoOriginal });
+            }
             return RedirectToAction(nameof(Index));
         }
     }
@@ -186,6 +189,36 @@ public class ContratoController : Controller
         ViewBag.IdInmueble = idInmueble;
         return View(contratos);
     }
+
+
+    [HttpGet]
+    public IActionResult Renovar(int idContrato)
+    {
+        RepositorioContrato rc = new RepositorioContrato();
+        var contratoActual = rc.GetContrato(idContrato);
+
+        if (contratoActual == null)
+        {
+            TempData["ErrorMessage"] = "El contrato no existe.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var nuevoContrato = new Contrato
+        {
+            IdContrato = idContrato,
+            IdInquilino = contratoActual.IdInquilino,
+            IdInmueble = contratoActual.IdInmueble,
+            Inquilino = contratoActual.Inquilino,
+            Inmueble = contratoActual.Inmueble,
+            FechaInicio = DateTime.Now,
+            FechaFinalizacion = DateTime.Now.AddYears(1),
+            MontoAlquiler = contratoActual.MontoAlquiler
+        };
+
+        return View("Renovar", nuevoContrato);
+    }
+
+
 
 
 }

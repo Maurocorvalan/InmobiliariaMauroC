@@ -81,6 +81,8 @@
                             class="fa fa-info"></span></a>
                     <a asp-controller="Pago" asp-action="ListarPorContrato" asp-route-idContrato="@item.IdContrato"
                         title="Ver Pagos"><span class="fa fa-money"></span></a>
+                    <a asp-action="Renovar" asp-route-idContrato="@item.IdContrato" title="Renovar Contrato"><span
+                            class="fa fa-refresh"></span></a>
 
 
                     @if (User.IsInRole("Administrador"))
