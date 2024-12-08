@@ -1,0 +1,49 @@
+@model Inmobiliaria.Models.Contrato
+
+<h1>Terminar Contrato</h1>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<form asp-action="RegistrarTerminacion" method="post">
+    <input type="hidden" asp-for="IdContrato" />
+
+    <div class="form-group">
+        <label>Inquilino</label>
+        <input asp-for="Inquilino.Nombre" class="form-control" disabled />
+    </div>
+
+    <div class="form-group">
+        <label>Inmueble</label>
+        <input asp-for="Inmueble.Direccion" class="form-control" disabled />
+    </div>
+
+    <div class="form-group">
+        <label>Fecha Original de Finalización</label>
+        <input asp-for="FechaFinalizacion" class="form-control" disabled />
+    </div>
+
+    <div class="form-group">
+        <label>Fecha Efectiva de Terminación</label>
+        <input type="date" name="fechaTerminacion" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Pagos Adeudados</label>
+        <input type="text" class="form-control" value="@ViewBag.PagosAdeudados" disabled />
+    </div>
+
+    <div class="form-group">
+        <label>Multa Calculada</label>
+        <input type="text" class="form-control" value="@ViewBag.Multa" disabled />
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Registrar Terminación" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>

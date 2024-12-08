@@ -18,7 +18,15 @@ namespace Inmobiliaria.Models
             var pagos = new List<Pago>();
             using (var connection = new MySqlConnection(ConnectionString))
             {
-                var sql = $"SELECT p.{nameof(Pago.IdPago)}, p.{nameof(Pago.FechaPago)}, p.{nameof(Pago.Monto)}, p.{nameof(Pago.Detalle)}, p.{nameof(Pago.Estado)}, p.{nameof(Pago.IdContrato)} FROM pagos p INNER JOIN contratos c ON p.{nameof(Pago.IdContrato)} = c.{nameof(Contrato.IdContrato)};";
+                var sql = $@"SELECT 
+                        p.{nameof(Pago.IdPago)}, 
+                        p.{nameof(Pago.FechaPago)}, 
+                        p.{nameof(Pago.Monto)}, 
+                        p.{nameof(Pago.Detalle)}, 
+                        p.{nameof(Pago.Estado)}, 
+                        p.{nameof(Pago.IdContrato)} 
+                    FROM pagos p 
+                    INNER JOIN contratos c ON p.{nameof(Pago.IdContrato)} = c.{nameof(Contrato.IdContrato)}";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -29,25 +37,20 @@ namespace Inmobiliaria.Models
                         {
                             pagos.Add(new Pago()
                             {
-                                IdPago = reader.GetInt32(nameof(Pago.IdPago)),
-                                Monto = reader.GetDecimal(nameof(Pago.Monto)),
-                                FechaPago = reader.GetDateTime(nameof(Pago.FechaPago)),
-                                Detalle = reader.GetString(nameof(Pago.Detalle)),
-                                IdContrato = reader.GetInt32(nameof(Pago.IdContrato)),
-                                Estado = reader.GetBoolean(nameof(Pago.Estado)),
-                                Contrato = new Contrato
-                                {
-                                    IdContrato = reader.GetInt32(nameof(Contrato.IdContrato)),
-                                    Estado = reader.GetBoolean(nameof(Contrato.Estado)),
-                                }
+                                IdPago = reader.IsDBNull(reader.GetOrdinal(nameof(Pago.IdPago))) ? 0 : reader.GetInt32(nameof(Pago.IdPago)),
+                                FechaPago = reader.IsDBNull(reader.GetOrdinal(nameof(Pago.FechaPago))) ? DateTime.MinValue : reader.GetDateTime(nameof(Pago.FechaPago)),
+                                Monto = reader.IsDBNull(reader.GetOrdinal(nameof(Pago.Monto))) ? 0 : reader.GetDecimal(nameof(Pago.Monto)),
+                                Detalle = reader.IsDBNull(reader.GetOrdinal(nameof(Pago.Detalle))) ? string.Empty : reader.GetString(nameof(Pago.Detalle)),
+                                Estado = reader.IsDBNull(reader.GetOrdinal(nameof(Pago.Estado))) ? false : reader.GetBoolean(nameof(Pago.Estado)),
+                                IdContrato = reader.IsDBNull(reader.GetOrdinal(nameof(Pago.IdContrato))) ? 0 : reader.GetInt32(nameof(Pago.IdContrato))
                             });
                         }
-                        connection.Close();
                     }
                 }
             }
             return pagos;
         }
+
 
 
         public Pago? GetPago(int id)
@@ -118,14 +121,15 @@ namespace Inmobiliaria.Models
                     command.Parameters.AddWithValue($"@{nameof(Pago.FechaPago)}", pago.FechaPago);
                     command.Parameters.AddWithValue($"@{nameof(Pago.Monto)}", pago.Monto);
                     command.Parameters.AddWithValue($"@{nameof(Pago.Detalle)}", pago.Detalle);
-                    command.Parameters.AddWithValue($"@{nameof(Pago.Estado)}", pago.Estado);
+                    command.Parameters.AddWithValue($"@{nameof(Pago.Estado)}", pago.Estado ? 1 : 0);
                     command.Parameters.AddWithValue($"@{nameof(Pago.IdContrato)}", pago.IdContrato);
                     connection.Open();
-                    command.ExecuteNonQuery();
+                    var result = command.ExecuteNonQuery();
                     connection.Close();
+
+                    return result;
                 }
             }
-            return 0;
         }
 
         public int CrearPago(Pago pago)
@@ -213,10 +217,98 @@ namespace Inmobiliaria.Models
         }
 
 
+        public IList<Pago> GetPagosPendientes(int idContrato)
+        {
+            var pagosPendientes = new List<Pago>();
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var sql = $@"
+            SELECT * 
+            FROM pagos 
+            WHERE IdContrato = @IdContrato AND Estado = 0";
+
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@IdContrato", idContrato);
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            pagosPendientes.Add(new Pago
+                            {
+                                IdPago = reader.GetInt32("IdPago"),
+                                IdContrato = reader.GetInt32("IdContrato"),
+                                FechaPago = reader.GetDateTime("FechaPago"),
+                                Estado = reader.GetBoolean("Estado"),
+                                Monto = reader.GetDecimal("Monto")
+                            });
+                        }
+                    }
+                }
+            }
+            return pagosPendientes;
+        }
+
+
+        public void RegistrarMulta(int idContrato, decimal montoMulta)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                var sql = $@"
+            INSERT INTO pagos (IdContrato, FechaPago, Estado, Monto, Detalle) 
+            VALUES (@IdContrato, @FechaPago, 0, @MontoMulta, @Detalle)";
+
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@IdContrato", idContrato);
+                    command.Parameters.AddWithValue("@FechaPago", DateTime.Now);
+                    command.Parameters.AddWithValue("@MontoMulta", montoMulta);
+                    command.Parameters.AddWithValue("@Detalle", "Multa por finalización anticipada de contrato");
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+
+        public int CalcularPagosAdeudados(int idContrato, DateTime fechaInicio, DateTime fechaFinalizacion)
+        {
+            using (var connection = new MySqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                // Total de meses del contrato
+                int totalMesesContrato = ((fechaFinalizacion.Year - fechaInicio.Year) * 12) + fechaFinalizacion.Month - fechaInicio.Month;
+
+                // Consulta para contar los pagos realizados
+                string query = $@"
+                SELECT COUNT(*) 
+                FROM pagos 
+                WHERE IdContrato = @idContrato AND Estado = 1"; // Estado 1 significa "pagado"
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@idContrato", idContrato);
+
+                    int pagosRealizados = Convert.ToInt32(command.ExecuteScalar());
+
+                    // Calcular pagos adeudados
+                    return totalMesesContrato - pagosRealizados;
+                }
+            }
+        }
+
+
+
+
 
 
 
     }
+
+
 
 
 

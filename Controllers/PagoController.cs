@@ -54,17 +54,38 @@ public class PagoController : Controller
 
     public IActionResult Editar(int idPago)
     {
-        RepositorioContrato rc = new RepositorioContrato();
-        ViewBag.Contratos = rc.GetContratos();
-        if (idPago > 0)
+        try
         {
-            RepositorioPago rp = new RepositorioPago();
-            var pago = rp.GetPago(idPago);
-            return View(pago);
+            // Obtener los contratos para mostrarlos en la vista
+            RepositorioContrato rc = new RepositorioContrato();
+            ViewBag.Contratos = rc.GetContratos();
+
+            if (idPago > 0)
+            {
+                // Obtener el pago específico
+                RepositorioPago rp = new RepositorioPago();
+                var pago = rp.GetPago(idPago);
+
+                if (pago == null)
+                {
+                    TempData["ErrorMessage"] = "El pago solicitado no existe.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                return View(pago);
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "ID de pago inválido.";
+                return RedirectToAction(nameof(Index));
+            }
         }
-        else
+        catch (Exception ex)
         {
-            return View();
+            // Manejo de errores
+            _logger.LogError(ex, "Error al cargar la vista de edición.");
+            TempData["ErrorMessage"] = "Ocurrió un error al intentar cargar la edición.";
+            return RedirectToAction(nameof(Index));
         }
     }
 
@@ -76,18 +97,6 @@ public class PagoController : Controller
         {
             if (pago.IdPago > 0)
             {
-                // Obtener el pago original de la base de datos
-                var pagoOriginal = rp.GetPago(pago.IdPago);
-
-                // Validar campos inmutables
-                if (pagoOriginal.FechaPago != pago.FechaPago ||
-                    pagoOriginal.Monto != pago.Monto ||
-                    pagoOriginal.IdContrato != pago.IdContrato)
-                {
-                    TempData["ErrorMessage"] = "No se permite modificar campos inmutables.";
-                    return RedirectToAction(nameof(Index));
-                }
-
                 rp.ModificarPago(pago);
                 TempData["SuccessMessage"] = "Pago actualizado correctamente.";
             }
@@ -96,12 +105,11 @@ public class PagoController : Controller
                 rp.CrearPago(pago);
                 TempData["SuccessMessage"] = "Pago creado correctamente.";
             }
-
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            _logger.LogError(ex, "Error al guardar el pago.");
             TempData["ErrorMessage"] = "Ocurrió un error al procesar el pago.";
             return RedirectToAction(nameof(Index));
         }
@@ -170,5 +178,32 @@ public class PagoController : Controller
         return Json(new { precio = 0 });
     }
 
+
+    [HttpPost]
+    public IActionResult RegistrarTerminacion(int idContrato, DateTime fechaTerminacion)
+    {
+        RepositorioContrato rc = new RepositorioContrato();
+        RepositorioPago rp = new RepositorioPago();
+
+        // Registrar la fecha de terminación anticipada
+        rc.TerminarContrato(idContrato, fechaTerminacion);
+
+        // Recuperar el contrato actualizado (con la fecha de terminación efectiva registrada)
+        var contrato = rc.GetContrato(idContrato);
+        if (contrato == null)
+        {
+            TempData["ErrorMessage"] = "El contrato no existe.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Calcular la multa basada en la fecha de terminación ingresada
+        var multa = contrato.CalcularMulta(fechaTerminacion);
+
+        // Registrar la multa como un pago pendiente con el detalle adecuado
+        rp.RegistrarMulta(idContrato, multa);
+
+        TempData["SuccessMessage"] = $"El contrato ha sido terminado anticipadamente. Multa registrada: ${multa}.";
+        return RedirectToAction(nameof(Index));
+    }
 
 }

@@ -406,5 +406,29 @@ public class RepositorioContrato
     }
 
 
+    public void TerminarContrato(int idContrato, DateTime fechaTerminacion)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = $@"
+            UPDATE contratos 
+            SET FechaTerminacionEfectiva = @FechaTerminacion, Estado = 0 
+            WHERE IdContrato = @IdContrato";
+
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@FechaTerminacion", fechaTerminacion);
+                command.Parameters.AddWithValue("@IdContrato", idContrato);
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+    }
+
+
+
+
+
 
 }

@@ -5,10 +5,10 @@ namespace Inmobiliaria.Models
     public class Pago
     {
         public int IdPago { get; set; }
-        public DateTime FechaPago { get; set; }
-        public decimal Monto { get; set; }
-        public string? Detalle { get; set; }
-        public bool Estado { get; set; }
+        public DateTime FechaPago { get; set; } =DateTime.MinValue;
+        public decimal Monto { get; set; } = 0;
+        public string? Detalle { get; set; } = string.Empty;
+        public bool Estado { get; set; } = false;
  
 
         public int IdContrato { get; set; }

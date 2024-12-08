@@ -31,14 +31,14 @@
             <div class="form-group">
                 <label asp-for="Estado" class="control-label">Estado</label>
                 <select asp-for="Estado" class="form-control" required>
-                    <option value="True">Pagado</option>
+                    <option value="True" selected>Pagado</option>
                     <option value="False">Anulado</option>
                 </select>
                 <span asp-validation-for="Estado" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="IdContrato" class="control-label">Contrato (Elegir)</label>
-                <select asp-for="IdContrato" class="form-control" readonly disabled>
+                <select asp-for="IdContrato" class="form-control" readonly >
                     @foreach (var item in ViewBag.Contratos)
                     {
                         <option value="@item.IdContrato">@(item.ToString())</option>

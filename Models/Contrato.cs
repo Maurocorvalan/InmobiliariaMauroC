@@ -7,6 +7,7 @@ namespace Inmobiliaria.Models
         public int IdContrato { get; set; }
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFinalizacion { get; set; }
+        public DateTime? FechaTerminacionEfectiva { get; set; }
         public decimal MontoAlquiler { get; set; }
         public Boolean Estado { get; set; }
 
@@ -20,5 +21,24 @@ namespace Inmobiliaria.Models
         {
             return $"Contrato: {IdContrato} Inquilino: {Inquilino} Inmueble: {Inmueble} /MONTO: {MontoAlquiler} ";
         }
+
+
+
+        public decimal CalcularMulta(DateTime fechaTerminacion)
+        {
+            int totalMesesContrato = ((FechaFinalizacion.Year - FechaInicio.Year) * 12) + (FechaFinalizacion.Month - FechaInicio.Month);
+
+            int mesesCumplidos = ((fechaTerminacion.Year - FechaInicio.Year) * 12) + (fechaTerminacion.Month - FechaInicio.Month);
+
+            if (mesesCumplidos < (totalMesesContrato / 2))
+            {
+                return MontoAlquiler * 2;
+            }
+            else
+            {
+                return MontoAlquiler;
+            }
+        }
+
     }
 }
