@@ -279,6 +279,22 @@ public class ContratoController : Controller
         }
     }
 
+    [HttpGet]
+    public IActionResult BuscarPorRango(DateTime fechaLimite)
+    {
+        var fechaInicio = DateTime.Now.Date; // Fecha actual
+        RepositorioContrato rc = new RepositorioContrato();
+
+        // Obtén los contratos que terminan en el rango
+        var contratos = rc.GetContratosPorRango(fechaInicio, fechaLimite);
+
+        if (!contratos.Any())
+        {
+            ViewData["InfoMessage"] = "No se encontraron contratos que terminen en este rango de fechas.";
+        }
+
+        return View("BuscarPorRango", contratos); // Renderiza la vista con los resultados
+    }
 
 
 

@@ -55,6 +55,7 @@ public class RepositorioContrato
                             MontoAlquiler = reader.GetDecimal(nameof(Contrato.MontoAlquiler)),
                             FechaInicio = reader.GetDateTime(nameof(Contrato.FechaInicio)),
                             FechaFinalizacion = reader.GetDateTime(nameof(Contrato.FechaFinalizacion)),
+                            Estado = reader.GetBoolean(nameof(Contrato.Estado)),
                             Inquilino = new Inquilino
                             {
                                 Nombre = reader.GetString("InquilinoNombre"),
@@ -426,6 +427,65 @@ public class RepositorioContrato
         }
     }
 
+    public IList<Contrato> GetContratosPorRango(DateTime fechaInicio, DateTime fechaFin)
+    {
+        var contratos = new List<Contrato>();
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = $@"
+            SELECT 
+                c.{nameof(Contrato.IdContrato)}, 
+                c.{nameof(Contrato.FechaInicio)}, 
+                c.{nameof(Contrato.FechaFinalizacion)}, 
+                c.{nameof(Contrato.MontoAlquiler)}, 
+                c.{nameof(Contrato.Estado)}, 
+                c.{nameof(Contrato.IdInquilino)}, 
+                inq.{nameof(Inquilino.Nombre)}, 
+                inq.{nameof(Inquilino.Apellido)}, 
+                c.{nameof(Contrato.IdInmueble)}, 
+                im.{nameof(Inmueble.Direccion)}
+            FROM 
+                contratos c
+            INNER JOIN 
+                inquilinos inq ON c.{nameof(Contrato.IdInquilino)} = inq.{nameof(Inquilino.IdInquilino)}
+            INNER JOIN 
+                inmuebles im ON c.{nameof(Contrato.IdInmueble)} = im.{nameof(Inmueble.IdInmueble)}
+            WHERE 
+                c.{nameof(Contrato.FechaFinalizacion)} BETWEEN @FechaInicio AND @FechaFin";
+
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@FechaInicio", fechaInicio);
+                command.Parameters.AddWithValue("@FechaFin", fechaFin);
+
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        contratos.Add(new Contrato
+                        {
+                            IdContrato = reader.GetInt32(nameof(Contrato.IdContrato)),
+                            FechaInicio = reader.GetDateTime(nameof(Contrato.FechaInicio)),
+                            FechaFinalizacion = reader.GetDateTime(nameof(Contrato.FechaFinalizacion)),
+                            MontoAlquiler = reader.GetDecimal(nameof(Contrato.MontoAlquiler)),
+                            Estado = reader.GetBoolean(nameof(Contrato.Estado)),
+                            Inquilino = new Inquilino
+                            {
+                                Nombre = reader.GetString(nameof(Inquilino.Nombre)),
+                                Apellido = reader.GetString(nameof(Inquilino.Apellido))
+                            },
+                            Inmueble = new Inmueble
+                            {
+                                Direccion = reader.GetString(nameof(Inmueble.Direccion))
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        return contratos;
+    }
 
 
 

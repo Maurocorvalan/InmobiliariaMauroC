@@ -13,6 +13,23 @@
     </div>
 </div>
 <a asp-action="ContratosVigentes" class="btn btn-primary">Ver Contratos Vigentes</a>
+<div class="col-md-6">
+    <div class="card">
+        <div class="card-header">Buscar Contratos por fecha limite </div>
+        <div class="card-body">
+            <form asp-controller="Contrato" asp-action="BuscarPorRango" method="get">
+                <div class="form-row">
+                    <div class="col">
+                        <label for="fechaLimite">Fecha Límite</label>
+                        <input type="date" class="form-control" id="fechaLimite" name="fechaLimite" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block mt-3">Buscar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 @if (ViewData["SuccessMessage"] != null)
 {
@@ -37,7 +54,7 @@
                 Monto Alquiler
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Estado)
+                Estado
             </th>
             <th>
                 Nombre Inquilino

@@ -1,0 +1,55 @@
+@model IEnumerable<Contrato>
+
+@{
+    ViewData["Title"] = "Contratos por Rango de Fechas";
+}
+
+<h1>Contratos que Terminan entre Hoy y la Fecha Límite</h1>
+
+@if (ViewData["InfoMessage"] != null)
+{
+    <div class="alert alert-info" role="alert">
+        @ViewData["InfoMessage"]
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID Contrato</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Finalización</th>
+                <th>Monto Alquiler</th>
+                <th>Estado</th>
+                <th>Inquilino</th>
+                <th>Dirección del Inmueble</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.IdContrato</td>
+                    <td>@item.FechaInicio.ToShortDateString()</td>
+                    <td>@item.FechaFinalizacion.ToShortDateString()</td>
+                    <td>@item.MontoAlquiler</td>
+                    <td>
+                        <input type="checkbox" disabled @(item.Estado ? "checked" : "") />
+                    </td>
+                    <td>@(item.Inquilino?.Nombre + " " + item.Inquilino?.Apellido)</td>
+                    <td>@(item.Inmueble?.Direccion)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        No se encontraron contratos en el rango seleccionado.
+    </div>
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Volver a la Lista General</a>
