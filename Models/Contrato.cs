@@ -10,7 +10,7 @@ namespace Inmobiliaria.Models
         public DateTime? FechaTerminacionEfectiva { get; set; }
         public decimal MontoAlquiler { get; set; }
         public Boolean Estado { get; set; }
-
+        public int MesesAdeudados { get; set; } // Asegúrate de que el tipo coincide con la base de datos
         public int IdInquilino { get; set; }
         public int IdInmueble { get; set; }
         public Inquilino? Inquilino { get; set; }

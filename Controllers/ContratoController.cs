@@ -221,13 +221,13 @@ public class ContratoController : Controller
 
         return View("Renovar", nuevoContrato);
     }
+
     [HttpGet]
     public IActionResult TerminarContrato(int idContrato)
     {
         RepositorioContrato rc = new RepositorioContrato();
         RepositorioPago rp = new RepositorioPago();
 
-        // Obtener los datos del contrato
         var contrato = rc.GetContrato(idContrato);
         if (contrato == null)
         {
@@ -235,13 +235,12 @@ public class ContratoController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        // Calcular los pagos adeudados (hasta la fecha actual)
-        int pagosAdeudados = rp.CalcularPagosAdeudados(idContrato, contrato.FechaInicio, contrato.FechaFinalizacion);
+        int pagosAdeudados = rp.CalcularPagosAdeudados(idContrato, contrato.FechaInicio, DateTime.Now);
 
-        // Pasar datos a la vista
         ViewBag.PagosAdeudados = pagosAdeudados;
+        ViewBag.FechaInicio = contrato.FechaInicio;
 
-        return View(contrato); // Pasa el contrato a la vista para mostrar detalles
+        return View(contrato); 
     }
     [HttpPost]
     public IActionResult RegistrarTerminacion(int idContrato, DateTime fechaTerminacion)
@@ -249,13 +248,9 @@ public class ContratoController : Controller
         RepositorioContrato rc = new RepositorioContrato();
         RepositorioPago rp = new RepositorioPago();
         RepositorioAuditoria ra = new RepositorioAuditoria();
+
         try
         {
-            // Registrar la fecha de terminación anticipada
-            rc.TerminarContrato(idContrato, fechaTerminacion);
-            ra.RegistrarAuditoria("Terminación Contrato", User.Identity.Name, $"Contrato ID: {idContrato}, Fecha Terminación: {fechaTerminacion}");
-
-            // Recuperar el contrato actualizado (con la fecha de terminación efectiva registrada)
             var contrato = rc.GetContrato(idContrato);
             if (contrato == null)
             {
@@ -263,13 +258,19 @@ public class ContratoController : Controller
                 return RedirectToAction(nameof(Index));
             }
 
-            // Calcular la multa basada en la fecha de terminación ingresada
+            int mesesAdeudados = rp.CalcularPagosAdeudados(idContrato, contrato.FechaInicio, fechaTerminacion);
+
+            rc.ActualizarTerminacionContrato(idContrato, fechaTerminacion, mesesAdeudados);
+
             var multa = contrato.CalcularMulta(fechaTerminacion);
 
-            // Registrar la multa como un pago pendiente con el detalle adecuado
             rp.RegistrarMulta(idContrato, multa);
 
-            TempData["SuccessMessage"] = $"El contrato ha sido terminado anticipadamente. Multa registrada: ${multa}.";
+
+
+            ra.RegistrarAuditoria("Terminación Contrato", User.Identity.Name, $"Contrato ID: {idContrato}, Fecha Terminación: {fechaTerminacion}, Meses Adeudados: {mesesAdeudados}, Multa: {multa}");
+
+            TempData["SuccessMessage"] = $"El contrato ha sido terminado anticipadamente. Multa registrada: ${multa}. Meses adeudados: {mesesAdeudados}.";
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
@@ -279,22 +280,49 @@ public class ContratoController : Controller
         }
     }
 
+
     [HttpGet]
     public IActionResult BuscarPorRango(DateTime fechaLimite)
     {
-        var fechaInicio = DateTime.Now.Date; // Fecha actual
+        var fechaInicio = DateTime.Now.Date; 
         RepositorioContrato rc = new RepositorioContrato();
 
-        // Obtén los contratos que terminan en el rango
         var contratos = rc.GetContratosPorRango(fechaInicio, fechaLimite);
 
         if (!contratos.Any())
         {
         }
 
-        return View("BuscarPorRango", contratos); // Renderiza la vista con los resultados
+        return View("BuscarPorRango", contratos); 
     }
+    [HttpPost]
+    public IActionResult CalcularMesesAdeudados(int idContrato, DateTime fechaTerminacion)
+    {
+        RepositorioContrato rc = new RepositorioContrato();
+        RepositorioPago rp = new RepositorioPago();
 
+        var contrato = rc.GetContrato(idContrato);
+        if (contrato == null)
+        {
+            return Json(new { error = "El contrato no existe" });
+        }
+
+        int mesesAdeudados = rp.CalcularPagosAdeudados(idContrato, contrato.FechaInicio, fechaTerminacion);
+        return Json(new { mesesAdeudados });
+    }
+    [HttpGet]
+    public IActionResult ContratosFinalizados()
+    {
+        RepositorioContrato rc = new RepositorioContrato();
+        var contratosFinalizados = rc.GetContratosFinalizados();
+
+        if (!contratosFinalizados.Any())
+        {
+            ViewData["InfoMessage"] = "No se encontraron contratos finalizados.";
+        }
+
+        return View(contratosFinalizados);
+    }
 
 
 }

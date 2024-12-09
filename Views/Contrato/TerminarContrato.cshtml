@@ -1,4 +1,7 @@
 @model Inmobiliaria.Models.Contrato
+@{
+    ViewData["Title"] = "Terminar contrato";
+}
 
 <h1>Terminar Contrato</h1>
 
@@ -21,29 +24,42 @@
         <label>Inmueble</label>
         <input asp-for="Inmueble.Direccion" class="form-control" disabled />
     </div>
-
+    <div class="form-group">
+        <label>Fecha Inicial del Contrato</label>
+        <input type="text" class="form-control" value="@Model.FechaInicio.ToString("yyyy-MM-dd HH:mm")" disabled />
+    </div>
     <div class="form-group">
         <label>Fecha Original de Finalización</label>
-        <input asp-for="FechaFinalizacion" class="form-control" disabled />
+        <input type="text" class="form-control" value="@Model.FechaFinalizacion.ToString("yyyy-MM-dd HH:mm")"
+            disabled />
     </div>
 
     <div class="form-group">
         <label>Fecha Efectiva de Terminación</label>
-        <input type="date" name="fechaTerminacion" class="form-control" required />
+        <input type="date" id="fechaTerminacion" name="fechaTerminacion" class="form-control" required
+            onchange="actualizarPagosAdeudados()" />
     </div>
 
-    <div class="form-group">
-        <label>Pagos Adeudados</label>
-        <input type="text" class="form-control" value="@ViewBag.PagosAdeudados" disabled />
-    </div>
 
-    <div class="form-group">
-        <label>Multa Calculada</label>
-        <input type="text" class="form-control" value="@ViewBag.Multa" disabled />
-    </div>
 
     <div class="form-group">
         <input type="submit" value="Registrar Terminación" class="btn btn-danger" />
         <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
     </div>
 </form>
+<script>
+    function actualizarPagosAdeudados() {
+        const fechaTerminacion = document.getElementById("fechaTerminacion").value;
+        const idContrato = @Model.IdContrato; // Reemplazar con la forma adecuada de pasar el ID del contrato.
+
+        if (fechaTerminacion) {
+            $.post('/Contrato/CalcularMesesAdeudados', { idContrato, fechaTerminacion }, function (data) {
+                if (data.mesesAdeudados !== undefined) {
+                    document.getElementById("pagosAdeudados").value = data.mesesAdeudados;
+                } else {
+                    alert(data.error || "Error al calcular los pagos adeudados.");
+                }
+            });
+        }
+    }
+</script>

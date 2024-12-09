@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Inmobiliaria.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Globalization;
 
 namespace Inmobiliaria.Controllers;
 [Authorize]
@@ -56,13 +57,11 @@ public class PagoController : Controller
     {
         try
         {
-            // Obtener los contratos para mostrarlos en la vista
             RepositorioContrato rc = new RepositorioContrato();
             ViewBag.Contratos = rc.GetContratos();
 
             if (idPago > 0)
             {
-                // Obtener el pago específico
                 RepositorioPago rp = new RepositorioPago();
                 var pago = rp.GetPago(idPago);
 
@@ -82,7 +81,6 @@ public class PagoController : Controller
         }
         catch (Exception ex)
         {
-            // Manejo de errores
             _logger.LogError(ex, "Error al cargar la vista de edición.");
             TempData["ErrorMessage"] = "Ocurrió un error al intentar cargar la edición.";
             return RedirectToAction(nameof(Index));
@@ -160,9 +158,13 @@ public class PagoController : Controller
     public IActionResult ListarPorContrato(int idContrato)
     {
         RepositorioPago rp = new RepositorioPago();
-        var pagos = rp.GetPagosPorContrato(idContrato); // Método a implementar en el repositorio
+        RepositorioContrato rc = new RepositorioContrato();
+
+        var pagos = rp.GetPagosPorContrato(idContrato);
+        var contrato = rc.GetContrato(idContrato);
 
         ViewData["IdContrato"] = idContrato;
+        ViewData["MontoAlquiler"] = contrato?.MontoAlquiler.ToString("F2", CultureInfo.InvariantCulture) ?? "0.00";
 
         if (!pagos.Any())
         {
@@ -191,10 +193,8 @@ public class PagoController : Controller
         RepositorioContrato rc = new RepositorioContrato();
         RepositorioPago rp = new RepositorioPago();
 
-        // Registrar la fecha de terminación anticipada
         rc.TerminarContrato(idContrato, fechaTerminacion);
 
-        // Recuperar el contrato actualizado (con la fecha de terminación efectiva registrada)
         var contrato = rc.GetContrato(idContrato);
         if (contrato == null)
         {
@@ -202,10 +202,8 @@ public class PagoController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        // Calcular la multa basada en la fecha de terminación ingresada
         var multa = contrato.CalcularMulta(fechaTerminacion);
 
-        // Registrar la multa como un pago pendiente con el detalle adecuado
         rp.RegistrarMulta(idContrato, multa);
 
         TempData["SuccessMessage"] = $"El contrato ha sido terminado anticipadamente. Multa registrada: ${multa}.";

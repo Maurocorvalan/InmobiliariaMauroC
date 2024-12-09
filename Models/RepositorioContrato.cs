@@ -13,7 +13,9 @@ public class RepositorioContrato
     public RepositorioContrato() { }
 
 
-    readonly String ConnectionString = "Server=localhost;Database=inmobiliaria;User=root;Password=;"; public IList<Contrato> GetContratos()
+    readonly String ConnectionString = "Server=localhost;Database=inmobiliaria;User=root;Password=;";
+
+    public IList<Contrato> GetContratos()
     {
         var contratos = new List<Contrato>();
 
@@ -437,6 +439,7 @@ public class RepositorioContrato
                 c.{nameof(Contrato.IdContrato)}, 
                 c.{nameof(Contrato.FechaInicio)}, 
                 c.{nameof(Contrato.FechaFinalizacion)}, 
+
                 c.{nameof(Contrato.MontoAlquiler)}, 
                 c.{nameof(Contrato.Estado)}, 
                 c.{nameof(Contrato.IdInquilino)}, 
@@ -486,8 +489,89 @@ public class RepositorioContrato
         }
         return contratos;
     }
+    public void ActualizarTerminacionContrato(int idContrato, DateTime fechaTerminacion, int mesesAdeudados)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = @"
+            UPDATE contratos 
+            SET FechaTerminacionEfectiva = @FechaTerminacion, 
+                MesesAdeudados = @MesesAdeudados,
+                Estado = 0 
+            WHERE IdContrato = @IdContrato";
+
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@FechaTerminacion", fechaTerminacion);
+                command.Parameters.AddWithValue("@MesesAdeudados", mesesAdeudados);
+                command.Parameters.AddWithValue("@IdContrato", idContrato);
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+    }
 
 
+    public IList<Contrato> GetContratosFinalizados()
+    {
+        var contratos = new List<Contrato>();
+
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            var sql = $@"
+            SELECT 
+                c.{nameof(Contrato.IdContrato)}, 
+                c.{nameof(Contrato.FechaInicio)}, 
+                c.{nameof(Contrato.FechaFinalizacion)}, 
+                c.{nameof(Contrato.FechaTerminacionEfectiva)}, 
+                c.{nameof(Contrato.MontoAlquiler)}, 
+                c.{nameof(Contrato.Estado)}, 
+                c.{nameof(Contrato.MesesAdeudados)},
+                inq.{nameof(Inquilino.Nombre)} AS InquilinoNombre, 
+                inq.{nameof(Inquilino.Apellido)} AS InquilinoApellido, 
+                im.{nameof(Inmueble.Direccion)}
+            FROM 
+                contratos c
+            INNER JOIN 
+                inquilinos inq ON c.{nameof(Contrato.IdInquilino)} = inq.{nameof(Inquilino.IdInquilino)}
+            INNER JOIN 
+                inmuebles im ON c.{nameof(Contrato.IdInmueble)} = im.{nameof(Inmueble.IdInmueble)}
+            WHERE 
+                c.{nameof(Contrato.FechaTerminacionEfectiva)} IS NOT NULL";
+
+            using (var command = new MySqlCommand(sql, connection))
+            {
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        contratos.Add(new Contrato
+                        {
+                            IdContrato = reader.GetInt32(nameof(Contrato.IdContrato)),
+                            FechaInicio = reader.GetDateTime(nameof(Contrato.FechaInicio)),
+                            FechaFinalizacion = reader.GetDateTime(nameof(Contrato.FechaFinalizacion)),
+                            FechaTerminacionEfectiva = reader.GetDateTime(nameof(Contrato.FechaTerminacionEfectiva)),
+                            MontoAlquiler = reader.GetDecimal(nameof(Contrato.MontoAlquiler)),
+                            MesesAdeudados = reader.GetInt32(nameof(Contrato.MesesAdeudados)),
+                            Estado = reader.GetBoolean(nameof(Contrato.Estado)),
+                            Inquilino = new Inquilino
+                            {
+                                Nombre = reader.GetString("InquilinoNombre"),
+                                Apellido = reader.GetString("InquilinoApellido")
+                            },
+                            Inmueble = new Inmueble
+                            {
+                                Direccion = reader.GetString(nameof(Inmueble.Direccion))
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        return contratos;
+    }
 
 
 

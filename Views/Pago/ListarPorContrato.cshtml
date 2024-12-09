@@ -33,14 +33,14 @@
                 <td>$ @pago.Monto</td>
                 <td>@pago.Detalle</td>
                 <td>@(pago.Estado ? "Pagado" : "Anulado")</td>
-                 <td>
-                    <a asp-action="Editar" asp-route-IdPago="@pago.IdPago" title="Editar" >
+                <td>
+                    <a asp-action="Editar" asp-route-IdPago="@pago.IdPago" title="Editar">
                         <span class="fa fa-edit"></span></a>
-                    <a asp-action="Detalle" asp-route-IdPago="@pago.IdPago" title="DetallePago" >
+                    <a asp-action="Detalle" asp-route-IdPago="@pago.IdPago" title="DetallePago">
                         <span class="fa fa-info"></span></a>
                     @if (User.IsInRole("Administrador"))
                     {
-                        <a asp-action="Eliminar" asp-route-id="@pago.IdPago" title="Eliminar" 
+                        <a asp-action="Eliminar" asp-route-id="@pago.IdPago" title="Eliminar"
                             onclick="return confirm('¿Estás seguro de eliminar el Pago ID: @pago.IdPago del Contrato ID: @pago.IdContrato?');">
                             <span class="fa fa-trash"></span>
                         </a>
@@ -62,8 +62,17 @@
     </div>
     <div class="form-group">
         <label for="Monto">Monto</label>
-        <input type="number" name="Monto" step="0.01" class="form-control" required />
+        <input type="number" name="Monto" id="montoInput" class="form-control" value="@ViewData["MontoAlquiler"]"
+            readonly />
     </div>
+    <div class="form-group">
+        <label for="Estado">Estado</label>
+        <select name="Estado" class="form-control" required>
+            <option value="true">Pagado</option>
+            <option value="false">Anulado</option>
+        </select>
+    </div>
+
     <div class="form-group">
         <label for="Detalle">Detalle</label>
         <textarea name="Detalle" class="form-control"></textarea>

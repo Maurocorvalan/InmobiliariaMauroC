@@ -1,0 +1,54 @@
+@model IEnumerable<Inmobiliaria.Models.Contrato>
+
+@{
+    ViewData["Title"] = "Contratos Finalizados";
+}
+
+<h1>Contratos Finalizados</h1>
+
+@if (ViewData["InfoMessage"] != null)
+{
+    <div class="alert alert-info" role="alert">
+        @ViewData["InfoMessage"]
+    </div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID Contrato</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Finalización</th>
+            <th>Fecha Terminación Efectiva</th>
+            <th>Inquilino</th>
+            <th>Inmueble</th>
+            <th>Meses Adeudados</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            @foreach (var contrato in Model)
+            {
+                <tr>
+                    <td>@contrato.IdContrato</td>
+                    <td>@contrato.FechaInicio.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@contrato.FechaFinalizacion.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@contrato.FechaTerminacionEfectiva?.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@(contrato.Inquilino?.Nombre + " " + contrato.Inquilino?.Apellido)</td>
+                    <td>@contrato.Inmueble?.Direccion</td>
+                    <td>@contrato.MesesAdeudados</td>
+                    <td>
+                    <a asp-controller="Pago" asp-action="ListarPorContrato" asp-route-idContrato="@contrato.IdContrato"
+                        title="Ver Pagos"><span class="fa fa-money"></span></a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+
+        }
+    </tbody>
+</table>

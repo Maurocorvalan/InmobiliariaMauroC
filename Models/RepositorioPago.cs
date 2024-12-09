@@ -273,44 +273,34 @@ namespace Inmobiliaria.Models
         }
 
 
-        public int CalcularPagosAdeudados(int idContrato, DateTime fechaInicio, DateTime fechaFinalizacion)
+        public int CalcularPagosAdeudados(int idContrato, DateTime fechaInicio, DateTime fechaTerminacion)
         {
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 connection.Open();
 
-                // Total de meses del contrato
-                int totalMesesContrato = ((fechaFinalizacion.Year - fechaInicio.Year) * 12) + fechaFinalizacion.Month - fechaInicio.Month;
+                // Calcular meses transcurridos entre inicio y terminación efectiva
+                int mesesTranscurridos = ((fechaTerminacion.Year - fechaInicio.Year) * 12) + fechaTerminacion.Month - fechaInicio.Month;
 
-                // Consulta para contar los pagos realizados
-                string query = $@"
-                SELECT COUNT(*) 
-                FROM pagos 
-                WHERE IdContrato = @idContrato AND Estado = 1"; // Estado 1 significa "pagado"
+                // Contar pagos realizados
+                string pagosRealizadosQuery = @"
+            SELECT COUNT(*) 
+            FROM pagos 
+            WHERE IdContrato = @IdContrato AND Estado = 1"; // Estado 1 significa "pagado"
 
-                using (var command = new MySqlCommand(query, connection))
+                using (var command = new MySqlCommand(pagosRealizadosQuery, connection))
                 {
-                    command.Parameters.AddWithValue("@idContrato", idContrato);
-
+                    command.Parameters.AddWithValue("@IdContrato", idContrato);
                     int pagosRealizados = Convert.ToInt32(command.ExecuteScalar());
 
-                    // Calcular pagos adeudados
-                    return totalMesesContrato - pagosRealizados;
+                    // Calcular meses adeudados
+                    int mesesAdeudados = mesesTranscurridos - pagosRealizados;
+                    return mesesAdeudados > 0 ? mesesAdeudados : 0;
                 }
             }
         }
 
-
-
-
-
-
-
     }
-
-
-
-
 
 
 }

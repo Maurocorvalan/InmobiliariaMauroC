@@ -5,84 +5,95 @@
     int id = Model == null ? 0 : Model.IdContrato;
 }
 
-<h4>Contrato</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert alert-danger" role="alert">
-                @TempData["ErrorMessage"]
-            </div>
-        }
-        <form asp-action="Guardar" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container mt-5">
+    <h4 class="text-primary text-center">Contrato</h4>
+    <hr class="mb-4" />
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+            <div class="card shadow">
+                <div class="card-body">
+                    <form asp-action="Guardar" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger text-center mb-3"></div>
 
-            <div class="form-group">
-                <label for="FechaInicio">Fecha de inicio</label>
-                <input asp-for="FechaInicio" class="form-control" required />
-                <span asp-validation-for="FechaInicio" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label for="FechaFinalizacion">Fecha de finalización</label>
-                <input asp-for="FechaFinalizacion" class="form-control" required />
-                <span asp-validation-for="FechaFinalizacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label">Estado (Elegir)</label>
-                <select asp-for="Estado" class="form-control" required>
-                    <option value="true">Activo</option>
-                    <option value="false">Inactivo</option>
-                </select>
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdInquilino" class="control-label">Inquilino (Elegir)</label>
-                <select asp-for="IdInquilino" class="form-control" required>
-                    @foreach (var item in ViewBag.Inquilinos)
-                    {
-                        <option value="@item.IdInquilino">@(item.ToString())</option>
-                    }
-                </select>
-            </div>
+                        <div class="form-group mb-3">
+                            <label for="FechaInicio" class="form-label">Fecha de inicio</label>
+                            <input asp-for="FechaInicio" class="form-control" required />
+                            <span asp-validation-for="FechaInicio" class="text-danger"></span>
+                        </div>
 
-            <div class="form-group">
-                <label asp-for="IdInmueble" class="control-label">Inmueble (elegir)</label>
-                <select asp-for="IdInmueble" id="inmuebleSelect" class="form-control" required>
-                    @foreach (var item in ViewBag.Inmuebles)
-                    {
-                        <option value="@item.IdInmueble" data-valor="@item.Valor">@(item.ToString())</option>
-                    }
-                </select>
+                        <div class="form-group mb-3">
+                            <label for="FechaFinalizacion" class="form-label">Fecha de finalización</label>
+                            <input asp-for="FechaFinalizacion" class="form-control" required />
+                            <span asp-validation-for="FechaFinalizacion" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Estado" class="form-label">Estado (Elegir)</label>
+                            <select asp-for="Estado" class="form-control" required>
+                                <option value="true">Activo</option>
+                                <option value="false">Inactivo</option>
+                            </select>
+                            <span asp-validation-for="Estado" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="IdInquilino" class="form-label">Inquilino (Elegir)</label>
+                            <select asp-for="IdInquilino" class="form-control" required>
+                                @foreach (var item in ViewBag.Inquilinos)
+                                {
+                                    <option value="@item.IdInquilino">@(item.ToString())</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="IdInmueble" class="form-label">Inmueble (Elegir)</label>
+                            <select asp-for="IdInmueble" id="inmuebleSelect" class="form-control" required>
+                                @foreach (var item in ViewBag.Inmuebles)
+                                {
+                                    <option value="@item.IdInmueble" data-valor="@item.Valor">@(item.ToString())</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="MontoAlquiler" class="form-label">Monto del alquiler</label>
+                            <input asp-for="MontoAlquiler" id="montoAlquilerInput" class="form-control" required readonly />
+                            <span asp-validation-for="MontoAlquiler" class="text-danger"></span>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success w-50">Guardar</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="MontoAlquiler">Monto del alquiler</label>
-                <input asp-for="MontoAlquiler" id="montoAlquilerInput" class="form-control" required readonly />
-                <span asp-validation-for="MontoAlquiler" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Guardar" class="btn btn-success" />
-            </div>
-        </form>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-action="Index" class="btn btn-secondary">Volver</a>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index" class="btn btn-secondary">Volver</a>
-</div>
 <script>
     document.getElementById('inmuebleSelect').addEventListener('change', function () {
-        const inmuebleId = this.value; // ID del inmueble seleccionado
+        const inmuebleId = this.value;
 
-        // Realizar la solicitud AJAX
         fetch(`/Inmueble/ObtenerMontoInmueble?idInmueble=${inmuebleId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.getElementById('montoAlquilerInput').value = data.valor; // Actualiza el campo
+                    document.getElementById('montoAlquilerInput').value = data.valor;
                 } else {
-                    document.getElementById('montoAlquilerInput').value = ''; // Limpia el campo
-                    alert(data.message); // Mostrar error
+                    document.getElementById('montoAlquilerInput').value = '';
+                    alert(data.message);
                 }
             })
             .catch(error => console.error('Error:', error));
