@@ -153,7 +153,7 @@ namespace Inmobiliaria.Controllers
         public IActionResult DisponiblesPorPropietario(int idPropietario)
         {
             RepositorioPropietarios rpro = new RepositorioPropietarios();
-            var propietario = rpro.GetPropietario(idPropietario); 
+            var propietario = rpro.GetPropietario(idPropietario);
 
             if (propietario == null)
             {
@@ -174,6 +174,19 @@ namespace Inmobiliaria.Controllers
             return View("DisponiblesPorPropietario", inmuebles);
         }
 
+
+        [HttpGet]
+        public IActionResult ObtenerMontoInmueble(int idInmueble)
+        {
+            RepositorioInmueble rinm = new RepositorioInmueble();
+            var inmueble = rinm.GetInmueble(idInmueble);
+            if (inmueble == null)
+            {
+                return Json(new { success = false, message = "Inmueble no encontrado." });
+            }
+
+            return Json(new { success = true, valor = inmueble.Valor });
+        }
 
 
 

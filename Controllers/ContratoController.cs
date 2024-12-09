@@ -58,16 +58,20 @@ public class ContratoController : Controller
     public IActionResult Guardar(Contrato contrato)
     {
         RepositorioContrato rc = new RepositorioContrato();
+        RepositorioAuditoria ra = new RepositorioAuditoria();
+
         try
         {
             if (contrato.IdContrato > 0)
             {
                 rc.ModificarContrato(contrato);
+                ra.RegistrarAuditoria("Modificación Contrato", User.Identity.Name, $"Contrato ID: {contrato.IdContrato}");
                 TempData["SuccessMessage"] = "Contrato actualizado correctamente.";
             }
             else
             {
                 rc.CrearContrato(contrato);
+                ra.RegistrarAuditoria("Creación Contrato", User.Identity.Name, $"Inmueble ID: {contrato.IdInmueble}");
                 TempData["SuccessMessage"] = "Contrato creado correctamente.";
             }
 
@@ -244,26 +248,35 @@ public class ContratoController : Controller
     {
         RepositorioContrato rc = new RepositorioContrato();
         RepositorioPago rp = new RepositorioPago();
-
-        // Registrar la fecha de terminación anticipada
-        rc.TerminarContrato(idContrato, fechaTerminacion);
-
-        // Recuperar el contrato actualizado (con la fecha de terminación efectiva registrada)
-        var contrato = rc.GetContrato(idContrato);
-        if (contrato == null)
+        RepositorioAuditoria ra = new RepositorioAuditoria();
+        try
         {
-            TempData["ErrorMessage"] = "El contrato no existe.";
+            // Registrar la fecha de terminación anticipada
+            rc.TerminarContrato(idContrato, fechaTerminacion);
+            ra.RegistrarAuditoria("Terminación Contrato", User.Identity.Name, $"Contrato ID: {idContrato}, Fecha Terminación: {fechaTerminacion}");
+
+            // Recuperar el contrato actualizado (con la fecha de terminación efectiva registrada)
+            var contrato = rc.GetContrato(idContrato);
+            if (contrato == null)
+            {
+                TempData["ErrorMessage"] = "El contrato no existe.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Calcular la multa basada en la fecha de terminación ingresada
+            var multa = contrato.CalcularMulta(fechaTerminacion);
+
+            // Registrar la multa como un pago pendiente con el detalle adecuado
+            rp.RegistrarMulta(idContrato, multa);
+
+            TempData["SuccessMessage"] = $"El contrato ha sido terminado anticipadamente. Multa registrada: ${multa}.";
             return RedirectToAction(nameof(Index));
         }
-
-        // Calcular la multa basada en la fecha de terminación ingresada
-        var multa = contrato.CalcularMulta(fechaTerminacion);
-
-        // Registrar la multa como un pago pendiente con el detalle adecuado
-        rp.RegistrarMulta(idContrato, multa);
-
-        TempData["SuccessMessage"] = $"El contrato ha sido terminado anticipadamente. Multa registrada: ${multa}.";
-        return RedirectToAction(nameof(Index));
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = $"Error al terminar el contrato: {ex.Message}";
+            return RedirectToAction(nameof(Index));
+        }
     }
 
 

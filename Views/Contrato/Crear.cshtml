@@ -29,11 +29,6 @@
                 <span asp-validation-for="FechaFinalizacion" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="MontoAlquiler">Monto del alquiler</label>
-                <input asp-for="MontoAlquiler" class="form-control" required />
-                <span asp-validation-for="MontoAlquiler" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Estado" class="control-label">Estado (Elegir)</label>
                 <select asp-for="Estado" class="form-control" required>
                     <option value="true">Activo</option>
@@ -53,14 +48,18 @@
 
             <div class="form-group">
                 <label asp-for="IdInmueble" class="control-label">Inmueble (elegir)</label>
-                <select asp-for="IdInmueble" class="form-control" required>
+                <select asp-for="IdInmueble" id="inmuebleSelect" class="form-control" required>
                     @foreach (var item in ViewBag.Inmuebles)
                     {
-                        <option value="@item.IdInmueble">@(item.ToString())</option>
+                        <option value="@item.IdInmueble" data-valor="@item.Valor">@(item.ToString())</option>
                     }
                 </select>
             </div>
-    
+            <div class="form-group">
+                <label for="MontoAlquiler">Monto del alquiler</label>
+                <input asp-for="MontoAlquiler" id="montoAlquilerInput" class="form-control" required readonly />
+                <span asp-validation-for="MontoAlquiler" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <input type="submit" value="Guardar" class="btn btn-success" />
             </div>
@@ -71,3 +70,21 @@
 <div>
     <a asp-action="Index" class="btn btn-secondary">Volver</a>
 </div>
+<script>
+    document.getElementById('inmuebleSelect').addEventListener('change', function () {
+        const inmuebleId = this.value; // ID del inmueble seleccionado
+
+        // Realizar la solicitud AJAX
+        fetch(`/Inmueble/ObtenerMontoInmueble?idInmueble=${inmuebleId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('montoAlquilerInput').value = data.valor; // Actualiza el campo
+                } else {
+                    document.getElementById('montoAlquilerInput').value = ''; // Limpia el campo
+                    alert(data.message); // Mostrar error
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>

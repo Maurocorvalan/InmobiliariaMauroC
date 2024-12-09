@@ -93,16 +93,19 @@ public class PagoController : Controller
     public IActionResult Guardar(Pago pago)
     {
         RepositorioPago rp = new RepositorioPago();
+        RepositorioAuditoria ra = new RepositorioAuditoria();
         try
         {
             if (pago.IdPago > 0)
             {
                 rp.ModificarPago(pago);
+                ra.RegistrarAuditoria("Modificación Pago", User.Identity.Name, $"Pago ID: {pago.IdPago}");
                 TempData["SuccessMessage"] = "Pago actualizado correctamente.";
             }
             else
             {
                 rp.CrearPago(pago);
+                ra.RegistrarAuditoria("Creación Pago", User.Identity.Name, $"Contrato ID: {pago.IdContrato}");
                 TempData["SuccessMessage"] = "Pago creado correctamente.";
             }
             return RedirectToAction(nameof(Index));
@@ -136,9 +139,12 @@ public class PagoController : Controller
     public IActionResult Eliminar(int id)
     {
         RepositorioPago rp = new RepositorioPago();
+        RepositorioAuditoria ra = new RepositorioAuditoria();
+
         try
         {
             rp.EliminarPago(id, false);
+            ra.RegistrarAuditoria("Anulacion de Pago", User.Identity.Name, $"Pago ID: {id}");
             TempData["SuccessMessage"] = "Estado del pago actualizado correctamente.";
         }
         catch (Exception ex)
