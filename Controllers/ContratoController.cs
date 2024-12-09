@@ -290,7 +290,6 @@ public class ContratoController : Controller
 
         if (!contratos.Any())
         {
-            ViewData["InfoMessage"] = "No se encontraron contratos que terminen en este rango de fechas.";
         }
 
         return View("BuscarPorRango", contratos); // Renderiza la vista con los resultados
