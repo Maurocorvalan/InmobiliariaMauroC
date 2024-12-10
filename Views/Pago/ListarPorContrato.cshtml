@@ -62,8 +62,11 @@
     </div>
     <div class="form-group">
         <label for="Monto">Monto</label>
-        <input type="number" name="Monto" id="montoInput" class="form-control" value="@ViewData["MontoAlquiler"]"
-            readonly />
+        <input type="hidden" name="IdContrato" value="@TempData["IdContrato"]" />
+        <input type="number" name="Monto" id="montoInput" class="form-control" 
+            value="@ViewData["MontoAlquiler"]" readonly>
+
+
     </div>
     <div class="form-group">
         <label for="Estado">Estado</label>
@@ -72,10 +75,10 @@
             <option value="false">Anulado</option>
         </select>
     </div>
-
     <div class="form-group">
         <label for="Detalle">Detalle</label>
         <textarea name="Detalle" class="form-control"></textarea>
     </div>
     <button type="submit" class="btn btn-primary">Guardar</button>
 </form>
+

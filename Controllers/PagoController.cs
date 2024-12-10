@@ -178,14 +178,22 @@ public class PagoController : Controller
 
         var pagos = rp.GetPagosPorContrato(idContrato);
         var contrato = rc.GetContrato(idContrato);
+        if (contrato == null)
+        {
+            TempData["ErrorMessage"] = "El contrato no existe.";
+            return RedirectToAction("Index");
+        }
 
+        ViewData["MontoAlquiler"] = contrato.MontoAlquiler > 0
+            ? contrato.MontoAlquiler.ToString("0.##", CultureInfo.InvariantCulture)
+            : "0";
         ViewData["IdContrato"] = idContrato;
-        ViewData["MontoAlquiler"] = contrato?.MontoAlquiler.ToString("F2", CultureInfo.InvariantCulture) ?? "0.00";
 
         if (!pagos.Any())
         {
             ViewData["InfoMessage"] = "Este contrato no tiene pagos realizados.";
         }
+        Console.WriteLine($"MontoAlquiler asignado: {ViewData["MontoAlquiler"]}");
 
         return View(pagos);
     }

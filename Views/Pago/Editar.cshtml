@@ -32,7 +32,7 @@
 
                         <div class="form-group mb-3">
                             <label asp-for="Monto" class="form-label">Monto</label>
-                            <input asp-for="Monto" class="form-control" readonly />
+                            <input asp-for="Monto" type="number" class="form-control" readonly />
                             <span asp-validation-for="Monto" class="text-danger"></span>
                         </div>
 
@@ -74,3 +74,13 @@
         <a asp-action="Index" class="btn btn-secondary">Volver</a>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const montoInput = document.querySelector('input[asp-for="Monto"]'); // Selecciona el campo de Monto
+        
+        if (montoInput) {
+            let monto = parseFloat(montoInput.value || '0').toFixed(2); // Convierte a decimal con 2 dígitos
+            montoInput.value = monto; // Asigna el valor formateado de nuevo al campo
+        }
+    });
+</script>

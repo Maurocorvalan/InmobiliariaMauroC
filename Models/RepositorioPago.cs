@@ -145,8 +145,8 @@ namespace Inmobiliaria.Models
             using (var connection = new MySqlConnection(ConnectionString))
             {
                 var sql = $@"INSERT INTO pagos ({nameof(Pago.FechaPago)}, {nameof(Pago.Monto)}, {nameof(Pago.Detalle)}, {nameof(Pago.Estado)}, {nameof(Pago.IdContrato)}) 
-                             VALUES (@{nameof(Pago.FechaPago)}, @{nameof(Pago.Monto)}, @{nameof(Pago.Detalle)}, @{nameof(Pago.Estado)}, @{nameof(Pago.IdContrato)});
-                             SELECT LAST_INSERT_ID();";
+                     VALUES (@{nameof(Pago.FechaPago)}, @{nameof(Pago.Monto)}, @{nameof(Pago.Detalle)}, @{nameof(Pago.Estado)}, @{nameof(Pago.IdContrato)});
+                     SELECT LAST_INSERT_ID();";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -155,9 +155,9 @@ namespace Inmobiliaria.Models
                     command.Parameters.AddWithValue($"@{nameof(Pago.Detalle)}", pago.Detalle);
                     command.Parameters.AddWithValue($"@{nameof(Pago.Estado)}", pago.Estado);
                     command.Parameters.AddWithValue($"@{nameof(Pago.IdContrato)}", pago.IdContrato);
+
                     connection.Open();
                     Id = Convert.ToInt32(command.ExecuteScalar());
-                    pago.IdPago = Id;
                     connection.Close();
                 }
             }
