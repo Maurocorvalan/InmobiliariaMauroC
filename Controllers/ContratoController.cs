@@ -97,7 +97,7 @@ public class ContratoController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = $"Fechas no disponibles para este inmueble: Fecha inicio:{contrato.FechaInicio} - Fecha Finalizacion:{contrato.FechaFinalizacion}";
+            TempData["ErrorMessage"] = $"Fechas no disponibles para este inmueble: Fecha inicio: {contrato.FechaInicio} - Fecha Finalizacion: {contrato.FechaFinalizacion}";
 
             if (Request.Form["EsRenovar"] == "true")
             {
@@ -105,7 +105,7 @@ public class ContratoController : Controller
 
                 return RedirectToAction("Renovar", new { idContrato = idContratoOriginal });
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Editar", new { idContrato = contrato.IdContrato });
         }
     }
 

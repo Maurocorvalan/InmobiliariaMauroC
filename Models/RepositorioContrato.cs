@@ -156,6 +156,7 @@ public class RepositorioContrato
                         SELECT COUNT(*) 
                         FROM contratos 
                         WHERE {nameof(Contrato.IdInmueble)} = @{nameof(Contrato.IdInmueble)} 
+                        AND {nameof(Contrato.Estado)} = '1'
                         AND (
                             (@{nameof(Contrato.FechaInicio)} BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFinalizacion)})
                             OR (@{nameof(Contrato.FechaFinalizacion)} BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFinalizacion)})
@@ -214,8 +215,9 @@ public class RepositorioContrato
             SELECT COUNT(*) 
             FROM contratos
             WHERE 
-                {nameof(Contrato.IdInmueble)} = @{nameof(Contrato.IdInmueble)} -- Validar el nuevo inmueble
-                AND {nameof(Contrato.IdContrato)} != @{nameof(Contrato.IdContrato)} -- Excluir el contrato actual
+                {nameof(Contrato.IdInmueble)} = @{nameof(Contrato.IdInmueble)} 
+                AND {nameof(Contrato.IdContrato)} != @{nameof(Contrato.IdContrato)} 
+                AND {nameof(Contrato.Estado)} = '1'
                 AND (
                     @{nameof(Contrato.FechaInicio)} BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFinalizacion)}
                     OR @{nameof(Contrato.FechaFinalizacion)} BETWEEN {nameof(Contrato.FechaInicio)} AND {nameof(Contrato.FechaFinalizacion)}
