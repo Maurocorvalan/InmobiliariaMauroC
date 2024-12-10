@@ -91,6 +91,8 @@ public class PagoController : Controller
     public IActionResult Guardar(Pago pago)
     {
         RepositorioPago rp = new RepositorioPago();
+        RepositorioContrato rc = new RepositorioContrato();
+
         RepositorioAuditoria ra = new RepositorioAuditoria();
         try
         {
@@ -105,6 +107,20 @@ public class PagoController : Controller
                 rp.CrearPago(pago);
                 ra.RegistrarAuditoria("Creación Pago", User.Identity.Name, $"Contrato ID: {pago.IdContrato}");
                 TempData["SuccessMessage"] = "Pago creado correctamente.";
+            }
+            // Verificar si el contrato está cancelado y actualizar los meses adeudados
+            var contrato = rc.GetContrato(pago.IdContrato);
+            if (contrato != null && contrato.FechaTerminacionEfectiva != null && !pago.EsMulta)
+            {
+                // Recalcular los meses adeudados
+                int mesesAdeudados = rp.CalcularPagosAdeudados(
+                    contrato.IdContrato,
+                    contrato.FechaInicio,
+                    contrato.FechaTerminacionEfectiva.Value
+                );
+
+                // Actualizar el contrato con los nuevos meses adeudados
+                rc.ActualizarTerminacionContrato(contrato.IdContrato, contrato.FechaTerminacionEfectiva.Value, mesesAdeudados);
             }
             return RedirectToAction(nameof(Index));
         }

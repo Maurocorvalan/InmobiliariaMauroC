@@ -38,10 +38,11 @@
                     <td>@contrato.FechaTerminacionEfectiva?.ToString("yyyy-MM-dd HH:mm")</td>
                     <td>@(contrato.Inquilino?.Nombre + " " + contrato.Inquilino?.Apellido)</td>
                     <td>@contrato.Inmueble?.Direccion</td>
-                    <td>@contrato.MesesAdeudados</td>
+                    <td>@(contrato.MesesAdeudados == 0 ? "No posee" : contrato.MesesAdeudados.ToString())</td>
+
                     <td>
-                    <a asp-controller="Pago" asp-action="ListarPorContrato" asp-route-idContrato="@contrato.IdContrato"
-                        title="Ver Pagos"><span class="fa fa-money"></span></a>
+                        <a asp-controller="Pago" asp-action="ListarPorContrato" asp-route-idContrato="@contrato.IdContrato"
+                            title="Ver Pagos"><span class="fa fa-money"></span></a>
                     </td>
                 </tr>
             }

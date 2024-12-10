@@ -36,10 +36,10 @@ public class ContratoController : Controller
 
         ViewBag.Inquilinos = ri.GetInquilinos();
         ViewBag.Inmuebles = rim.GetInmuebles();
+        RepositorioContrato rc = new RepositorioContrato();
 
         if (idContrato.HasValue && idContrato > 0)
         {
-            RepositorioContrato rc = new RepositorioContrato();
             var contrato = rc.GetContrato(idContrato.Value);
             return View(contrato);
         }
@@ -49,6 +49,11 @@ public class ContratoController : Controller
             if (idInmueble.HasValue)
             {
                 nuevoContrato.IdInmueble = idInmueble.Value;
+                var inmuebleSeleccionado = rim.GetInmueble(idInmueble.Value);
+                if (inmuebleSeleccionado != null)
+                {
+                    nuevoContrato.MontoAlquiler = inmuebleSeleccionado.Valor;
+                }
             }
             return View(nuevoContrato);
         }
@@ -240,7 +245,7 @@ public class ContratoController : Controller
         ViewBag.PagosAdeudados = pagosAdeudados;
         ViewBag.FechaInicio = contrato.FechaInicio;
 
-        return View(contrato); 
+        return View(contrato);
     }
     [HttpPost]
     public IActionResult RegistrarTerminacion(int idContrato, DateTime fechaTerminacion)
@@ -284,7 +289,7 @@ public class ContratoController : Controller
     [HttpGet]
     public IActionResult BuscarPorRango(DateTime fechaLimite)
     {
-        var fechaInicio = DateTime.Now.Date; 
+        var fechaInicio = DateTime.Now.Date;
         RepositorioContrato rc = new RepositorioContrato();
 
         var contratos = rc.GetContratosPorRango(fechaInicio, fechaLimite);
@@ -293,7 +298,7 @@ public class ContratoController : Controller
         {
         }
 
-        return View("BuscarPorRango", contratos); 
+        return View("BuscarPorRango", contratos);
     }
     [HttpPost]
     public IActionResult CalcularMesesAdeudados(int idContrato, DateTime fechaTerminacion)

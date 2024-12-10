@@ -24,7 +24,8 @@ namespace Inmobiliaria.Models
                         p.{nameof(Pago.Monto)}, 
                         p.{nameof(Pago.Detalle)}, 
                         p.{nameof(Pago.Estado)}, 
-                        p.{nameof(Pago.IdContrato)} 
+                        p.{nameof(Pago.IdContrato)},
+                        P.{nameof(Pago.EsMulta)}
                     FROM pagos p 
                     INNER JOIN contratos c ON p.{nameof(Pago.IdContrato)} = c.{nameof(Contrato.IdContrato)}";
 
@@ -42,7 +43,8 @@ namespace Inmobiliaria.Models
                                 Monto = reader.IsDBNull(reader.GetOrdinal(nameof(Pago.Monto))) ? 0 : reader.GetDecimal(nameof(Pago.Monto)),
                                 Detalle = reader.IsDBNull(reader.GetOrdinal(nameof(Pago.Detalle))) ? string.Empty : reader.GetString(nameof(Pago.Detalle)),
                                 Estado = reader.IsDBNull(reader.GetOrdinal(nameof(Pago.Estado))) ? false : reader.GetBoolean(nameof(Pago.Estado)),
-                                IdContrato = reader.IsDBNull(reader.GetOrdinal(nameof(Pago.IdContrato))) ? 0 : reader.GetInt32(nameof(Pago.IdContrato))
+                                IdContrato = reader.IsDBNull(reader.GetOrdinal(nameof(Pago.IdContrato))) ? 0 : reader.GetInt32(nameof(Pago.IdContrato)),
+                                EsMulta = reader.GetBoolean(nameof(Pago.EsMulta))
                             });
                         }
                     }
@@ -64,6 +66,7 @@ namespace Inmobiliaria.Models
         p.{nameof(Pago.Monto)}, 
         p.{nameof(Pago.Detalle)}, 
         p.{nameof(Pago.Estado)}, 
+        p.{nameof(Pago.EsMulta)},
         p.{nameof(Pago.IdContrato)} 
         FROM 
             pagos p 
@@ -87,6 +90,7 @@ namespace Inmobiliaria.Models
                                 Detalle = reader.GetString(nameof(Pago.Detalle)),
                                 IdContrato = reader.GetInt32(nameof(Pago.IdContrato)),
                                 Estado = reader.GetBoolean(nameof(Pago.Estado)),
+                                EsMulta = reader.GetBoolean(nameof(Pago.EsMulta)),
                                 Contrato = new Contrato
                                 {
                                     IdContrato = reader.GetInt32(nameof(Contrato.IdContrato)),
@@ -111,7 +115,9 @@ namespace Inmobiliaria.Models
                              {nameof(Pago.Monto)} = @{nameof(Pago.Monto)},
                              {nameof(Pago.Detalle)} = @{nameof(Pago.Detalle)},
                              {nameof(Pago.Estado)} = @{nameof(Pago.Estado)},
+                             {nameof(Pago.EsMulta)} = @{nameof(Pago.EsMulta)},
                              {nameof(Pago.IdContrato)} = @{nameof(Pago.IdContrato)}
+
                             WHERE 
                             {nameof(Pago.IdPago)} = @{nameof(Pago.IdPago)};";
 
@@ -122,6 +128,7 @@ namespace Inmobiliaria.Models
                     command.Parameters.AddWithValue($"@{nameof(Pago.Monto)}", pago.Monto);
                     command.Parameters.AddWithValue($"@{nameof(Pago.Detalle)}", pago.Detalle);
                     command.Parameters.AddWithValue($"@{nameof(Pago.Estado)}", pago.Estado ? 1 : 0);
+                    command.Parameters.AddWithValue($"@{nameof(Pago.EsMulta)}", pago.EsMulta);
                     command.Parameters.AddWithValue($"@{nameof(Pago.IdContrato)}", pago.IdContrato);
                     connection.Open();
                     var result = command.ExecuteNonQuery();
@@ -257,7 +264,7 @@ namespace Inmobiliaria.Models
             {
                 var sql = $@"
             INSERT INTO pagos (IdContrato, FechaPago, Estado, Monto, Detalle) 
-            VALUES (@IdContrato, @FechaPago, 0, @MontoMulta, @Detalle)";
+            VALUES (@IdContrato, @FechaPago, 0, @MontoMulta, @Detalle, 1)";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -279,21 +286,18 @@ namespace Inmobiliaria.Models
             {
                 connection.Open();
 
-                // Calcular meses transcurridos entre inicio y terminación efectiva
                 int mesesTranscurridos = ((fechaTerminacion.Year - fechaInicio.Year) * 12) + fechaTerminacion.Month - fechaInicio.Month;
 
-                // Contar pagos realizados
                 string pagosRealizadosQuery = @"
             SELECT COUNT(*) 
             FROM pagos 
-            WHERE IdContrato = @IdContrato AND Estado = 1"; // Estado 1 significa "pagado"
+            WHERE IdContrato = @IdContrato AND Estado = 1";
 
                 using (var command = new MySqlCommand(pagosRealizadosQuery, connection))
                 {
                     command.Parameters.AddWithValue("@IdContrato", idContrato);
                     int pagosRealizados = Convert.ToInt32(command.ExecuteScalar());
 
-                    // Calcular meses adeudados
                     int mesesAdeudados = mesesTranscurridos - pagosRealizados;
                     return mesesAdeudados > 0 ? mesesAdeudados : 0;
                 }

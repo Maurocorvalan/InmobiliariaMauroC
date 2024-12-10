@@ -10,6 +10,7 @@ namespace Inmobiliaria.Models
         public string? Detalle { get; set; } = string.Empty;
         public bool Estado { get; set; } = false;
  
+        public bool EsMulta { get; set; } = false;
 
         public int IdContrato { get; set; }
         public Contrato? Contrato { get; set; }

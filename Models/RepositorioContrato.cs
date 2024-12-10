@@ -94,6 +94,7 @@ public class RepositorioContrato
                     c.{nameof(Contrato.MontoAlquiler)}, 
                     c.{nameof(Contrato.Estado)}, 
                     c.{nameof(Contrato.IdInquilino)}, 
+                    c.{nameof(Contrato.FechaTerminacionEfectiva)},
                     inq.{nameof(Inquilino.Nombre)}, 
                     inq.{nameof(Inquilino.Apellido)}, 
                     c.{nameof(Contrato.IdInmueble)},
@@ -124,6 +125,9 @@ public class RepositorioContrato
                             Estado = reader.GetBoolean(nameof(Contrato.Estado)),
                             IdInquilino = reader.GetInt32(nameof(Contrato.IdInquilino)),
                             IdInmueble = reader.GetInt32(nameof(Contrato.IdInmueble)),
+                            FechaTerminacionEfectiva = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.FechaTerminacionEfectiva)))
+                            ? (DateTime?)null
+                            : reader.GetDateTime(nameof(Contrato.FechaTerminacionEfectiva)),
                             Inquilino = new Inquilino
                             {
                                 Nombre = reader.GetString(nameof(Inquilino.Nombre)),
@@ -435,31 +439,30 @@ public class RepositorioContrato
         using (var connection = new MySqlConnection(ConnectionString))
         {
             var sql = $@"
-            SELECT 
-                c.{nameof(Contrato.IdContrato)}, 
-                c.{nameof(Contrato.FechaInicio)}, 
-                c.{nameof(Contrato.FechaFinalizacion)}, 
-
-                c.{nameof(Contrato.MontoAlquiler)}, 
-                c.{nameof(Contrato.Estado)}, 
-                c.{nameof(Contrato.IdInquilino)}, 
-                inq.{nameof(Inquilino.Nombre)}, 
-                inq.{nameof(Inquilino.Apellido)}, 
-                c.{nameof(Contrato.IdInmueble)}, 
-                im.{nameof(Inmueble.Direccion)}
-            FROM 
-                contratos c
-            INNER JOIN 
-                inquilinos inq ON c.{nameof(Contrato.IdInquilino)} = inq.{nameof(Inquilino.IdInquilino)}
-            INNER JOIN 
-                inmuebles im ON c.{nameof(Contrato.IdInmueble)} = im.{nameof(Inmueble.IdInmueble)}
-            WHERE 
-                c.{nameof(Contrato.FechaFinalizacion)} BETWEEN @FechaInicio AND @FechaFin";
+        SELECT 
+            c.{nameof(Contrato.IdContrato)}, 
+            c.{nameof(Contrato.FechaInicio)}, 
+            c.{nameof(Contrato.FechaFinalizacion)}, 
+            c.{nameof(Contrato.MontoAlquiler)}, 
+            c.{nameof(Contrato.Estado)}, 
+            c.{nameof(Contrato.IdInquilino)}, 
+            inq.{nameof(Inquilino.Nombre)}, 
+            inq.{nameof(Inquilino.Apellido)}, 
+            c.{nameof(Contrato.IdInmueble)}, 
+            im.{nameof(Inmueble.Direccion)}
+        FROM 
+            contratos c
+        INNER JOIN 
+            inquilinos inq ON c.{nameof(Contrato.IdInquilino)} = inq.{nameof(Inquilino.IdInquilino)}
+        INNER JOIN 
+            inmuebles im ON c.{nameof(Contrato.IdInmueble)} = im.{nameof(Inmueble.IdInmueble)}
+        WHERE 
+            DATE(c.{nameof(Contrato.FechaFinalizacion)}) BETWEEN @FechaInicio AND @FechaFin";
 
             using (var command = new MySqlCommand(sql, connection))
             {
-                command.Parameters.AddWithValue("@FechaInicio", fechaInicio);
-                command.Parameters.AddWithValue("@FechaFin", fechaFin);
+                command.Parameters.AddWithValue("@FechaInicio", fechaInicio.Date);
+                command.Parameters.AddWithValue("@FechaFin", fechaFin.Date);
 
                 connection.Open();
                 using (var reader = command.ExecuteReader())
@@ -489,6 +492,7 @@ public class RepositorioContrato
         }
         return contratos;
     }
+
     public void ActualizarTerminacionContrato(int idContrato, DateTime fechaTerminacion, int mesesAdeudados)
     {
         using (var connection = new MySqlConnection(ConnectionString))
@@ -572,6 +576,73 @@ public class RepositorioContrato
         }
         return contratos;
     }
+
+    public void ActualizarMesesAdeudados(int idContrato)
+    {
+        using (var connection = new MySqlConnection(ConnectionString))
+        {
+            // Verificar si el contrato está finalizado
+            var contratoQuery = $@"
+            SELECT FechaInicio, FechaTerminacionEfectiva 
+            FROM contratos 
+            WHERE IdContrato = @IdContrato AND FechaTerminacionEfectiva IS NOT NULL";
+
+            using (var contratoCommand = new MySqlCommand(contratoQuery, connection))
+            {
+                contratoCommand.Parameters.AddWithValue("@IdContrato", idContrato);
+                connection.Open();
+
+                using (var reader = contratoCommand.ExecuteReader())
+                {
+                    if (!reader.Read())
+                    {
+                        // Contrato no finalizado o no existe
+                        connection.Close();
+                        return;
+                    }
+
+                    var fechaInicio = reader.GetDateTime("FechaInicio");
+                    var fechaTerminacion = reader.GetDateTime("FechaTerminacionEfectiva");
+
+                    connection.Close();
+
+                    // Calcular meses adeudados
+                    var mesesTranscurridos = ((fechaTerminacion.Year - fechaInicio.Year) * 12) + (fechaTerminacion.Month - fechaInicio.Month);
+
+                    var pagosRealizadosQuery = @"
+                    SELECT COUNT(*) 
+                    FROM pagos 
+                    WHERE IdContrato = @IdContrato AND Estado = 1";
+
+                    using (var pagosCommand = new MySqlCommand(pagosRealizadosQuery, connection))
+                    {
+                        pagosCommand.Parameters.AddWithValue("@IdContrato", idContrato);
+                        connection.Open();
+                        var pagosRealizados = Convert.ToInt32(pagosCommand.ExecuteScalar());
+                        connection.Close();
+
+                        var mesesAdeudados = mesesTranscurridos - pagosRealizados;
+
+                        // Actualizar los meses adeudados
+                        var actualizarQuery = @"
+                        UPDATE contratos 
+                        SET MesesAdeudados = @MesesAdeudados 
+                        WHERE IdContrato = @IdContrato";
+
+                        using (var updateCommand = new MySqlCommand(actualizarQuery, connection))
+                        {
+                            updateCommand.Parameters.AddWithValue("@MesesAdeudados", mesesAdeudados > 0 ? mesesAdeudados : 0);
+                            updateCommand.Parameters.AddWithValue("@IdContrato", idContrato);
+                            connection.Open();
+                            updateCommand.ExecuteNonQuery();
+                            connection.Close();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
 
 
