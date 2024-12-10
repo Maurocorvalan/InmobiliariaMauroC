@@ -193,7 +193,6 @@ public class PagoController : Controller
         {
             ViewData["InfoMessage"] = "Este contrato no tiene pagos realizados.";
         }
-        Console.WriteLine($"MontoAlquiler asignado: {ViewData["MontoAlquiler"]}");
 
         return View(pagos);
     }
