@@ -26,21 +26,25 @@
 
                         <div class="form-group mb-3">
                             <label asp-for="Nombre" class="form-label">Nombre</label>
-                            <input asp-for="Nombre" class="form-control" required />
+                            <input asp-for="Nombre" class="form-control" required pattern="^[a-zA-Z\s]+$"
+                                title="El Nombre solo debe contener letras y espacios" />
                             <span asp-validation-for="Nombre" class="text-danger"></span>
                         </div>
 
                         <div class="form-group mb-3">
                             <label asp-for="Apellido" class="form-label">Apellido</label>
-                            <input asp-for="Apellido" class="form-control" required />
+                            <input asp-for="Apellido" class="form-control" required pattern="^[a-zA-Z\s]+$"
+                                title="El Apellido solo debe contener letras y espacios" />
                             <span asp-validation-for="Apellido" class="text-danger"></span>
                         </div>
 
                         <div class="form-group mb-3">
                             <label asp-for="Dni" class="form-label">DNI</label>
-                            <input asp-for="Dni" class="form-control" required />
+                            <input asp-for="Dni" class="form-control" required pattern="^[a-zA-Z0-9]+$"
+                                title="El DNI solo puede contener letras y números, sin espacios ni caracteres especiales" />
                             <span asp-validation-for="Dni" class="text-danger"></span>
                         </div>
+
 
                         <div class="form-group mb-3">
                             <label asp-for="Telefono" class="form-label">Teléfono</label>

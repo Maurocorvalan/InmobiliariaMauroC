@@ -62,6 +62,10 @@ namespace Inmobiliaria.Controllers
         [HttpPost]
         public IActionResult Guardar(Inquilino inquilino)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(inquilino);
+            }
             RepositorioInquilino ri = new RepositorioInquilino();
             if (inquilino.IdInquilino > 0)
             {
